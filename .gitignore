@@ -1,0 +1,8 @@
+.vscode/
+*/bin
+*/obj
+*/*/bin
+*/*/obj
+*/config.json
+_releases/
+PerfectionHandbook/manifest.json
