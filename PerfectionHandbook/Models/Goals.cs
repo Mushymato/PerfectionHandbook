@@ -1,4 +1,3 @@
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData;
@@ -10,18 +9,22 @@ using StardewValley.Locations;
 
 namespace PerfectionHandbook.Models;
 
-public record NumOutOfNum(int Count, int Total)
+public record GoalFulfillment(Farmer? Who, int Count, int Total)
 {
     public float Percent => Total > 0 ? (float)Count / Total : 0;
     public bool Filled => Count >= Total;
     public string? Notes { get; set; }
+    public string DisplayText => I18n.Ui_Fulfillment_Dipslay(Count, Total);
+    public string DiplayPercent => $"{Percent:P2}";
 }
 
 public interface IGoal
 {
     bool IsShared { get; }
-    NumOutOfNum CountAndTotal(Farmer who);
+    GoalFulfillment GetFulfillment(Farmer who);
     object? PageContext { get; }
+    string DisplayName { get; }
+    ParsedItemData DisplayIcon { get; }
 }
 
 public interface IPerfectionGoal : IGoal
@@ -37,13 +40,30 @@ public interface IAchievementGoal : IGoal
 public static class Goals
 {
     #region extensions
-    public static KeyValuePair<Farmer, float> CheckPercent(this IGoal goal)
+    public static GoalFulfillment GetBestFulfillment(
+        this IGoal goal,
+        Farmer who,
+        GoalFulfillment? bestFulfillment = null
+    )
     {
+        bestFulfillment ??= goal.GetFulfillment(who);
         if (goal.IsShared)
         {
-            return new(Game1.player, goal.CountAndTotal(Game1.player).Percent);
+            return bestFulfillment;
         }
-        return Utility.GetFarmCompletion(who => goal.CountAndTotal(who).Percent);
+        foreach (Farmer otherFarmer in Game1.getAllFarmers())
+        {
+            if (otherFarmer == who || !otherFarmer.isCustomized.Value)
+            {
+                continue;
+            }
+            GoalFulfillment otherFulfillment = goal.GetFulfillment(otherFarmer);
+            if (otherFulfillment.Percent > bestFulfillment.Percent)
+            {
+                bestFulfillment = otherFulfillment;
+            }
+        }
+        return bestFulfillment;
     }
     #endregion
 
@@ -53,8 +73,10 @@ public static class Goals
         public float PercentWeight => 15f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Shipped");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)24");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -72,7 +94,7 @@ public static class Goals
                         count++;
                 }
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -81,9 +103,11 @@ public static class Goals
         public float PercentWeight => 4f;
         public bool IsShared => true;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Obelisks");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)688");
 
         // TODO: include modded obelisks
-        public NumOutOfNum CountAndTotal(Farmer who) => new(Utility.GetObeliskTypesBuilt(), 4);
+        public GoalFulfillment GetFulfillment(Farmer who) => new(null, Utility.GetObeliskTypesBuilt(), 4);
     }
 
     public sealed class Perfection_GoldClockBuilt : IPerfectionGoal
@@ -91,8 +115,11 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => true;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldClock");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)336");
 
-        public NumOutOfNum CountAndTotal(Farmer who) => new(Game1.IsBuildingConstructed("Gold Clock") ? 1 : 0, 1);
+        public GoalFulfillment GetFulfillment(Farmer who) =>
+            new(null, Game1.IsBuildingConstructed("Gold Clock") ? 1 : 0, 1);
     }
 
     public sealed class Perfection_MonsterSlayered : IPerfectionGoal
@@ -100,8 +127,10 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_MonsterSlayer");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)767");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -112,7 +141,7 @@ public static class Goals
                     continue;
                 foreach (string target in value.Targets)
                 {
-                    killedNum += Game1.stats.getMonstersKilled(target);
+                    killedNum += who.stats.getMonstersKilled(target);
                     if (killedNum >= value.Count)
                     {
                         count++;
@@ -121,7 +150,7 @@ public static class Goals
                 }
                 total++;
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -130,8 +159,10 @@ public static class Goals
         public float PercentWeight => 11f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GreatFriends");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)StardropTea");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -149,7 +180,7 @@ public static class Goals
                         count++;
                 }
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -159,8 +190,10 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_FarmerLevel");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)PurpleBook");
 
-        public NumOutOfNum CountAndTotal(Farmer who) => new(who.Level, 25);
+        public GoalFulfillment GetFulfillment(Farmer who) => new(who, who.Level, 25);
     }
 
     public sealed class Perfection_StardropsFound : IPerfectionGoal
@@ -168,10 +201,12 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Stardrops");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)434");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
-            return new(Utility.numStardropsFound(who), 7);
+            return new(who, Utility.numStardropsFound(who), 7);
         }
     }
 
@@ -180,8 +215,10 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Cooking");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)201");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -199,7 +236,7 @@ public static class Goals
                     }
                 }
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -208,8 +245,10 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Crafting");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)621");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -224,7 +263,7 @@ public static class Goals
                     count++;
                 }
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -233,8 +272,10 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Fish");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)130");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -252,7 +293,7 @@ public static class Goals
                     }
                 }
             }
-            return new(count, total);
+            return new(who, count, total);
         }
     }
 
@@ -261,8 +302,11 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => true;
         public object? PageContext => null;
+        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldenWalnut");
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)73");
 
-        public NumOutOfNum CountAndTotal(Farmer who) => new(Game1.netWorldState.Value.GoldenWalnutsFound, 130);
+        public GoalFulfillment GetFulfillment(Farmer who) =>
+            new(null, Game1.netWorldState.Value.GoldenWalnutsFound, 130);
     }
 
     public sealed class Achievement_Museum : IAchievementGoal
@@ -270,9 +314,11 @@ public static class Goals
         public int AchievementId => 5;
         public bool IsShared => true;
         public object? PageContext => null;
+        public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)587");
 
-        public NumOutOfNum CountAndTotal(Farmer who) =>
-            new(Game1.netWorldState.Value.MuseumPieces.Length, LibraryMuseum.totalArtifacts);
+        public GoalFulfillment GetFulfillment(Farmer who) =>
+            new(null, Game1.netWorldState.Value.MuseumPieces.Length, LibraryMuseum.totalArtifacts);
     }
 
     public sealed class Achievement_Polyculture : IAchievementGoal
@@ -280,8 +326,10 @@ public static class Goals
         public int AchievementId => 31;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)188");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 0;
@@ -296,7 +344,7 @@ public static class Goals
                     }
                 }
             }
-            return new(count, total);
+            return new(null, count, total);
         }
     }
 
@@ -305,8 +353,10 @@ public static class Goals
         public int AchievementId => 32;
         public bool IsShared => false;
         public object? PageContext => null;
+        public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
+        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)258");
 
-        public NumOutOfNum CountAndTotal(Farmer who)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
             int count = 0;
             int total = 300;
@@ -325,7 +375,7 @@ public static class Goals
                         break;
                 }
             }
-            return new(count, total) { Notes = notes };
+            return new(null, count, total) { Notes = notes };
         }
     }
     #endregion
@@ -356,20 +406,6 @@ public static class Goals
         FishCaught,
         GoldenWalnutsFound,
     ];
-
-    internal static void DebugPrintPerfection(string cmd, string[] args)
-    {
-        if (!Context.IsWorldReady)
-            return;
-        foreach (IPerfectionGoal goal in PerfectionGoals)
-        {
-            (Farmer farmer, float percent) = goal.CheckPercent();
-            ModEntry.Log(
-                $"{goal.GetType().Name}\tFarmer={farmer.displayName}\tPercent={percent:P2}\nWeighted={percent * goal.PercentWeight / 100f:P2}",
-                LogLevel.Info
-            );
-        }
-    }
     #endregion
 
     #region achievements
@@ -377,16 +413,5 @@ public static class Goals
     public static readonly Achievement_Polyculture Polyculture = new();
     public static readonly Achievement_Monoculture Monoculture = new();
     public static readonly List<IAchievementGoal> AchievementGoals = [Museum, Polyculture, Monoculture];
-
-    internal static void DebugPrintAchievements(string cmd, string[] args)
-    {
-        if (!Context.IsWorldReady)
-            return;
-        foreach (IAchievementGoal goal in AchievementGoals)
-        {
-            (Farmer farmer, float percent) = goal.CheckPercent();
-            ModEntry.Log($"{goal.GetType().Name}\tFarmer={farmer.displayName}\tPercent={percent:P2}", LogLevel.Info);
-        }
-    }
     #endregion
 }

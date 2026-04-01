@@ -2,6 +2,7 @@ global using SObject = StardewValley.Object;
 using System.Diagnostics;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 
 namespace PerfectionHandbook;
 
@@ -23,12 +24,14 @@ public sealed class ModEntry : Mod
         mon = Monitor;
         help = helper;
 
-        help.ConsoleCommands.Add("ph-debug-perfection", "Debug check perfection goals", Goals.DebugPrintPerfection);
-        help.ConsoleCommands.Add(
-            "ph-debug-achievements",
-            "Debug check achievement goals",
-            Goals.DebugPrintAchievements
-        );
+        help.Events.GameLoop.GameLaunched += OnGameLaunched;
+
+        help.ConsoleCommands.Add("ph-show", "Debug show the handbook", (cmd, args) => MenuHandler.ShowHandbook());
+    }
+
+    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    {
+        MenuHandler.Register();
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>
