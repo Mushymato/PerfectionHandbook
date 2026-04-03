@@ -27,6 +27,7 @@ public static class MenuHandler
             return;
         HandbookContext context = new(Game1.player);
         IMenuController menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
+        menuCtrl.CloseAction = context.CloseAction;
         menuCtrl.EnableCloseButton();
         Game1.activeClickableMenu = menuCtrl.Menu;
     }
