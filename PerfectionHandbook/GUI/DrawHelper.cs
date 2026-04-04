@@ -8,6 +8,23 @@ public static class DrawHelper
 {
     private static readonly Dictionary<long, RenderTarget2D> cachedIcons = [];
 
+    public static void DisposeCache()
+    {
+        foreach (RenderTarget2D renderTarget in cachedIcons.Values)
+        {
+            renderTarget.Dispose();
+        }
+        cachedIcons.Clear();
+    }
+
+    public static void PreloadCache()
+    {
+        foreach (Farmer who in Game1.getAllFarmers())
+        {
+            GetFarmerMiniIcon(who);
+        }
+    }
+
     public static RenderTarget2D? GetFarmerMiniIcon(Farmer? who)
     {
         if (who == null)
@@ -17,6 +34,8 @@ public static class DrawHelper
             && !renderTarget.IsDisposed
         )
             return renderTarget;
+
+        ModEntry.Log($"Render farmer mini-icon for {who.displayName}({who.UniqueMultiplayerID})");
 
         RenderTarget2D? wasRenderTarget;
         {

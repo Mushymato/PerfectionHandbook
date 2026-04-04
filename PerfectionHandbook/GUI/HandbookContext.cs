@@ -17,6 +17,8 @@ public sealed record GoalContext(IGoal Goal, int Page, GoalFulfillment MyFulfill
     }
 
     public bool ShowBestFulfillment => BestFulfillment != null && BestFulfillment.Who != MyFulfillment.Who;
+
+    public object? PageContext => Goal.GetPageContext(this);
 }
 
 public sealed partial class HandbookContext(Farmer who)
@@ -37,19 +39,19 @@ public sealed partial class HandbookContext(Farmer who)
     }
 
     [Notify]
-    private GoalContext? selectedGoal = null;
-    public int Page => SelectedGoal?.Page ?? 0;
+    private GoalContext? selectedGoalCtx = null;
+    public int Page => SelectedGoalCtx?.Page ?? 0;
 
     public void ChangePage(GoalContext goalCtx)
     {
-        SelectedGoal = goalCtx;
+        SelectedGoalCtx = goalCtx;
     }
 
     internal void CloseAction()
     {
-        if (SelectedGoal != null)
+        if (SelectedGoalCtx != null)
         {
-            SelectedGoal = null;
+            SelectedGoalCtx = null;
         }
         else
         {

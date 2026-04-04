@@ -27,16 +27,5 @@
     </grid>
   </scrollable>
   <!-- page 1: items shipped -->
-  <panel *case="1">
-    <label text="Page1"/>
-  </panel>
+  <include *case="1" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-item-shipped" />
 </frame>
-
-<!-- <template name="form-row">
-  <lane layout="content content" vertical-content-alignment="middle" margin="0,8">
-    <banner layout="content content"
-      margin="0,8"
-      text={&title}/>
-    <outlet />
-  </lane>
-</template> -->

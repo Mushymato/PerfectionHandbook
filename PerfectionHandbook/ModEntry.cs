@@ -1,6 +1,6 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
-using PerfectionHandbook.Models;
+using PerfectionHandbook.GUI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -25,6 +25,8 @@ public sealed class ModEntry : Mod
         help = helper;
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
+        help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
 
         help.ConsoleCommands.Add("ph-show", "Debug show the handbook", (cmd, args) => MenuHandler.ShowHandbook());
     }
@@ -32,6 +34,16 @@ public sealed class ModEntry : Mod
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         MenuHandler.Register();
+    }
+
+    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        DrawHelper.PreloadCache();
+    }
+
+    private void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
+    {
+        DrawHelper.DisposeCache();
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>
