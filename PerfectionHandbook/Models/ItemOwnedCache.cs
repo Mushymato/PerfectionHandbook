@@ -22,24 +22,7 @@ public sealed record PlayerOwned(
     Farmer Who,
     IReadOnlyDictionary<string, OwnedItemGroup> OwnedGroups,
     IList<Item> OwnedRepr
-)
-{
-    public int CountOwned(string qualifiedItemId, bool fridgeOnly = false)
-    {
-        if (!OwnedGroups.TryGetValue(qualifiedItemId, out OwnedItemGroup? ownedGroup))
-        {
-            return 0;
-        }
-        int count = 0;
-        foreach (OwnedItem owned in ownedGroup.Things)
-        {
-            if (fridgeOnly && owned.Container != null && !owned.Container.fridge.Value)
-                continue;
-            count += owned.ThisItem.Stack;
-        }
-        return count;
-    }
-}
+);
 
 public static class ItemOwnedCache
 {

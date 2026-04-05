@@ -116,7 +116,7 @@ public static class ItemInfoCache
                 {
                     CraftingRecipe recipe = MakeCraftingRecipe(recipeId, isCooking);
                     Item reprItem = recipe.createItem(); // must do this to account for spacecore
-                    ParsedItemData datum = ItemRegistry.GetDataOrErrorItem(reprItem.ItemId);
+                    ParsedItemData datum = ItemRegistry.GetDataOrErrorItem(reprItem.QualifiedItemId);
                     if (datum.IsErrorItem)
                         continue;
                     if (!newCache.TryGetValue(datum.QualifiedItemId, out ItemInfo? itemInfo))
@@ -127,7 +127,6 @@ public static class ItemInfoCache
                     itemInfo.FromRecipe.Add(recipe);
                 }
             }
-            //MarkCraftingRecipeKnown Current 7thAxis.HnH_DummyItem1 false
         }
     }
 

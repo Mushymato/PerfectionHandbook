@@ -3,12 +3,13 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record ItemShippedDisplay(ItemInfo Info, int OwnedCount)
+public sealed record ItemShippedDisplay(ItemInfo Info, bool OwnedAny)
 {
-    public readonly Color HasNoneTint = (OwnedCount <= 0 ? 0.5f : 1f) * Color.White;
+    public readonly Color DisplayTint = (OwnedAny ? 1f : 0.5f) * Color.White;
 }
 
 public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoalPageContext
@@ -68,10 +69,10 @@ public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoal
             {
                 if (!itemInfo.IsPotentialShipped)
                     continue;
-                if (!string.IsNullOrEmpty(txt) && !itemInfo.Datum.DisplayName.Contains(txt))
+                if (!string.IsNullOrEmpty(txt) && !itemInfo.Datum.DisplayName.ContainsIgnoreCase(txt))
                     continue;
                 filteredNeedToShip.Add(
-                    new(itemInfo, GoalContext.PlayerOwned.CountOwned(itemInfo.Datum.QualifiedItemId))
+                    new(itemInfo, GoalContext.OwnedInfo.OwnedGroups.ContainsKey(itemInfo.Datum.QualifiedItemId))
                 );
                 shownCnt--;
                 if (shownCnt == 0)

@@ -8,17 +8,17 @@ public sealed record GoalContext(
     IGoal Goal,
     GoalFulfillment MyFulfillment,
     GoalFulfillment? BestFulfillment,
-    PlayerOwned PlayerOwned
+    PlayerOwned OwnedInfo
 )
 {
-    public static GoalContext Make(Farmer who, IGoal goal, PlayerOwned playerOwned)
+    public static GoalContext Make(Farmer who, IGoal goal, PlayerOwned ownedInfo)
     {
         GoalFulfillment myFulfillment = goal.GetFulfillment(who);
         if (goal.IsShared)
         {
-            return new(goal, myFulfillment, null, playerOwned);
+            return new(goal, myFulfillment, null, ownedInfo);
         }
-        return new(goal, myFulfillment, goal.GetBestFulfillment(who, myFulfillment), playerOwned);
+        return new(goal, myFulfillment, goal.GetBestFulfillment(who, myFulfillment), ownedInfo);
     }
 
     public bool ShowBestFulfillment => BestFulfillment != null && BestFulfillment.Who != MyFulfillment.Who;
@@ -28,7 +28,7 @@ public sealed record GoalContext(
 
 public sealed partial class HandbookContext(Farmer who)
 {
-    public const int MAX_SHOWN = 1000;
+    public const int MAX_SHOWN = 15 * 80;
 
     private readonly PlayerOwned playerOwned = ItemOwnedCache.GetPlayerOwned(who);
     public IReadOnlyList<GoalContext> PerfectionGoals
