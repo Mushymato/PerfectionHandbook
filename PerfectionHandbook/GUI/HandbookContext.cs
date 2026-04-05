@@ -23,14 +23,14 @@ public sealed record GoalContext(
 
     public bool ShowBestFulfillment => BestFulfillment != null && BestFulfillment.Who != MyFulfillment.Who;
     public string PageName => Goal.GetType().Name;
-    public object? PageContext => field ??= Goal.GetPageContext(this);
+    public object? PageCtx => field ??= Goal.GetPageContext(this);
 }
 
 public sealed partial class HandbookContext(Farmer who)
 {
     public const int MAX_SHOWN = 15 * 80;
 
-    private readonly PlayerOwned playerOwned = ItemOwnedCache.GetPlayerOwned(who);
+    private readonly PlayerOwned playerOwned = ItemOwnedCache.GetPlayerOwned();
     public IReadOnlyList<GoalContext> PerfectionGoals
     {
         get
@@ -50,7 +50,7 @@ public sealed partial class HandbookContext(Farmer who)
 
     public void ChangePage(GoalContext goalCtx)
     {
-        if (goalCtx.PageContext != null)
+        if (goalCtx.PageCtx != null)
             SelectedGoalCtx = goalCtx;
     }
 

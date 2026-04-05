@@ -39,7 +39,7 @@ public interface IGoal
     string DisplayName { get; }
     ParsedItemData DisplayIcon { get; }
     GoalFulfillment GetFulfillment(Farmer who);
-    object? GetPageContext(GoalContext goalContext);
+    object? GetPageContext(GoalContext goalCtx);
 }
 
 public interface IPerfectionGoal : IGoal
@@ -104,9 +104,9 @@ public static class Goals
             return new(who, count, total);
         }
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
-            return new ItemShippedContext(goalContext);
+            return new GoalItemShippedContext(goalCtx);
         }
     }
 
@@ -115,7 +115,7 @@ public static class Goals
         public float PercentWeight => 4f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -132,7 +132,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -149,7 +149,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -186,7 +186,7 @@ public static class Goals
         public float PercentWeight => 11f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -222,7 +222,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -238,7 +238,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -257,9 +257,9 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
-            return new CookingRecipesContext(goalContext);
+            return new GoalRecipesContext(goalCtx, true);
         }
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Cooking");
@@ -292,9 +292,9 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
-            return new CraftingRecipesContext(goalContext);
+            return new GoalRecipesContext(goalCtx, false);
         }
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Crafting");
@@ -323,9 +323,9 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
-            return null;
+            return new GoalFishCaughtContext(goalCtx);
         }
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Fish");
@@ -355,7 +355,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -372,7 +372,7 @@ public static class Goals
         public int AchievementId => 5;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -389,7 +389,7 @@ public static class Goals
         public int AchievementId => 31;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }
@@ -421,7 +421,7 @@ public static class Goals
         public int AchievementId => 32;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalContext)
+        public object? GetPageContext(GoalContext goalCtx)
         {
             return null;
         }

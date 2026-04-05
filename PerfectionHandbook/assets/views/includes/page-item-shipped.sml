@@ -5,9 +5,9 @@
     <scrollable peeking="128" scroll-step="108" scrollbar-margin="-26,0,0,0">
       <grid margin="6,0,0,0" item-layout="length: 80" layout="stretch content">
         <item-icon margin="4"
-          *repeat={FilteredItems}
-          item={:Info.ReprItem}
-          tooltip={:Info.ReprItem}
+          *repeat={FilteredDisplay}
+          item={:ReprItem}
+          tooltip={:Tooltip}
           tint={:DisplayTint}
           +hover:scale="1.1"
         />

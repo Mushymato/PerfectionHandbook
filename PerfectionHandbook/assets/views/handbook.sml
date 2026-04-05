@@ -27,9 +27,11 @@
     </grid>
   </scrollable>
   <!-- Perfection_ItemShipped -->
-  <include *case="Perfection_ItemShipped" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-item-shipped" />
+  <include *case="Perfection_ItemShipped" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-shipped" />
   <!-- Perfection_RecipesCooked -->
-  <include *case="Perfection_RecipesCooked" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <include *case="Perfection_RecipesCooked" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
   <!-- Perfection_RecipesCooked -->
-  <include *case="Perfection_RecipesCrafted" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <include *case="Perfection_RecipesCrafted" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <!-- Perfection_RecipesCooked -->
+  <include *case="Perfection_FishCaught" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-fish-caught" />
 </frame>

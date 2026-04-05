@@ -7,8 +7,7 @@
         <item-icon margin="4"
           *repeat={FilteredDisplay}
           item={:Info.ReprItem}
-          tooltip={:Tooltip}
-          tint={:DisplayTint}
+          tooltip={:Info.ReprItem}
           +hover:scale="1.1"
         />
       </grid>

@@ -8,25 +8,23 @@ public sealed record OwnedItem(Item ThisItem, Chest? Container = null);
 
 public sealed record OwnedItemGroup(IReadOnlyList<OwnedItem> Things)
 {
-    public Item ReprItem = GetReprItem(Things);
+    public ReprObject ReprItem = GetReprItem(Things);
 
-    private static Item GetReprItem(IReadOnlyList<OwnedItem> OwnedList)
+    private static ReprObject GetReprItem(IReadOnlyList<OwnedItem> OwnedList)
     {
-        Item reprItem = OwnedList[0].ThisItem.getOne();
-        reprItem.Stack = OwnedList.Sum(owned => owned.ThisItem.Stack);
+        ReprObject reprItem = new(OwnedList[0].ThisItem.getOne())
+        {
+            Stack = OwnedList.Sum(owned => owned.ThisItem.Stack),
+        };
         return reprItem;
     }
 }
 
-public sealed record PlayerOwned(
-    Farmer Who,
-    IReadOnlyDictionary<string, OwnedItemGroup> OwnedGroups,
-    IList<Item> OwnedRepr
-);
+public sealed record PlayerOwned(IReadOnlyDictionary<string, OwnedItemGroup> OwnedGroups, IList<Item> OwnedRepr);
 
 public static class ItemOwnedCache
 {
-    public static PlayerOwned GetPlayerOwned(Farmer who)
+    public static PlayerOwned GetPlayerOwned()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -43,7 +41,7 @@ public static class ItemOwnedCache
                     {
                         newOwned = new(ctx.Item, chest);
                     }
-                    else if (path == who)
+                    else if (path is Farmer)
                     {
                         newOwned = new(ctx.Item, null);
                     }
@@ -57,7 +55,10 @@ public static class ItemOwnedCache
             }
         );
         var ownedItemGroups = ownedItems.ToDictionary(kv => kv.Key, kv => new OwnedItemGroup(kv.Value));
-        PlayerOwned result = new(who, ownedItemGroups, ownedItemGroups.Values.Select(value => value.ReprItem).ToList());
+        PlayerOwned result = new(
+            ownedItemGroups,
+            ownedItemGroups.Values.Select(value => (Item)value.ReprItem).ToList()
+        );
 
         ModEntry.Log($"OwnedItems: gathered in {stopwatch.Elapsed}");
         return result;

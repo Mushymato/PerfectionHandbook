@@ -3,5 +3,8 @@
   "ui.goals-perfection": "Perfection",
   "ui.fulfillment.dipslay": "{{count}}/{{total}}",
   "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",
-  "ui.search": "Search..."
+  "ui.search": "Search...",
+  "ui.owned-count": "(You own {{count}})",
+  "ui.showing-needed": "Showing Needed",
+  "ui.showing-completed": "Showing Competed",
 }

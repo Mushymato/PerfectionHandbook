@@ -18,6 +18,13 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public bool IsCatchableFish =
         Datum.ObjectType == "Fish" && !(Datum.RawData is ObjectData { ExcludeFromFishingCollection: not false });
     public List<CraftingRecipe> FromRecipe = [];
+
+    public bool SearchMatch(string txt)
+    {
+        if (string.IsNullOrEmpty(txt))
+            return true;
+        return Datum.DisplayName.ContainsIgnoreCase(txt);
+    }
 }
 
 public static class ItemInfoCache
@@ -59,6 +66,9 @@ public static class ItemInfoCache
 
     private static bool HashHasChanged()
     {
+        // never recheck while menu is open
+        if (Game1.activeClickableMenu != null)
+            return false;
         bool anyHashChanged = false;
         // objects
         int newObjectDataHash = Game1.objectData.GetHashCode();
@@ -117,8 +127,6 @@ public static class ItemInfoCache
                     CraftingRecipe recipe = MakeCraftingRecipe(recipeId, isCooking);
                     Item reprItem = recipe.createItem(); // must do this to account for spacecore
                     ParsedItemData datum = ItemRegistry.GetDataOrErrorItem(reprItem.QualifiedItemId);
-                    if (datum.IsErrorItem)
-                        continue;
                     if (!newCache.TryGetValue(datum.QualifiedItemId, out ItemInfo? itemInfo))
                     {
                         itemInfo = new(datum);
