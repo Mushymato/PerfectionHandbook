@@ -1,6 +1,7 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
-using PerfectionHandbook.GUI;
+using PerfectionHandbook.GUI.Shared;
+using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -34,6 +35,7 @@ public sealed class ModEntry : Mod
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         MenuHandler.Register();
+        ItemInfoCache.Setup();
     }
 
     private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

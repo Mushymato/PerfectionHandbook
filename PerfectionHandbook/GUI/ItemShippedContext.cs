@@ -1,13 +1,18 @@
+using Microsoft.Xna.Framework;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
+public sealed record ItemShippedDisplay(ItemInfo Info, int OwnedCount)
+{
+    public readonly Color HasNoneTint = (OwnedCount <= 0 ? 0.5f : 1f) * Color.White;
+}
+
 public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoalPageContext
 {
-    public const int MAX_SHOWN = 1000;
-
     [Notify]
     public string searchText = string.Empty;
 
@@ -44,7 +49,7 @@ public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoal
         }
     }
 
-    public IReadOnlyList<ItemInfo> FilteredNeedToShip
+    public IReadOnlyList<ItemShippedDisplay> FilteredItems
     {
         get
         {
@@ -52,17 +57,12 @@ public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoal
             if (who == null)
                 return [];
             bool showNeedToShip = ShowNeedToShip;
-            int shownCnt = MAX_SHOWN;
-            List<ItemInfo> filteredNeedToShip = [];
+            int shownCnt = HandbookContext.MAX_SHOWN;
+            List<ItemShippedDisplay> filteredNeedToShip = [];
             string txt = SearchText;
             foreach (
-                ItemInfo itemInfo in ItemCache.Cache.Where(
-                    (itemInfo) =>
-                    {
-                        if (who.basicShipped.TryGetValue(itemInfo.Datum.ItemId, out int shippedCount))
-                            return shippedCount <= 0 == showNeedToShip;
-                        return showNeedToShip;
-                    }
+                ItemInfo itemInfo in ItemInfoCache.Cache.Values.Where(
+                    (itemInfo) => !who.basicShipped.ContainsKey(itemInfo.Datum.ItemId) == showNeedToShip
                 )
             )
             {
@@ -70,7 +70,9 @@ public sealed partial record ItemShippedContext(GoalContext GoalContext) : IGoal
                     continue;
                 if (!string.IsNullOrEmpty(txt) && !itemInfo.Datum.DisplayName.Contains(txt))
                     continue;
-                filteredNeedToShip.Add(itemInfo);
+                filteredNeedToShip.Add(
+                    new(itemInfo, GoalContext.PlayerOwned.CountOwned(itemInfo.Datum.QualifiedItemId))
+                );
                 shownCnt--;
                 if (shownCnt == 0)
                     break;

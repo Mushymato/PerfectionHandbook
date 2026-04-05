@@ -4,11 +4,11 @@
   <panel layout="stretch 100%">
     <scrollable peeking="128">
       <grid margin="6,0,0,0" item-layout="length: 80" layout="stretch content">
-        <item-icon margin="4"
-          *repeat={FilteredItems}
+        <item-icon margin="8"
+          *repeat={FilteredRecipes}
           item={:Info.ReprItem}
-          tooltip={:Info.ReprItem}
-          tint={:HasNoneTint}
+          tooltip={:Tooltip}
+          tint={:NotLearntTint}
           +hover:scale="1.1"
         />
       </grid>

@@ -1,4 +1,4 @@
-namespace PerfectionHandbook.GUI;
+namespace PerfectionHandbook.GUI.Shared;
 
 public interface IGoalPageContext
 {

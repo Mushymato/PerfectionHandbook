@@ -2,9 +2,9 @@
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 24, 36"
-  *switch={Page}>
+  *switch={PageName}>
   <!-- page 0: main -->
-  <scrollable *case="0">
+  <scrollable *case="Main">
     <grid margin="6,0,16,0" item-layout="count: 4" layout="stretch content">
       <button *repeat={:PerfectionGoals}
         hover-background={@Mods/StardewUI/Sprites/ButtonLight}
@@ -26,6 +26,10 @@
       </button>
     </grid>
   </scrollable>
-  <!-- page 1: items shipped -->
-  <include *case="1" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-item-shipped" />
+  <!-- Perfection_ItemShipped -->
+  <include *case="Perfection_ItemShipped" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-item-shipped" />
+  <!-- Perfection_RecipesCooked -->
+  <include *case="Perfection_RecipesCooked" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <!-- Perfection_RecipesCooked -->
+  <include *case="Perfection_RecipesCrafted" *context={:SelectedGoalCtx.PageContext} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
 </frame>

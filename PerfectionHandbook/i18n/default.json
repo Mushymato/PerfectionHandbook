@@ -2,5 +2,6 @@
   "$schema": "https://smapi.io/schemas/i18n.json",
   "ui.goals-perfection": "Perfection",
   "ui.fulfillment.dipslay": "{{count}}/{{total}}",
+  "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",
   "ui.search": "Search..."
 }

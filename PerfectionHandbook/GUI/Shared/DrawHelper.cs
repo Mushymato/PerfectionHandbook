@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
-namespace PerfectionHandbook.GUI;
+namespace PerfectionHandbook.GUI.Shared;
 
 public static class DrawHelper
 {

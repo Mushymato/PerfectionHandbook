@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI;
+using PerfectionHandbook.GUI.Shared;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData;
@@ -18,8 +19,18 @@ public record GoalFulfillment(Farmer? Who, int Count, int Total)
     public string? Notes { get; set; }
     public string DisplayText => I18n.Ui_Fulfillment_Dipslay(Count, Total);
     public string DiplayPercent => $"{Percent:P2}";
+    public string TooltipText
+    {
+        get
+        {
+            string tooltip = I18n.Ui_Fulfillment_Tooltip(Count, Total, $"{Percent:P2}");
+            if (Who != null)
+                return string.Concat(Who.displayName, ": ", tooltip);
+            return tooltip;
+        }
+    }
+    public Texture2D MiniIcon => DrawHelper.GetFarmerMiniIcon(Who) ?? Game1.staminaRect;
     public bool HasMiniIcon => MiniIcon != null;
-    public Texture2D MiniIcon = DrawHelper.GetFarmerMiniIcon(Who) ?? Game1.staminaRect;
 }
 
 public interface IGoal
@@ -84,7 +95,7 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
-            foreach (ItemInfo sobj in ItemCache.Cache)
+            foreach (ItemInfo sobj in ItemInfoCache.Cache.Values)
             {
                 total++;
                 if (sobj.IsPotentialShipped && who.basicShipped.ContainsKey(sobj.Datum.ItemId))
@@ -248,7 +259,7 @@ public static class Goals
 
         public object? GetPageContext(GoalContext goalContext)
         {
-            return null;
+            return new CookingRecipesContext(goalContext);
         }
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Cooking");
@@ -283,7 +294,7 @@ public static class Goals
 
         public object? GetPageContext(GoalContext goalContext)
         {
-            return null;
+            return new CraftingRecipesContext(goalContext);
         }
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Crafting");
@@ -293,8 +304,7 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
-            Dictionary<string, string> craftingRecipes = CraftingRecipe.craftingRecipes;
-            foreach (string key in craftingRecipes.Keys)
+            foreach (string key in CraftingRecipe.craftingRecipes.Keys)
             {
                 if (key == "Wedding Ring")
                     continue;
@@ -325,15 +335,12 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
-            foreach (ParsedItemData allDatum in ItemRegistry.GetObjectTypeDefinition().GetAllData())
+            foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
             {
-                if (
-                    allDatum.ObjectType == "Fish"
-                    && !(allDatum.RawData is ObjectData { ExcludeFromFishingCollection: not false })
-                )
+                if (itemInfo.IsCatchableFish)
                 {
                     total++;
-                    if (who.fishCaught.ContainsKey(allDatum.QualifiedItemId))
+                    if (who.fishCaught.ContainsKey(itemInfo.Datum.QualifiedItemId))
                     {
                         count++;
                     }
