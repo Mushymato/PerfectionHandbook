@@ -45,7 +45,7 @@ public sealed class GoalItemShippedContext(GoalContext GoalCtx)
             Item? ownedRepr = null;
             if (GoalCtx.OwnedInfo.OwnedGroups.TryGetValue(itemInfo.Datum.QualifiedItemId, out OwnedItemGroup? group))
             {
-                ownedRepr = group.ReprItem;
+                ownedRepr = group.CountRepr;
             }
             shippingList.Add(new(itemInfo, ownedRepr));
         }

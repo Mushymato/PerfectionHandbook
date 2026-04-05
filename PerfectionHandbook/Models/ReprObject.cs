@@ -20,12 +20,16 @@ public sealed class ReprObject : SObject
         return int.MaxValue;
     }
 
+    private int reprStack = 0;
     public override int Stack
     {
-#pragma warning disable AvoidNetField // Avoid Netcode types when possible
-        get => base.stack.Value;
-        set => base.stack.Value = value;
-#pragma warning restore AvoidNetField // Avoid Netcode types when possible
+        get => reprStack;
+        set { }
+    }
+
+    internal void SetReprStack(int stack)
+    {
+        reprStack = stack;
     }
 
     protected override Item GetOneNew()

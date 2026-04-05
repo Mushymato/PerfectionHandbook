@@ -1,6 +1,6 @@
+using System.ComponentModel;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
-using PropertyChanged.SourceGenerator;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
@@ -21,8 +21,14 @@ public sealed record FishCaughtDisplay(ItemInfo Info) : IPageDisplayEntry
     }
 }
 
-public sealed class GoalFishCaughtContext(GoalContext GoalCtx) : AbstractGoalPageListContext<FishCaughtDisplay>(GoalCtx)
+public sealed class GoalFishCaughtContext : AbstractGoalPageListContext<FishCaughtDisplay>
 {
+    public GoalFishCaughtContext(GoalContext GoalCtx)
+        : base(GoalCtx)
+    {
+        PropertyChanged += OnUpdateFilteredDisplay;
+    }
+
     protected override IReadOnlyList<FishCaughtDisplay> MakeAllDisplay()
     {
         List<FishCaughtDisplay> fishingList = [];
@@ -33,5 +39,24 @@ public sealed class GoalFishCaughtContext(GoalContext GoalCtx) : AbstractGoalPag
             fishingList.Add(new(itemInfo));
         }
         return fishingList;
+    }
+
+    public IReadOnlyList<FishCaughtDisplay> FilteredDisplay_InSeason
+    {
+        get { return []; }
+    }
+
+    public IReadOnlyList<FishCaughtDisplay> FilteredDisplay_OffSeason
+    {
+        get { return []; }
+    }
+
+    private void OnUpdateFilteredDisplay(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "FilteredDisplay")
+        {
+            OnPropertyChanged(new(nameof(FilteredDisplay_InSeason)));
+            OnPropertyChanged(new(nameof(FilteredDisplay_OffSeason)));
+        }
     }
 }

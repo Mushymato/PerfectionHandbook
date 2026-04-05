@@ -35,14 +35,17 @@ public sealed partial class HandbookContext(Farmer who)
     {
         get
         {
+            if (field != null)
+                return field;
             List<GoalContext> goalContexts = [];
             foreach (IGoal goal in Goals.PerfectionGoals)
             {
                 goalContexts.Add(GoalContext.Make(who, goal, playerOwned));
             }
+            field = goalContexts;
             return goalContexts;
         }
-    }
+    } = null;
 
     [Notify]
     private GoalContext? selectedGoalCtx = null;

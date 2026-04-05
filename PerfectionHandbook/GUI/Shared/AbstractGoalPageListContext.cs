@@ -26,6 +26,34 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     [Notify]
     private bool showNeeded = true;
 
+    [Notify]
+    private int scrollPage = 1;
+    public float ScrollProgress
+    {
+        get => field;
+        set
+        {
+            bool changed = false;
+            if (value <= 0 && scrollPage > 1)
+            {
+                scrollPage--;
+                field = 0.9999f;
+                changed = true;
+            }
+            else if (value >= 1 && (scrollPage * HandbookContext.MAX_SHOWN < FilteredDisplay.Count))
+            {
+                scrollPage++;
+                field = 0f;
+                changed = true;
+            }
+            if (changed)
+            {
+                OnPropertyChanged(new(nameof(ScrollPage)));
+                OnPropertyChanged(new(nameof(ScrollProgress)));
+            }
+        }
+    }
+
     public void ClickMyFulfilment()
     {
         UpdateDisplayingFarmer(GoalCtx.MyFulfillment.Who);
@@ -40,6 +68,7 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     {
         if (who == null)
             return;
+        filteredDisplay = null;
         if (who != DisplayingFarmer)
         {
             DisplayingFarmer = who;
@@ -60,17 +89,18 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     }
 
     protected abstract IReadOnlyList<TDisplay> MakeAllDisplay();
-
-    public IReadOnlyList<TDisplay> FilteredDisplay
+    private List<TDisplay>? filteredDisplay = null;
+    protected List<TDisplay> FilteredDisplay
     {
         get
         {
+            if (this.filteredDisplay != null)
+                return this.filteredDisplay;
             Farmer? who = DisplayingFarmer;
             if (who == null)
                 return [];
             bool showNeed = ShowNeeded;
             string txt = SearchText;
-            int shownCnt = HandbookContext.MAX_SHOWN;
             List<TDisplay> filteredDisplay = [];
             foreach (TDisplay display in AllDisplay)
             {
@@ -79,11 +109,25 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
                 if (!display.Info.SearchMatch(txt))
                     continue;
                 filteredDisplay.Add(display);
-                shownCnt--;
-                if (shownCnt <= 0)
-                    break;
             }
-            return filteredDisplay;
+            this.filteredDisplay = filteredDisplay;
+            return this.filteredDisplay;
+        }
+    }
+
+    public IReadOnlyList<TDisplay> FilteredDisplayPaginated
+    {
+        get
+        {
+            List<TDisplay> filteredDisplay = FilteredDisplay;
+            int actualPage = ScrollPage - 1;
+            int nextPageSize = Math.Min(
+                HandbookContext.MAX_SHOWN,
+                filteredDisplay.Count - actualPage * HandbookContext.MAX_SHOWN
+            );
+            if (nextPageSize == 0)
+                return [];
+            return filteredDisplay.GetRange(actualPage * HandbookContext.MAX_SHOWN, nextPageSize);
         }
     }
 }

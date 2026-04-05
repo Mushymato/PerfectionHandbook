@@ -15,8 +15,7 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public bool IsPotentialShipped = ItemInfoCache.IsPotentialBasicShipped(Datum);
     public bool IsMuseumDonation =
         Datum.GetItemTypeId() == ItemRegistry.type_object && LibraryMuseum.IsItemSuitableForDonation(Datum.ItemId);
-    public bool IsCatchableFish =
-        Datum.ObjectType == "Fish" && !(Datum.RawData is ObjectData { ExcludeFromFishingCollection: not false });
+    public bool IsCatchableFish = ItemInfoCache.IsCatchableFish(Datum);
     public List<CraftingRecipe> FromRecipe = [];
 
     public bool SearchMatch(string txt)
@@ -33,6 +32,7 @@ public static class ItemInfoCache
     private static int lastCraftingHash = -1;
     private static int lastCookingHash = -1;
 
+    private static Dictionary<string, string>? allFishData = null;
     private static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
 
     private static CraftingRecipe Vanilla_MakeCraftingRecipe(string recipeId, bool isCooking) =>
@@ -67,7 +67,7 @@ public static class ItemInfoCache
     private static bool HashHasChanged()
     {
         // never recheck while menu is open
-        if (Game1.activeClickableMenu != null)
+        if (Game1.activeClickableMenu != null && cache != null)
             return false;
         bool anyHashChanged = false;
         // objects
@@ -104,6 +104,7 @@ public static class ItemInfoCache
         {
             if (!HashHasChanged() && cache != null)
                 return cache;
+            allFishData = null;
             Stopwatch stopwatch = Stopwatch.StartNew();
             Dictionary<string, ItemInfo> newCache = [];
             // objects
@@ -140,11 +141,18 @@ public static class ItemInfoCache
 
     public static bool IsPotentialBasicShipped(ParsedItemData datum)
     {
+        if (datum.IsErrorItem)
+            return false;
         if (datum.GetItemTypeId() != ItemRegistry.type_object)
             return false;
         int category = datum.Category;
         return category != SObject.CookingCategory
             && category != SObject.GemCategory
             && SObject.isPotentialBasicShipped(datum.ItemId, category, datum.ObjectType);
+    }
+
+    internal static bool IsCatchableFish(ParsedItemData datum)
+    {
+        return datum.ObjectType == "Fish" && !(datum.RawData is ObjectData { ExcludeFromFishingCollection: not false });
     }
 }

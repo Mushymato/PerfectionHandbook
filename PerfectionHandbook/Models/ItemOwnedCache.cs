@@ -8,14 +8,12 @@ public sealed record OwnedItem(Item ThisItem, Chest? Container = null);
 
 public sealed record OwnedItemGroup(IReadOnlyList<OwnedItem> Things)
 {
-    public ReprObject ReprItem = GetReprItem(Things);
+    public ReprObject CountRepr = GetCountRepr(Things);
 
-    private static ReprObject GetReprItem(IReadOnlyList<OwnedItem> OwnedList)
+    private static ReprObject GetCountRepr(IReadOnlyList<OwnedItem> OwnedList)
     {
-        ReprObject reprItem = new(OwnedList[0].ThisItem.getOne())
-        {
-            Stack = OwnedList.Sum(owned => owned.ThisItem.Stack),
-        };
+        ReprObject reprItem = new(OwnedList[0].ThisItem.getOne());
+        reprItem.SetReprStack(OwnedList.Sum(owned => owned.ThisItem.Stack));
         return reprItem;
     }
 }
@@ -57,7 +55,7 @@ public static class ItemOwnedCache
         var ownedItemGroups = ownedItems.ToDictionary(kv => kv.Key, kv => new OwnedItemGroup(kv.Value));
         PlayerOwned result = new(
             ownedItemGroups,
-            ownedItemGroups.Values.Select(value => (Item)value.ReprItem).ToList()
+            ownedItemGroups.Values.Select(value => (Item)value.CountRepr).ToList()
         );
 
         ModEntry.Log($"OwnedItems: gathered in {stopwatch.Elapsed}");
