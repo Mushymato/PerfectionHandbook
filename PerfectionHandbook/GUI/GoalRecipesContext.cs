@@ -11,6 +11,7 @@ public partial record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, Player
 {
     [Notify]
     public Color displayTint = HandbookContext.ActiveColor;
+    public Item ReprItem => Info.ReprItem;
 
     public readonly SDUITooltipData Tooltip = new(
         " ",
@@ -51,6 +52,8 @@ public partial record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, Player
         else
             DisplayTint = HandbookContext.ActiveColor;
     }
+
+    public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)

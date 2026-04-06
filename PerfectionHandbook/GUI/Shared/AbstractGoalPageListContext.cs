@@ -1,6 +1,7 @@
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
 
@@ -15,18 +16,39 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     {
         GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
-        showNeeded = !goalCtx.MyFulfillment.Filled && !(goalCtx.BestFulfillment?.Filled ?? true);
+        ShowNeeded = !goalCtx.MyFulfillment.Filled;
         UpdateDisplayingFarmer(goalCtx.MyFulfillment);
     }
 
-    [Notify]
-    public string searchText = string.Empty;
+    public string SearchText
+    {
+        get => field;
+        set
+        {
+            if (!field.EqualsIgnoreCase(value))
+            {
+                field = value;
+                filteredDisplay = null;
+                OnPropertyChanged(new(nameof(SearchText)));
+                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            }
+        }
+    } = string.Empty;
 
-    [Notify]
-    private Farmer? displayingFarmer = null;
-
-    [Notify]
-    private bool showNeeded = false;
+    public bool ShowNeeded
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                filteredDisplay = null;
+                OnPropertyChanged(new(nameof(ShowNeeded)));
+                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            }
+        }
+    } = true;
 
     [Notify]
     private int scrollPage = 1;
@@ -56,6 +78,13 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         }
     }
 
+    public void ClickShowNeeded()
+    {
+        filteredDisplay = null;
+        ShowNeeded = !ShowNeeded;
+        OnPropertyChanged(new(nameof(FilteredDisplay)));
+    }
+
     public void ClickMyFulfilment()
     {
         UpdateDisplayingFarmer(GoalCtx.MyFulfillment);
@@ -66,27 +95,18 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         UpdateDisplayingFarmer(GoalCtx.BestFulfillment);
     }
 
+    private Farmer? displayingFarmer = null;
+
     protected virtual void UpdateDisplayingFarmer(GoalFulfillment? fulfillment)
     {
-        filteredDisplay = null;
-        if (fulfillment?.Who is Farmer who && who != DisplayingFarmer)
+        if (fulfillment?.Who is Farmer who && who != displayingFarmer)
         {
-            DisplayingFarmer = who;
-            ShowNeeded = true;
-            UpdateDisplayStatus();
-        }
-        else
-        {
-            ShowNeeded = !ShowNeeded;
-            UpdateDisplayStatus();
-        }
-    }
-
-    private void UpdateDisplayStatus()
-    {
-        if (DisplayingFarmer != null)
+            filteredDisplay = null;
+            displayingFarmer = who;
+            ShowNeeded = !fulfillment.Filled;
             foreach (TDisplay display in AllDisplay)
-                display.SetStatus(DisplayingFarmer);
+                display.SetStatus(displayingFarmer);
+        }
     }
 
     protected abstract IReadOnlyList<TDisplay> MakeAllDisplay();
@@ -104,7 +124,7 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
             {
                 if (display.Needed != showNeed)
                     continue;
-                if (!display.Info.SearchMatch(txt))
+                if (!display.SearchMatch(txt))
                     continue;
                 filteredDisplay.Add(display);
             }
@@ -118,13 +138,15 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         get
         {
             List<TDisplay> filteredDisplay = FilteredDisplay;
+            if (filteredDisplay.Count == 0)
+                return filteredDisplay;
             int actualPage = ScrollPage - 1;
             int nextPageSize = Math.Min(
                 HandbookContext.MAX_SHOWN,
                 filteredDisplay.Count - actualPage * HandbookContext.MAX_SHOWN
             );
             if (nextPageSize == 0)
-                return filteredDisplay;
+                return [];
             return filteredDisplay.GetRange(actualPage * HandbookContext.MAX_SHOWN, nextPageSize);
         }
     }

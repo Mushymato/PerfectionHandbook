@@ -1,6 +1,5 @@
 {
   "$schema": "https://smapi.io/schemas/i18n.json",
-  "ui.goals-perfection": "Perfection",
   "ui.fulfillment.dipslay": "{{count}}/{{total}}",
   "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",
   "ui.search": "Search...",
@@ -8,7 +7,9 @@
   "ui.shipped-count": "(You shipped {{count}})",
   "ui.fish-catch": "(You caught {{count}} of these, the largest is {{length}}cm long)",
   "ui.showing-needed": "Needed",
-  "ui.showing-completed": "Competed",
+  "ui.showing-completed": "Completed",
   "ui.title.perfection": "Perfection",
   "ui.title.achievements": "Achievements",
+  "ui.goals.item-shipped": "Items Shipped",
+  "ui.goals.buildings-constructed": "Buildings Constructed"
 }

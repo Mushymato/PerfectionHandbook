@@ -1,4 +1,4 @@
-<frame layout="1244px 90%[580..]"
+<frame layout="85%[1280..] 85%[700..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 24, 36"
@@ -6,20 +6,22 @@
   <!-- Main -->
   <scrollable *case="Main">
     <lane layout="stretch content" orientation="Vertical">
-      <banner text={#ui.title.perfection}/>
+      <banner margin="16,8" text={#ui.title.perfection}/>
       <goal-grid goals={:PerfectionGoals}/>
-      <banner text={#ui.title.achievements}/>
+      <banner margin="16,8" text={#ui.title.achievements}/>
       <goal-grid goals={:AchievementGoals}/>
     </lane>
   </scrollable>
   <!-- Perfection_ItemShipped -->
   <include *case="Perfection_ItemShipped" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_RecipesCooked -->
-  <include *case="Perfection_RecipesCooked" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <include *case="Perfection_RecipesCooked" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_RecipesCooked -->
-  <include *case="Perfection_RecipesCrafted" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-recipes" />
+  <include *case="Perfection_RecipesCrafted" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_FishCaught -->
-  <include *case="Perfection_FishCaught" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-fish-caught" />
+  <include *case="Perfection_FishCaught" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
+  <!-- Perfection_MonsterSlayered -->
+  <include *case="Perfection_MonsterSlayered" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-monster-slayer" />
   <!-- Achievement_Museum -->
   <include *case="Achievement_Museum" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Achievement_Polyculture -->
@@ -29,22 +31,22 @@
 </frame>
 
 <template name="goal-grid">
- <grid margin="6,0,16,0" item-layout="count: 4" layout="stretch content">
+ <grid margin="6,0,16,0" item-layout="count: 6" layout="stretch content">
     <button *repeat={&goals}
       hover-background={@Mods/StardewUI/Sprites/ButtonLight}
       left-click=|^ChangePage(this)|
       horizontal-content-alignment="Start"
       vertical-content-alignment="Start"
       margin="2"
-      padding="16,12,0,0"
-      layout="stretch 180px">
+      padding="16,12,16,0"
+      layout="stretch 140px">
       <panel layout="100% 100%" >
-        <label font="dialogue" text={:Goal.DisplayName} shadow-alpha="0.8" />
-        <panel layout="100% 100%" padding="0,0,0,0" horizontal-content-alignment="Start" vertical-content-alignment="End">
+        <label font="small" text={:Goal.DisplayName} max-lines="2" shadow-alpha="0.8" />
+        <panel layout="100% 100%" horizontal-content-alignment="Start" vertical-content-alignment="End">
           <image sprite={:Goal.DisplayIcon} layout="48px 48px" padding="-4,12"/>
         </panel>
-        <panel layout="100% 100%" padding="0,0,16,12" horizontal-content-alignment="End" vertical-content-alignment="End">
-          <label font="dialogue" text={:MyFulfillment.DisplayText} />
+        <panel layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="End" vertical-content-alignment="End">
+          <label font="small" text={:MyFulfillment.DisplayText} shadow-alpha="0.8"  />
         </panel>
       </panel>
     </button>

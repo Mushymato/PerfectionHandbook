@@ -85,7 +85,7 @@ public static class Goals
         public float PercentWeight => 15f;
         public bool IsShared => false;
 
-        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Shipped");
+        public string DisplayName => I18n.Ui_Goals_ItemShipped();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)24");
 
         public GoalFulfillment GetFulfillment(Farmer who)
@@ -111,12 +111,7 @@ public static class Goals
 
         public object? GetPageContext(GoalContext goalCtx) => null;
 
-        public string DisplayName =>
-            string.Concat(
-                Game1.content.LoadString("Strings\\Buildings:GoldClock_Name"),
-                "/",
-                Game1.content.LoadString("Strings\\UI:PT_Obelisks")
-            );
+        public string DisplayName => I18n.Ui_Goals_BuildingsConstructed();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)688");
 
         public GoalFulfillment GetFulfillment(Farmer who)
@@ -134,7 +129,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalMonsterSlayerContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_MonsterSlayer");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)767");
@@ -406,35 +401,27 @@ public static class Goals
     #endregion
 
     #region perfection
-    public static readonly Perfection_ItemShipped ItemShipped = new();
-    public static readonly Perfection_BuildingsBuilt BuildingsBuilt = new();
-    public static readonly Perfection_MonsterSlayered MonsterSlayered = new();
-    public static readonly Perfection_BestFriendsMade BestFriendsMade = new();
-    public static readonly Perfection_SkillLeveled SkillLeveled = new();
-    public static readonly Perfection_StardropsFound StardropsFound = new();
-    public static readonly Perfection_RecipesCooked RecipesCooked = new();
-    public static readonly Perfection_RecipesCrafted RecipesCrafted = new();
-    public static readonly Perfection_FishCaught FishCaught = new();
-    public static readonly Perfection_GoldenWalnutsFound GoldenWalnutsFound = new();
-    public static List<IPerfectionGoal> PerfectionGoals =>
-        [
-            ItemShipped,
-            BuildingsBuilt,
-            MonsterSlayered,
-            BestFriendsMade,
-            SkillLeveled,
-            StardropsFound,
-            RecipesCrafted,
-            RecipesCooked,
-            FishCaught,
-            GoldenWalnutsFound,
-        ];
+    public static readonly List<IPerfectionGoal> PerfectionGoals =
+    [
+        new Perfection_ItemShipped(),
+        new Perfection_RecipesCooked(),
+        new Perfection_RecipesCrafted(),
+        new Perfection_FishCaught(),
+        new Perfection_MonsterSlayered(),
+        new Perfection_BestFriendsMade(),
+        new Perfection_SkillLeveled(),
+        new Perfection_BuildingsBuilt(),
+        new Perfection_StardropsFound(),
+        new Perfection_GoldenWalnutsFound(),
+    ];
     #endregion
 
     #region achievements
-    public static readonly Achievement_Museum Museum = new();
-    public static readonly Achievement_Polyculture Polyculture = new();
-    public static readonly Achievement_Monoculture Monoculture = new();
-    public static readonly List<IAchievementGoal> AchievementGoals = [Museum, Polyculture, Monoculture];
+    public static readonly List<IAchievementGoal> AchievementGoals =
+    [
+        new Achievement_Museum(),
+        new Achievement_Polyculture(),
+        new Achievement_Monoculture(),
+    ];
     #endregion
 }

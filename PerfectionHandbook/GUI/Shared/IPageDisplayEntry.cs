@@ -5,7 +5,7 @@ namespace PerfectionHandbook.GUI.Shared;
 
 public interface IPageDisplayEntry
 {
-    public ItemInfo Info { get; }
     public bool Needed { get; }
     public void SetStatus(Farmer who);
+    public bool SearchMatch(string txt);
 }

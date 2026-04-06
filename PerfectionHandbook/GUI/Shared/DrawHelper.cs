@@ -37,6 +37,20 @@ public static class DrawHelper
 
         ModEntry.Log($"Render farmer mini-icon for {who.displayName}({who.UniqueMultiplayerID})");
 
+        renderTarget = RenderToTarget(
+            (renderBatch) =>
+                who.FarmerRenderer.drawMiniPortrat(renderBatch, Vector2.Zero, 1f, 3f, who.facingDirection.Value, who),
+            48,
+            48
+        );
+
+        cachedIcons[who.UniqueMultiplayerID] = renderTarget;
+        return renderTarget;
+    }
+
+    private static RenderTarget2D RenderToTarget(Action<SpriteBatch> drawCallback, int width, int height)
+    {
+        RenderTarget2D renderTarget;
         RenderTarget2D? wasRenderTarget;
         {
             RenderTargetBinding[] wasRenderTargets = Game1.graphics.GraphicsDevice.GetRenderTargets();
@@ -45,8 +59,8 @@ public static class DrawHelper
 
         renderTarget = new(
             Game1.graphics.GraphicsDevice,
-            48,
-            48,
+            width,
+            height,
             false,
             SurfaceFormat.Color,
             DepthFormat.None,
@@ -61,7 +75,7 @@ public static class DrawHelper
             renderBatch = new SpriteBatch(Game1.graphics.GraphicsDevice);
             renderBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
             Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
-            who.FarmerRenderer.drawMiniPortrat(renderBatch, Vector2.Zero, 1f, 3f, who.facingDirection.Value, who);
+            drawCallback(renderBatch);
             renderBatch.End();
         }
         finally
@@ -70,7 +84,6 @@ public static class DrawHelper
             renderBatch?.Dispose();
         }
 
-        cachedIcons[who.UniqueMultiplayerID] = renderTarget;
         return renderTarget;
     }
 }

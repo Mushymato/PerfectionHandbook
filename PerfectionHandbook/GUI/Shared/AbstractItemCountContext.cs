@@ -29,6 +29,8 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
             I18n.Ui_OwnedCount(OwnedRepr.Stack)
         );
     }
+
+    public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
 public abstract class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
