@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
@@ -29,22 +30,18 @@ public sealed record GoalContext(
 public sealed partial class HandbookContext(Farmer who)
 {
     public const int MAX_SHOWN = 15 * 80;
+    public static readonly Color ActiveColor = Color.White;
+    public static readonly Color InactiveColor = Color.DimGray * 0.4f;
+    public static readonly Color HiddenColor = Color.Black * 0.2f;
 
     private readonly PlayerOwned playerOwned = ItemOwnedCache.GetPlayerOwned();
     public IReadOnlyList<GoalContext> PerfectionGoals
     {
-        get
-        {
-            if (field != null)
-                return field;
-            List<GoalContext> goalContexts = [];
-            foreach (IGoal goal in Goals.PerfectionGoals)
-            {
-                goalContexts.Add(GoalContext.Make(who, goal, playerOwned));
-            }
-            field = goalContexts;
-            return goalContexts;
-        }
+        get => field ??= Goals.PerfectionGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
+    } = null;
+    public IReadOnlyList<GoalContext> AchievementGoals
+    {
+        get => field ??= Goals.AchievementGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
     } = null;
 
     [Notify]

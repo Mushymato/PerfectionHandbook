@@ -1,3 +1,4 @@
+using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 
@@ -14,7 +15,8 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     {
         GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
-        UpdateDisplayingFarmer(goalCtx.MyFulfillment.Who);
+        showNeeded = !goalCtx.MyFulfillment.Filled && !(goalCtx.BestFulfillment?.Filled ?? true);
+        UpdateDisplayingFarmer(goalCtx.MyFulfillment);
     }
 
     [Notify]
@@ -24,7 +26,7 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     private Farmer? displayingFarmer = null;
 
     [Notify]
-    private bool showNeeded = true;
+    private bool showNeeded = false;
 
     [Notify]
     private int scrollPage = 1;
@@ -56,29 +58,28 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
 
     public void ClickMyFulfilment()
     {
-        UpdateDisplayingFarmer(GoalCtx.MyFulfillment.Who);
+        UpdateDisplayingFarmer(GoalCtx.MyFulfillment);
     }
 
     public void ClickBestFulfilment()
     {
-        UpdateDisplayingFarmer(GoalCtx.BestFulfillment?.Who);
+        UpdateDisplayingFarmer(GoalCtx.BestFulfillment);
     }
 
-    protected virtual void UpdateDisplayingFarmer(Farmer? who)
+    protected virtual void UpdateDisplayingFarmer(GoalFulfillment? fulfillment)
     {
-        if (who == null)
-            return;
         filteredDisplay = null;
-        if (who != DisplayingFarmer)
+        if (fulfillment?.Who is Farmer who && who != DisplayingFarmer)
         {
             DisplayingFarmer = who;
             ShowNeeded = true;
+            UpdateDisplayStatus();
         }
         else
         {
             ShowNeeded = !ShowNeeded;
+            UpdateDisplayStatus();
         }
-        UpdateDisplayStatus();
     }
 
     private void UpdateDisplayStatus()
@@ -96,9 +97,6 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         {
             if (this.filteredDisplay != null)
                 return this.filteredDisplay;
-            Farmer? who = DisplayingFarmer;
-            if (who == null)
-                return [];
             bool showNeed = ShowNeeded;
             string txt = SearchText;
             List<TDisplay> filteredDisplay = [];
@@ -126,7 +124,7 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
                 filteredDisplay.Count - actualPage * HandbookContext.MAX_SHOWN
             );
             if (nextPageSize == 0)
-                return [];
+                return filteredDisplay;
             return filteredDisplay.GetRange(actualPage * HandbookContext.MAX_SHOWN, nextPageSize);
         }
     }

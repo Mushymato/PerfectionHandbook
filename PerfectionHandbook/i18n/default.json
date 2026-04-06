@@ -5,6 +5,10 @@
   "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",
   "ui.search": "Search...",
   "ui.owned-count": "(You own {{count}})",
-  "ui.showing-needed": "Showing Needed",
-  "ui.showing-completed": "Showing Competed",
+  "ui.shipped-count": "(You shipped {{count}})",
+  "ui.fish-catch": "(You caught {{count}} of these, the largest is {{length}}cm long)",
+  "ui.showing-needed": "Needed",
+  "ui.showing-completed": "Competed",
+  "ui.title.perfection": "Perfection",
+  "ui.title.achievements": "Achievements",
 }

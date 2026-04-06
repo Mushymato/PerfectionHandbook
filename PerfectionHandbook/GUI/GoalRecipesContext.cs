@@ -10,7 +10,7 @@ namespace PerfectionHandbook.GUI;
 public partial record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerOwned OwnedInfo) : IPageDisplayEntry
 {
     [Notify]
-    public Color displayTint = Color.White;
+    public Color displayTint = HandbookContext.ActiveColor;
 
     public readonly SDUITooltipData Tooltip = new(
         " ",
@@ -45,16 +45,16 @@ public partial record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, Player
         }
 
         if (!Learnt)
-            DisplayTint = Color.Black * 0.2f;
+            DisplayTint = HandbookContext.HiddenColor;
         else if (!CanCraft)
-            DisplayTint = Color.DimGray * 0.4f;
+            DisplayTint = HandbookContext.InactiveColor;
         else
-            DisplayTint = Color.White;
+            DisplayTint = HandbookContext.ActiveColor;
     }
 }
 
-public sealed class GoalRecipesContext(GoalContext GoalCtx, bool isCooking)
-    : AbstractGoalPageListContext<RecipeDisplay>(GoalCtx)
+public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
+    : AbstractGoalPageListContext<RecipeDisplay>(goalCtx)
 {
     public readonly bool IsCooking = isCooking;
 

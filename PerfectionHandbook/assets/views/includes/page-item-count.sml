@@ -5,12 +5,13 @@
     <scrollable peeking="128" scroll-step="108" scrollbar-margin="-26,0,0,0"
       progress={<>ScrollProgress}>
       <grid margin="6,0,0,0" item-layout="length: 80" layout="stretch content">
-        <item-icon margin="4"
-          *repeat={FilteredDisplayPaginated}
+        <item-icon *repeat={FilteredDisplayPaginated}
           item={:ReprItem}
           tooltip={:Tooltip}
-          tint={:DisplayTint}
+          tint={DisplayTint}
+          padding="4"
           +hover:scale="1.1"
+          +transition:scale="100ms EaseInSine"
         />
       </grid>
     </scrollable>

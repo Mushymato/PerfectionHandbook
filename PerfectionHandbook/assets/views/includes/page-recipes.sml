@@ -9,8 +9,9 @@
           *repeat={FilteredDisplayPaginated}
           item={:Info.ReprItem}
           tooltip={:Tooltip}
-          tint={:DisplayTint}
+          tint={DisplayTint}
           +hover:scale="1.1"
+          +transition:scale="100ms EaseInSine"
         />
       </grid>
     </scrollable>

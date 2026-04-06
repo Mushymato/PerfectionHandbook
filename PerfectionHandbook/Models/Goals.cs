@@ -2,11 +2,8 @@ using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using StardewValley;
-using StardewValley.Extensions;
 using StardewValley.GameData;
 using StardewValley.GameData.Characters;
-using StardewValley.GameData.Crops;
-using StardewValley.GameData.Objects;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Locations;
 
@@ -104,44 +101,32 @@ public static class Goals
             return new(who, count, total);
         }
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return new GoalItemShippedContext(goalCtx);
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalItemShippedContext(goalCtx);
     }
 
-    public sealed class Perfection_ObelisksBuilt : IPerfectionGoal
+    public sealed class Perfection_BuildingsBuilt : IPerfectionGoal
     {
         public float PercentWeight => 4f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
-        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Obelisks");
+        public string DisplayName =>
+            string.Concat(
+                Game1.content.LoadString("Strings\\Buildings:GoldClock_Name"),
+                "/",
+                Game1.content.LoadString("Strings\\UI:PT_Obelisks")
+            );
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)688");
 
-        // TODO: include modded obelisks
-        public GoalFulfillment GetFulfillment(Farmer who) => new(null, Utility.GetObeliskTypesBuilt(), 4);
-    }
-
-    public sealed class Perfection_GoldClockBuilt : IPerfectionGoal
-    {
-        public float PercentWeight => 10f;
-        public bool IsShared => true;
-
-        public object? GetPageContext(GoalContext goalCtx)
+        public GoalFulfillment GetFulfillment(Farmer who)
         {
-            return null;
+            return new(
+                null,
+                Math.Min(Utility.GetObeliskTypesBuilt(), 4) + (Game1.IsBuildingConstructed("Gold Clock") ? 1 : 0),
+                5
+            );
         }
-
-        public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldClock");
-        public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)336");
-
-        public GoalFulfillment GetFulfillment(Farmer who) =>
-            new(null, Game1.IsBuildingConstructed("Gold Clock") ? 1 : 0, 1);
     }
 
     public sealed class Perfection_MonsterSlayered : IPerfectionGoal
@@ -149,10 +134,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_MonsterSlayer");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)767");
@@ -186,10 +168,7 @@ public static class Goals
         public float PercentWeight => 11f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GreatFriends");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)StardropTea");
@@ -222,10 +201,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_FarmerLevel");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)PurpleBook");
@@ -238,10 +214,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Stardrops");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)434");
@@ -257,10 +230,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return new GoalRecipesContext(goalCtx, true);
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, true);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Cooking");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)201");
@@ -292,10 +262,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return new GoalRecipesContext(goalCtx, false);
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, false);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Crafting");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)621");
@@ -323,10 +290,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return new GoalFishCaughtContext(goalCtx);
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalFishCaughtContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Fish");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)130");
@@ -355,10 +319,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => null;
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldenWalnut");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)73");
@@ -372,10 +333,7 @@ public static class Goals
         public int AchievementId => 5;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalMuseumDonateContext(goalCtx);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)587");
@@ -389,10 +347,7 @@ public static class Goals
         public int AchievementId => 31;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalPolycultureContext(goalCtx);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)188");
@@ -401,18 +356,18 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
-            foreach (CropData value in Game1.cropData.Values)
+            foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
             {
-                if (value.CountForPolyculture)
+                if (itemInfo.CountForPolyculture)
                 {
                     total++;
-                    if (Game1.player.basicShipped.GetValueOrDefault(value.HarvestItemId, 0) >= 15)
+                    if (who.basicShipped.GetValueOrDefault(itemInfo.Datum.ItemId, 0) >= 15)
                     {
                         count++;
                     }
                 }
             }
-            return new(null, count, total);
+            return new(who, count, total);
         }
     }
 
@@ -421,10 +376,7 @@ public static class Goals
         public int AchievementId => 32;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx)
-        {
-            return null;
-        }
+        public object? GetPageContext(GoalContext goalCtx) => new GoalMonocultureContext(goalCtx);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)258");
@@ -434,29 +386,28 @@ public static class Goals
             int count = 0;
             int total = 300;
             string? notes = null;
-            foreach (CropData value in Game1.cropData.Values)
+            foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
             {
-                if (value.CountForMonoculture)
+                if (itemInfo.CountForMonoculture)
                 {
-                    int shipped = Game1.player.basicShipped.GetValueOrDefault(value.HarvestItemId, 0);
+                    int shipped = who.basicShipped.GetValueOrDefault(itemInfo.Datum.ItemId, 0);
                     if (shipped > count)
                     {
-                        notes = ItemRegistry.GetDataOrErrorItem(value.HarvestItemId).DisplayName;
+                        notes = itemInfo.Datum.DisplayName;
                         count = shipped;
                     }
                     if (count >= 300)
                         break;
                 }
             }
-            return new(null, count, total) { Notes = notes };
+            return new(who, count, total) { Notes = notes };
         }
     }
     #endregion
 
     #region perfection
     public static readonly Perfection_ItemShipped ItemShipped = new();
-    public static readonly Perfection_ObelisksBuilt ObelisksBuilt = new();
-    public static readonly Perfection_GoldClockBuilt GoldClockBuilt = new();
+    public static readonly Perfection_BuildingsBuilt BuildingsBuilt = new();
     public static readonly Perfection_MonsterSlayered MonsterSlayered = new();
     public static readonly Perfection_BestFriendsMade BestFriendsMade = new();
     public static readonly Perfection_SkillLeveled SkillLeveled = new();
@@ -468,8 +419,7 @@ public static class Goals
     public static List<IPerfectionGoal> PerfectionGoals =>
         [
             ItemShipped,
-            ObelisksBuilt,
-            GoldClockBuilt,
+            BuildingsBuilt,
             MonsterSlayered,
             BestFriendsMade,
             SkillLeveled,
