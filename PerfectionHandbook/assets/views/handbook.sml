@@ -22,6 +22,8 @@
   <include *case="Perfection_FishCaught" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_MonsterSlayered -->
   <include *case="Perfection_MonsterSlayered" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-monster-slayer" />
+  <!-- Perfection_BuildingsConstructed -->
+  <include *case="Perfection_BuildingsConstructed" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-buildings-constructed" />
   <!-- Achievement_Museum -->
   <include *case="Achievement_Museum" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Achievement_Polyculture -->

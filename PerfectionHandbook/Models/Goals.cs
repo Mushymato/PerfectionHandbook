@@ -104,12 +104,12 @@ public static class Goals
         public object? GetPageContext(GoalContext goalCtx) => new GoalItemShippedContext(goalCtx);
     }
 
-    public sealed class Perfection_BuildingsBuilt : IPerfectionGoal
+    public sealed class Perfection_BuildingsConstructed : IPerfectionGoal
     {
         public float PercentWeight => 4f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalBuildingsConstructedContext(goalCtx);
 
         public string DisplayName => I18n.Ui_Goals_BuildingsConstructed();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)688");
@@ -410,7 +410,7 @@ public static class Goals
         new Perfection_MonsterSlayered(),
         new Perfection_BestFriendsMade(),
         new Perfection_SkillLeveled(),
-        new Perfection_BuildingsBuilt(),
+        new Perfection_BuildingsConstructed(),
         new Perfection_StardropsFound(),
         new Perfection_GoldenWalnutsFound(),
     ];

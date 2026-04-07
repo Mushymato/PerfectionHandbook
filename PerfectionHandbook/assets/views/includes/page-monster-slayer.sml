@@ -2,12 +2,12 @@
   <include *context={:this} name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
   <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,8,0" fit="Stretch"/>
   <panel layout="stretch 100%">
-    <scrollable peeking="128" scroll-step="108"
-      progress={<>ScrollProgress}>
+    <scrollable peeking="128" progress={<>ScrollProgress}>
       <grid margin="6,0,12,0" item-layout="count: 3" layout="stretch content">
         <frame *repeat={FilteredDisplayPaginated}
           layout="content content"
           padding="12"
+          focusable="true"
           tooltip={:TooltipText}
           background={@mushymato.PerfectionHandbook/sprites/cursors:shopBg}>
           <panel>

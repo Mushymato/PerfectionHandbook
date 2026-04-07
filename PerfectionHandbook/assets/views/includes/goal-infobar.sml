@@ -2,7 +2,7 @@
   <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" layout="40% 68px" margin="4,4,4,0"/>
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     font="dialogue"
-    layout="240px content"
+    layout="120px content"
     margin="4,0"
     text={#ui.showing-done}
     left-click=|^ClickShowNeeded()|

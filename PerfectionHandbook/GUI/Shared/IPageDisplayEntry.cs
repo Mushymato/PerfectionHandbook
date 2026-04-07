@@ -1,4 +1,3 @@
-using PerfectionHandbook.Models;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;
