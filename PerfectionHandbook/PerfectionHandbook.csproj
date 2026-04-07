@@ -16,7 +16,7 @@
   <PropertyGroup>
     <Name>PerfectionHandbook</Name>
     <Authors>mushymato</Authors>
-    <Description>DESCRIPTION</Description>
+    <Description>UI for tracking perfection and achievements, plus getting more info about everything.</Description>
     <UniqueId>mushymato.PerfectionHandbook</UniqueId>
     <UpdateKeys>Nexus:???,GitHub:Mushymato/PerfectionHandbook</UpdateKeys>
     <Version>0.2.0-alpha.0</Version>

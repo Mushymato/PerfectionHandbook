@@ -3,7 +3,12 @@
   "Sprites": {
     "shopBg": {
       "SourceRect": "384,396,15,15",
-      "FixedEdges": "5,5,5,5",
+      "FixedEdges": "6,6,6,6",
+      "Scale": 4
+    },
+    "shopBgQ": {
+      "SourceRect": "399,396,15,15",
+      "FixedEdges": "6,6,6,6",
       "Scale": 4
     }
   }

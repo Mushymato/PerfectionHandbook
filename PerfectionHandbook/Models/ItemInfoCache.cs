@@ -35,10 +35,22 @@ public sealed record ItemInfo(ParsedItemData Datum)
 
 public static class ItemInfoCache
 {
-    private static int lastObjectDataHash = -1;
-    private static int lastCraftingHash = -1;
-    private static int lastCookingHash = -1;
-    private static int lastCropDataHash = -1;
+    private static readonly HashTracker hashObject = new(
+        nameof(Game1.objectData),
+        static () => Game1.objectData.GetHashCode()
+    );
+    private static readonly HashTracker hashCooking = new(
+        nameof(CraftingRecipe.cookingRecipes),
+        static () => CraftingRecipe.cookingRecipes.GetHashCode()
+    );
+    private static readonly HashTracker hashCrafting = new(
+        nameof(CraftingRecipe.craftingRecipes),
+        static () => CraftingRecipe.craftingRecipes.GetHashCode()
+    );
+    private static readonly HashTracker hashCrop = new(
+        nameof(Game1.cropData),
+        static () => Game1.cropData.GetHashCode()
+    );
 
     private static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
 
@@ -71,62 +83,6 @@ public static class ItemInfoCache
         }
     }
 
-    private static void CheckHashChanged(string logName, int newHash, ref int hashField, ref bool anyHashChanged)
-    {
-        if (newHash != hashField)
-        {
-            ModEntry.Log($"{logName}: {hashField} -> {newHash}");
-            anyHashChanged = true;
-            hashField = newHash;
-        }
-    }
-
-    private static bool ItemHashChanged()
-    {
-        bool anyHashChanged = false;
-        // objects
-        CheckHashChanged(
-            nameof(Game1.objectData),
-            Game1.objectData.GetHashCode(),
-            ref lastObjectDataHash,
-            ref anyHashChanged
-        );
-        return anyHashChanged;
-    }
-
-    private static bool RecipeHashChanged()
-    {
-        bool anyHashChanged = false;
-        // cooking
-        CheckHashChanged(
-            nameof(CraftingRecipe.cookingRecipes),
-            CraftingRecipe.cookingRecipes.GetHashCode(),
-            ref lastCookingHash,
-            ref anyHashChanged
-        );
-        // crafting
-        CheckHashChanged(
-            nameof(CraftingRecipe.craftingRecipes),
-            CraftingRecipe.craftingRecipes.GetHashCode(),
-            ref lastCraftingHash,
-            ref anyHashChanged
-        );
-        return anyHashChanged;
-    }
-
-    private static bool CropHashChanged()
-    {
-        bool anyHashChanged = false;
-        // crops
-        CheckHashChanged(
-            nameof(Game1.cropData),
-            Game1.cropData.GetHashCode(),
-            ref lastCropDataHash,
-            ref anyHashChanged
-        );
-        return anyHashChanged;
-    }
-
     private static Dictionary<string, ItemInfo>? cache = null;
     public static IReadOnlyDictionary<string, ItemInfo> Cache
     {
@@ -140,7 +96,7 @@ public static class ItemInfoCache
 
             Dictionary<string, ItemInfo> cacheRet;
             bool useCached = false;
-            if (ItemHashChanged() || cache == null)
+            if (hashObject.CheckHashChanged() || cache == null)
             {
                 stopwatch = Stopwatch.StartNew();
                 cacheRet = cache = RefreshCache();
@@ -151,18 +107,20 @@ public static class ItemInfoCache
                 useCached = true;
             }
 
-            if (RecipeHashChanged())
+            bool cookingChanged = hashCooking.CheckHashChanged();
+            bool craftingChanged = hashCrafting.CheckHashChanged();
+            if (cookingChanged || craftingChanged)
             {
                 UpdateFromRecipes(cacheRet, useCached);
             }
 
-            if (CropHashChanged())
+            if (hashCrop.CheckHashChanged())
             {
                 UpdateFromCrop(cacheRet, useCached);
             }
 
             if (stopwatch != null)
-                ModEntry.Log($"ItemInfoCache: refreshed in {stopwatch.Elapsed}");
+                ModEntry.Log($"ItemInfoCache: refreshed in {stopwatch.Elapsed}", LogLevel.Info);
             return cacheRet;
         }
     }

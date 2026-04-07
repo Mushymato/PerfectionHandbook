@@ -29,7 +29,11 @@ public sealed class ModEntry : Mod
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
 
-        help.ConsoleCommands.Add("ph-show", "Debug show the handbook", (cmd, args) => MenuHandler.ShowHandbook());
+        help.ConsoleCommands.Add(
+            "ph-show",
+            "Debug show the handbook",
+            static (cmd, args) => MenuHandler.ShowHandbook()
+        );
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -40,6 +44,8 @@ public sealed class ModEntry : Mod
 
     private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        // preload the cache
+        var _ = ItemInfoCache.Cache;
         DrawHelper.PreloadCache();
     }
 

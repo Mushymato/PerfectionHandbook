@@ -31,22 +31,21 @@
 </frame>
 
 <template name="goal-grid">
- <grid margin="6,0,16,0" item-layout="count: 6" layout="stretch content">
+ <grid margin="6,0,16,0" item-layout="count: 5" layout="stretch content">
     <button *repeat={&goals}
-      hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+      default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
+      hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
       left-click=|^ChangePage(this)|
       horizontal-content-alignment="Start"
       vertical-content-alignment="Start"
       margin="2"
-      padding="16,12,16,0"
+      padding="12,12,16,0"
       layout="stretch 140px">
       <panel layout="100% 100%" >
-        <label font="small" text={:Goal.DisplayName} max-lines="2" shadow-alpha="0.8" />
-        <panel layout="100% 100%" horizontal-content-alignment="Start" vertical-content-alignment="End">
-          <image sprite={:Goal.DisplayIcon} layout="48px 48px" padding="-4,12"/>
-        </panel>
+        <image sprite={:Goal.DisplayIcon} layout="48px 48px" />
+        <label margin="56,0,0,0" font="small" text={:Goal.DisplayName} max-lines="2" shadow-alpha="0.8" />
         <panel layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="End" vertical-content-alignment="End">
-          <label font="small" text={:MyFulfillment.DisplayText} shadow-alpha="0.8"  />
+          <label font="dialogue" text={:MyFulfillment.DisplayText} shadow-alpha="0.8"  />
         </panel>
       </panel>
     </button>
