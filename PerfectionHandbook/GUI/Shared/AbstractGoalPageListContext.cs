@@ -1,6 +1,6 @@
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
-using StardewValley;
 using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
@@ -16,8 +16,8 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
     {
         GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
-        ShowNeeded = !goalCtx.MyFulfillment.Filled;
-        UpdateDisplayingFarmer(goalCtx.MyFulfillment);
+        ShowNeeded = !goalCtx.Fulfillments[0].Filled;
+        UpdateDisplayingFulfillment(goalCtx.Fulfillments[0]);
     }
 
     public string SearchText
@@ -85,27 +85,25 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         OnPropertyChanged(new(nameof(FilteredDisplay)));
     }
 
-    public void ClickMyFulfilment()
+    public void ClickFulfilment(GoalFulfillment fulfillment)
     {
-        UpdateDisplayingFarmer(GoalCtx.MyFulfillment);
+        UpdateDisplayingFulfillment(fulfillment);
     }
 
-    public void ClickBestFulfilment()
-    {
-        UpdateDisplayingFarmer(GoalCtx.BestFulfillment);
-    }
+    private GoalFulfillment? displayingFulfillment = null;
 
-    private Farmer? displayingFarmer = null;
-
-    protected virtual void UpdateDisplayingFarmer(GoalFulfillment? fulfillment)
+    protected virtual void UpdateDisplayingFulfillment(GoalFulfillment fulfillment)
     {
-        if (fulfillment?.Who is Farmer who && who != displayingFarmer)
+        if (displayingFulfillment != fulfillment)
         {
             filteredDisplay = null;
-            displayingFarmer = who;
-            ShowNeeded = !fulfillment.Filled;
-            foreach (TDisplay display in AllDisplay)
-                display.SetStatus(displayingFarmer);
+            displayingFulfillment = fulfillment;
+            if (fulfillment.Who != null)
+                foreach (TDisplay display in AllDisplay)
+                    display.SetStatus(fulfillment.Who);
+            foreach (GoalFulfillment eachful in GoalCtx.Fulfillments)
+                eachful.DisplayTint = eachful == displayingFulfillment ? Color.White : Color.Transparent;
+            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
         }
     }
 

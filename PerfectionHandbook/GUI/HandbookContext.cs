@@ -1,16 +1,14 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
-using StardewModdingAPI;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
 public sealed record GoalContext(
     IGoal Goal,
-    GoalFulfillment MyFulfillment,
-    GoalFulfillment? BestFulfillment,
+    IReadOnlyList<GoalFulfillment> Fulfillments,
+    GoalFulfillment BestFulfillment,
     PlayerOwned OwnedInfo
 )
 {
@@ -19,12 +17,25 @@ public sealed record GoalContext(
         GoalFulfillment myFulfillment = goal.GetFulfillment(who);
         if (goal.IsShared)
         {
-            return new(goal, myFulfillment, null, ownedInfo);
+            return new(goal, [myFulfillment], myFulfillment, ownedInfo);
         }
-        return new(goal, myFulfillment, goal.GetBestFulfillment(who, myFulfillment), ownedInfo);
+        List<GoalFulfillment> allFulfilments = [];
+        foreach (Farmer otherFarmer in Game1.getAllFarmers())
+        {
+            if (otherFarmer == who || !otherFarmer.isCustomized.Value)
+                continue;
+            allFulfilments.Add(goal.GetFulfillment(otherFarmer));
+        }
+        allFulfilments.Sort();
+        GoalFulfillment bestFulfillment;
+        if (allFulfilments.Any())
+            bestFulfillment = myFulfillment.Percent >= allFulfilments[0].Percent ? myFulfillment : allFulfilments[0];
+        else
+            bestFulfillment = myFulfillment;
+        allFulfilments.Insert(0, myFulfillment);
+        return new(goal, allFulfilments, bestFulfillment, ownedInfo);
     }
 
-    public bool ShowBestFulfillment => BestFulfillment != null && BestFulfillment.Who != MyFulfillment.Who;
     public string PageName => Goal.GetType().Name;
     public object? PageCtx => field ??= Goal.GetPageContext(this);
 }

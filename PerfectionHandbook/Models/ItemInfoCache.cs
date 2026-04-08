@@ -88,10 +88,6 @@ public static class ItemInfoCache
     {
         get
         {
-            // when menu is active and cache exists, don't do any refresh
-            if (Game1.activeClickableMenu != null && cache != null)
-                return cache;
-
             Stopwatch? stopwatch = null;
 
             Dictionary<string, ItemInfo> cacheRet;
@@ -155,6 +151,7 @@ public static class ItemInfoCache
 
     private static void UpdateFromCrop(Dictionary<string, ItemInfo> cacheRet, bool useCached)
     {
+        // when using prior cache, clear previous crop data
         if (useCached)
             foreach (ItemInfo itemInfo in cacheRet.Values)
             {

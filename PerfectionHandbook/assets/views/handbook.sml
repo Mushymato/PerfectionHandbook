@@ -1,4 +1,4 @@
-<frame layout="85%[1280..] 85%[700..]"
+<frame layout="80%[1280..] 85%[700..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 24, 36"
@@ -38,6 +38,7 @@
       default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
       hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
       left-click=|^ChangePage(this)|
+      screen-read={:Goal.DisplayName}
       horizontal-content-alignment="Start"
       vertical-content-alignment="Start"
       margin="2"
@@ -47,7 +48,7 @@
         <image sprite={:Goal.DisplayIcon} layout="48px 48px" />
         <label margin="56,0,0,0" font="small" text={:Goal.DisplayName} max-lines="2" shadow-alpha="0.8" />
         <panel layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="End" vertical-content-alignment="End">
-          <label font="dialogue" text={:MyFulfillment.DisplayText} shadow-alpha="0.8"  />
+          <label font="dialogue" text={:BestFulfillment.DisplayText} shadow-alpha="0.8"  />
         </panel>
       </panel>
     </button>

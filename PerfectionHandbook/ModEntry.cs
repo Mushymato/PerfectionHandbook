@@ -34,6 +34,13 @@ public sealed class ModEntry : Mod
             "Debug show the handbook",
             static (cmd, args) => MenuHandler.ShowHandbook()
         );
+#if DEBUG
+        help.ConsoleCommands.Add(
+            "ph-invalidate",
+            "Invalidate some asset",
+            static (cmd, args) => help.GameContent.InvalidateCache(args[0])
+        );
+#endif
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)

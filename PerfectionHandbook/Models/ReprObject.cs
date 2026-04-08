@@ -21,9 +21,10 @@ public sealed class ReprObject : SObject
     }
 
     private int reprStack = 0;
+    public int ReprStack => reprStack;
     public override int Stack
     {
-        get => reprStack;
+        get => Math.Min(reprStack, 99999);
         set { }
     }
 

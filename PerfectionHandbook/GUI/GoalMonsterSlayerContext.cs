@@ -20,12 +20,16 @@ public sealed partial record MonsterSlayerDisplay(string QuestName, List<string>
 
     public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(KilledCount, RequiredCount);
 
-    public string QuestFillLayout => $"{(float)KilledCount / RequiredCount * 100}% stretch";
+    public string QuestFillLayout =>
+        RequiredCount <= 0
+            ? "100% stretch"
+            : $"{100f * MathF.Min(KilledCount, RequiredCount) / RequiredCount}% stretch";
 
     public string TooltipText =>
         string.Concat(
+            QuestName,
+            ": ",
             DisplayCounts,
-            ":",
             Environment.NewLine,
             string.Join(Environment.NewLine, QuestTargets.Select(GetMonsterName))
         );

@@ -1,6 +1,8 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
+using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData;
 using StardewValley.GameData.Characters;
@@ -9,7 +11,7 @@ using StardewValley.Locations;
 
 namespace PerfectionHandbook.Models;
 
-public record GoalFulfillment(Farmer? Who, int Count, int Total)
+public sealed partial record GoalFulfillment(Farmer? Who, int Count, int Total) : IComparable<GoalFulfillment>
 {
     public float Percent => Total > 0 ? (float)Count / Total : 0;
     public bool Filled => Count >= Total;
@@ -28,6 +30,17 @@ public record GoalFulfillment(Farmer? Who, int Count, int Total)
     }
     public Texture2D MiniIcon => DrawHelper.GetFarmerMiniIcon(Who) ?? Game1.staminaRect;
     public bool HasMiniIcon => MiniIcon != null;
+
+    [Notify]
+    private Color displayTint;
+
+    // default reverse compare
+    public int CompareTo(GoalFulfillment? other)
+    {
+        if (other == null)
+            return -1;
+        return other.Percent.CompareTo(Percent);
+    }
 }
 
 public interface IGoal
@@ -51,34 +64,6 @@ public interface IAchievementGoal : IGoal
 
 public static class Goals
 {
-    #region extensions
-    public static GoalFulfillment GetBestFulfillment(
-        this IGoal goal,
-        Farmer who,
-        GoalFulfillment? bestFulfillment = null
-    )
-    {
-        bestFulfillment ??= goal.GetFulfillment(who);
-        if (goal.IsShared)
-        {
-            return bestFulfillment;
-        }
-        foreach (Farmer otherFarmer in Game1.getAllFarmers())
-        {
-            if (otherFarmer == who || !otherFarmer.isCustomized.Value)
-            {
-                continue;
-            }
-            GoalFulfillment otherFulfillment = goal.GetFulfillment(otherFarmer);
-            if (otherFulfillment.Percent > bestFulfillment.Percent)
-            {
-                bestFulfillment = otherFulfillment;
-            }
-        }
-        return bestFulfillment;
-    }
-    #endregion
-
     #region defs
     public sealed class Perfection_ItemShipped : IPerfectionGoal
     {

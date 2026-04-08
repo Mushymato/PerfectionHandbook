@@ -27,7 +27,7 @@ public sealed record ShippedCountDisplay(ItemInfo Info, ReprObject? OwnedRepr, i
             Info.Datum.Description,
             Environment.NewLine,
             Environment.NewLine,
-            I18n.Ui_ShippedCount(OwnedRepr.Stack)
+            I18n.Ui_ShippedCount(OwnedRepr.ReprStack)
         );
     }
 }

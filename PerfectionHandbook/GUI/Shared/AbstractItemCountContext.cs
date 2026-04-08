@@ -26,7 +26,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
             Info.Datum.Description,
             Environment.NewLine,
             Environment.NewLine,
-            I18n.Ui_OwnedCount(OwnedRepr.Stack)
+            I18n.Ui_OwnedCount(OwnedRepr.ReprStack)
         );
     }
 
