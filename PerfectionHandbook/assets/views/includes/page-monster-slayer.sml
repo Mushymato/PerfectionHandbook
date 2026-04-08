@@ -13,7 +13,7 @@
           <panel>
             <image sprite={@Mods/StardewUI/Sprites/White} tint="#4CAF50" fit="Stretch" layout={QuestFillLayout}/>
             <lane padding="6" orientation="Horizontal" vertical-content-alignment="Middle">
-              <label font="dialogue" layout="stretch content" max-lines="1" text={:QuestName} shadow-alpha="0.5" />
+              <label font="dialogue" text={:QuestName} max-lines="1" shadow-alpha="0.5" layout="stretch content" />
               <label font="dialogue" text={:DisplayCounts} max-lines="1" shadow-alpha="0.5" />
             </lane>
           </panel>

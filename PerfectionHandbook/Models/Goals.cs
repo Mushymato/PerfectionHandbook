@@ -181,7 +181,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalSkillLeveledContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_FarmerLevel");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)PurpleBook");

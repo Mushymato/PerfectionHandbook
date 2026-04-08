@@ -6,67 +6,54 @@ namespace PerfectionHandbook.GUI.Shared;
 
 public static class DrawHelper
 {
-    private static readonly Dictionary<long, RenderTarget2D> cachedIcons = [];
+    private static readonly Dictionary<long, RenderTarget2D> cachedRT = [];
 
     public static void DisposeCache()
     {
-        foreach (RenderTarget2D renderTarget in cachedIcons.Values)
+        foreach (RenderTarget2D renderTarget in cachedRT.Values)
         {
             renderTarget.Dispose();
         }
-        cachedIcons.Clear();
-    }
-
-    public static void PreloadCache()
-    {
-        foreach (Farmer who in Game1.getAllFarmers())
-        {
-            GetFarmerMiniIcon(who);
-        }
+        cachedRT.Clear();
     }
 
     public static RenderTarget2D? GetFarmerMiniIcon(Farmer? who)
     {
         if (who == null)
             return null;
-        if (
-            cachedIcons.TryGetValue(who.UniqueMultiplayerID, out RenderTarget2D? renderTarget)
-            && !renderTarget.IsDisposed
-        )
-            return renderTarget;
+        if (!cachedRT.TryGetValue(who.UniqueMultiplayerID, out RenderTarget2D? renderTarget) || renderTarget.IsDisposed)
+        {
+            renderTarget = new(
+                Game1.graphics.GraphicsDevice,
+                48,
+                48,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.None,
+                0,
+                RenderTargetUsage.DiscardContents
+            );
+            cachedRT[who.UniqueMultiplayerID] = renderTarget;
+        }
 
-        ModEntry.Log($"Render farmer mini-icon for {who.displayName}({who.UniqueMultiplayerID})");
-
-        renderTarget = RenderToTarget(
+        RenderToTarget(
+            renderTarget,
             (renderBatch) =>
-                who.FarmerRenderer.drawMiniPortrat(renderBatch, Vector2.Zero, 1f, 3f, who.facingDirection.Value, who),
-            48,
-            48
+                who.FarmerRenderer.drawMiniPortrat(renderBatch, Vector2.Zero, 1f, 3f, who.facingDirection.Value, who)
         );
 
-        cachedIcons[who.UniqueMultiplayerID] = renderTarget;
+        cachedRT[who.UniqueMultiplayerID] = renderTarget;
         return renderTarget;
     }
 
-    private static RenderTarget2D RenderToTarget(Action<SpriteBatch> drawCallback, int width, int height)
+    private static RenderTarget2D RenderToTarget(RenderTarget2D renderTarget, Action<SpriteBatch> drawCallback)
     {
-        RenderTarget2D renderTarget;
         RenderTarget2D? wasRenderTarget;
         {
             RenderTargetBinding[] wasRenderTargets = Game1.graphics.GraphicsDevice.GetRenderTargets();
             wasRenderTarget = wasRenderTargets.Length > 0 ? wasRenderTargets[0].RenderTarget as RenderTarget2D : null;
         }
 
-        renderTarget = new(
-            Game1.graphics.GraphicsDevice,
-            width,
-            height,
-            false,
-            SurfaceFormat.Color,
-            DepthFormat.None,
-            0,
-            RenderTargetUsage.DiscardContents
-        );
         Game1.SetRenderTarget(renderTarget);
 
         SpriteBatch? renderBatch = null;

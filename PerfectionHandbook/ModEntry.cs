@@ -1,6 +1,8 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
+using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
+using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -54,13 +56,13 @@ public sealed class ModEntry : Mod
     {
         MenuHandler.Register();
         ItemInfoCache.Setup();
+        GoalSkillLeveledContext.Setup();
     }
 
     private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         // preload the cache
         var _ = ItemInfoCache.Cache;
-        DrawHelper.PreloadCache();
     }
 
     private void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
