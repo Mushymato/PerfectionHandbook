@@ -1,3 +1,4 @@
+using System.Text;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewValley;
@@ -9,6 +10,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
     public override bool Needed => caughtCount == 0;
     public int caughtCount = 0;
     private int biggestCatch = 0;
+    private IReadOnlyList<string>? canCatchIn = null;
 
     public override void SetStatus(Farmer who)
     {
@@ -26,18 +28,37 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
+    public void SetCanCatchIn(IReadOnlyList<string> canCatchIn)
+    {
+        this.canCatchIn = canCatchIn.Any() ? canCatchIn : null;
+        DisplayTint = this.canCatchIn != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
+    }
+
+    private static readonly StringBuilder sb = new();
+
     public override string GetTooltipDesc()
     {
-        if (OwnedRepr == null || caughtCount == 0)
+        sb.Append(Info.Datum.Description);
+        if (OwnedRepr != null && caughtCount != 0)
         {
-            return Info.Datum.Description;
+            sb.Append(Environment.NewLine);
+            sb.Append(Environment.NewLine);
+            sb.Append(
+                I18n.Ui_FishCatch(caughtCount, biggestCatch > 0 ? I18n.Ui_FishCatchLength(biggestCatch) : string.Empty)
+            );
         }
-        return string.Concat(
-            Info.Datum.Description,
-            Environment.NewLine,
-            Environment.NewLine,
-            I18n.Ui_FishCatch(caughtCount, biggestCatch)
-        );
+        if (canCatchIn != null)
+        {
+            sb.Append(Environment.NewLine);
+            sb.Append(Environment.NewLine);
+            sb.Append(I18n.Ui_FishFrom());
+            sb.Append(Environment.NewLine);
+            sb.Append("  ");
+            sb.AppendJoin(Environment.NewLine + "  ", canCatchIn);
+        }
+        string result = sb.ToString();
+        sb.Clear();
+        return result;
     }
 }
 
@@ -49,4 +70,35 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
 
     protected override FishCaughtDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
         new(itemInfo, ownedRepr);
+
+    protected override IReadOnlyList<FishCaughtDisplay> SortAllDisplay(List<FishCaughtDisplay> displayList)
+    {
+        return displayList
+            .OrderBy(static disp =>
+            {
+                List<string> canCatchIn = [];
+                foreach (FishSourceInfo fishSourceInfo in disp.Info.FromFishing)
+                {
+                    Season? season = fishSourceInfo.Spawn?.Season;
+                    if (season != null && season != Game1.GetSeasonForLocation(fishSourceInfo.Location))
+                        continue;
+                    string? condition = fishSourceInfo.Spawn?.Condition;
+                    if (condition != null && GameQueryHelper.GSQCheckNoRandom(condition, fishSourceInfo.Location))
+                        continue;
+                    if (disp.Info.FishReq is FishSpawnReq spawnReq)
+                    {
+                        if (
+                            spawnReq.CrabPotGroups == null
+                            && spawnReq.Rain != null
+                            && spawnReq.Rain != (fishSourceInfo.Location?.IsRainingHere())
+                        )
+                            continue;
+                    }
+                    canCatchIn.Add(fishSourceInfo.Location?.DisplayName ?? fishSourceInfo.LocationId);
+                }
+                disp.SetCanCatchIn(canCatchIn);
+                return (canCatchIn.Any() ? -int.MaxValue : 0, disp.ReprItem.Category, disp.Info.Datum.QualifiedItemId);
+            })
+            .ToList();
+    }
 }

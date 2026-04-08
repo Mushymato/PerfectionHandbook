@@ -1,5 +1,5 @@
 <lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" margin="0,0,16,0">
-  <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="stretch stretch" />
+  <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="400px stretch" />
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     font="dialogue"
     layout="120px content"

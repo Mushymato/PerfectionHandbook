@@ -46,7 +46,7 @@ public abstract class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
                 continue;
             displayList.Add(MakeDisplay(itemInfo, GetReprObject(itemInfo)));
         }
-        return displayList;
+        return SortAllDisplay(displayList);
     }
 
     protected abstract bool ShouldInclude(ItemInfo itemInfo);
@@ -62,4 +62,7 @@ public abstract class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
     }
 
     protected abstract TDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr);
+
+    protected virtual IReadOnlyList<TDisplay> SortAllDisplay(List<TDisplay> displayList) =>
+        displayList.OrderBy(static disp => (disp.ReprItem.Category, disp.Info.Datum.QualifiedItemId)).ToList();
 }

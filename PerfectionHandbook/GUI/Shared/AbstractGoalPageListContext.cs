@@ -127,6 +127,7 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
                 filteredDisplay.Add(display);
             }
             this.filteredDisplay = filteredDisplay;
+
             return this.filteredDisplay;
         }
     }

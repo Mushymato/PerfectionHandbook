@@ -10,6 +10,7 @@ public sealed class ReprObject : SObject
     {
         this.innerItem = innerItem;
         this.CopyFieldsFrom(innerItem);
+        this.Category = innerItem.Category;
         this.ResetParentSheetIndex();
     }
 

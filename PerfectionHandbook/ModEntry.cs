@@ -4,6 +4,7 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 
 namespace PerfectionHandbook;
 
@@ -28,6 +29,7 @@ public sealed class ModEntry : Mod
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
+        help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
 
         help.ConsoleCommands.Add(
             "ph-show",
@@ -41,6 +43,11 @@ public sealed class ModEntry : Mod
             static (cmd, args) => help.GameContent.InvalidateCache(args[0])
         );
 #endif
+    }
+
+    private static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
+    {
+        InvalidateTracker.OnAssetInvalidated(e);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
