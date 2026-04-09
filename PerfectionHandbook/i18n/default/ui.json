@@ -3,6 +3,7 @@
   "ui.mod.desc": "Show your game progress towards perfection and achievements.",
   "ui.fulfillment.dipslay": "{{count}}/{{total}}",
   "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",
+  "ui.skill.dipslay": "Lv. {{count}}/{{total}}",
   "ui.search": "Search...",
   "ui.owned-count": "(You own {{count}})",
   "ui.shipped-count": "(You shipped {{count}})",

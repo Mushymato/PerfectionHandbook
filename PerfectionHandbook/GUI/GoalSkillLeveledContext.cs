@@ -7,7 +7,7 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record ExpSquares(string Layout, bool Show, Color Tint);
+public sealed record LevelSquare(bool Show, Color Tint);
 
 public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite SkillIcon, int MaxLevel)
     : IPageDisplayEntry
@@ -21,51 +21,33 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
 
     public bool Needed => Level < MaxLevel;
 
-    public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(Level, MaxLevel);
+    // public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(Level, MaxLevel);
+    public string SkillCountDisplay =>
+        string.Concat(SkillName, Environment.NewLine, I18n.Ui_Skill_Dipslay(Level, MaxLevel));
     private static Color SkillColor1 = new(0xbd, 0x11, 0x4a);
     private static Color SkillColor2 = new(0x11, 0xbd, 0x84);
-    public IReadOnlyList<IReadOnlyList<ExpSquares>> ExpToNextFillLayouts
+    public IReadOnlyList<IReadOnlyList<LevelSquare>> LevelSquares
     {
         get
         {
-            List<ExpSquares> layouts = [];
-            List<IReadOnlyList<ExpSquares>> layoutRows = [layouts];
-            for (int i = 0; i < Level; i++)
+            List<LevelSquare> layouts = [];
+            List<IReadOnlyList<LevelSquare>> layoutRows = [];
+            for (int i = 0; i < MaxLevel; i++)
             {
-                layouts = AddSquare(layouts, layoutRows, i, 100);
-            }
-            if (Level < MaxLevel)
-            {
-                layouts = AddSquare(
-                    layouts,
-                    layoutRows,
-                    Level,
-                    100f * MathF.Max(expToNextMax - ExpToNext, 0) / expToNextMax
-                );
-                for (int i = Level + 1; i < MaxLevel; i++)
+                if (i % 10 == 0)
                 {
-                    layouts = AddSquare(layouts, layoutRows, i, 0);
+                    layouts = [];
+                    layoutRows.Add(layouts);
                 }
+                layouts.Add(new LevelSquare(i < Level, i < 10 ? SkillColor1 : SkillColor2));
             }
             return layoutRows;
         }
     }
-
-    private static List<ExpSquares> AddSquare(
-        List<ExpSquares> layouts,
-        List<IReadOnlyList<ExpSquares>> layoutRows,
-        int i,
-        float widthPercent
-    )
-    {
-        if (i == 10)
-        {
-            layouts = [];
-            layoutRows.Add(layouts);
-        }
-        layouts.Add(new ExpSquares($"{widthPercent}% stretch", widthPercent > 0, i < 10 ? SkillColor1 : SkillColor2));
-        return layouts;
-    }
+    public string ExpToNextLayout =>
+        $"{(ExpToNext == 0 ? 0 : (expToNextMax == 0 ? 0 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax))}% stretch";
+    public Color ExpToNextTint => Level < 10 ? SkillColor1 : SkillColor2;
+    public string ExpToNextDisplay => I18n.Ui_Fulfillment_Dipslay(ExpToNext, expToNextMax);
 
     public bool SearchMatch(string txt)
     {
@@ -80,9 +62,9 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
         if (Level < MaxLevel)
         {
             int exp = GetSkillExperience(who);
-            int lvlExp = GetSkillExperienceForLevel(level);
+            int lvlExp = Math.Max(GetSkillExperienceForLevel(level), 0);
             ExpToNext = exp - lvlExp;
-            expToNextMax = GetSkillExperienceForLevel(level + 1) - lvlExp;
+            expToNextMax = Math.Max(GetSkillExperienceForLevel(level + 1) - lvlExp, 0);
         }
         else
         {
@@ -156,8 +138,8 @@ public sealed class GoalSkillLeveledContext(GoalContext goalCtx)
             VanillaMaxLevel = 20;
             GetExpForLevel = (level) =>
             {
-                if (level > 10)
-                    return vppApi.LevelExperiences[level - 10];
+                if (level >= 11)
+                    return vppApi.LevelExperiences[level - 11];
                 return Farmer.getBaseExperienceForLevel(level);
             };
         }
