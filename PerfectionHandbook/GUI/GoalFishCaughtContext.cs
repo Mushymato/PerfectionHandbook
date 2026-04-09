@@ -78,11 +78,19 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
                 List<string> canCatchIn = [];
                 foreach (FishSourceInfo fishSourceInfo in disp.Info.FromFishing)
                 {
+                    if (!Game1.player.locationsVisited.Contains(fishSourceInfo.Location!.NameOrUniqueName))
+                        continue;
                     Season? season = fishSourceInfo.Spawn?.Season;
                     if (season != null && season != Game1.GetSeasonForLocation(fishSourceInfo.Location))
                         continue;
                     string? condition = fishSourceInfo.Spawn?.Condition;
-                    if (condition != null && GameQueryHelper.GSQCheckNoRandom(condition, fishSourceInfo.Location))
+                    if (
+                        condition != null
+                        && !GameQueryHelper.GSQCheckNoRandom(
+                            condition.Replace(" Here ", " Target "),
+                            fishSourceInfo.Location
+                        )
+                    )
                         continue;
                     if (disp.Info.FishReq is FishSpawnReq spawnReq)
                     {

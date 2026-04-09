@@ -14,20 +14,20 @@ namespace PerfectionHandbook.Models;
 public interface ILocationSourceInfo
 {
     string LocationId { get; }
-    GameLocation? Location { get; }
+    GameLocation Location { get; }
 }
 
 public sealed record FishSourceInfo(
     string LocationId,
-    GameLocation? Location,
+    GameLocation Location,
     SpawnFishData? Spawn,
     FishAreaData? FishArea
 ) : ILocationSourceInfo;
 
-public sealed record ForageSourceInfo(string LocationId, GameLocation? Location, SpawnForageData Spawn)
+public sealed record ForageSourceInfo(string LocationId, GameLocation Location, SpawnForageData Spawn)
     : ILocationSourceInfo;
 
-public sealed record FishAreaSourceInfo(string LocationId, GameLocation? Location, FishAreaData Area)
+public sealed record FishAreaSourceInfo(string LocationId, GameLocation Location, FishAreaData Area)
     : ILocationSourceInfo;
 
 public sealed record FishSpawnReq(
@@ -232,8 +232,7 @@ public static class ItemInfoCache
         ModEntry.Log($"UpdateFromLocation({useCached})");
         foreach ((string locationName, LocationData locationData) in Game1.locationData)
         {
-            GameLocation? location = Game1.getLocationFromName(locationName);
-            if (location == null)
+            if (Game1.getLocationFromName(locationName) is not GameLocation location)
                 continue;
             // fish
             foreach (SpawnFishData spawnFishData in locationData.Fish ?? [])
