@@ -18,7 +18,7 @@ public sealed class HashTracker(string logName, Func<int> getHash) : IChangeTrac
         int newHash = getHash();
         if (newHash != lastHash)
         {
-            ModEntry.Log($"{logName}: {lastHash} -> {newHash}");
+            ModEntry.Log($"{logName}: changed ({newHash})");
             lastHash = newHash;
             return true;
         }
@@ -38,13 +38,8 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
         IAssetName assetName = ModEntry.help.GameContent.ParseAssetName(name);
         if (!invalidateTrackers.TryGetValue(assetName, out List<InvalidateTracker>? trackerList))
         {
-            ModEntry.Log($"MISS: {assetName}");
             trackerList = [];
             invalidateTrackers[assetName] = trackerList;
-        }
-        else
-        {
-            ModEntry.Log($"HIT: {assetName}");
         }
         InvalidateTracker tracker = new(assetName);
         trackerList.Add(tracker);
@@ -55,8 +50,8 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
     {
         if (invalidatedTick != Game1.ticks)
         {
-            ModEntry.Log($"{AssetName}: changed");
-            Game1.ticks = invalidatedTick;
+            ModEntry.Log($"{AssetName}: changed ({Game1.ticks})");
+            invalidatedTick = Game1.ticks;
             return true;
         }
         return false;

@@ -15,17 +15,19 @@
               <label font="dialogue" text={:DisplayCounts} max-lines="1" shadow-alpha="0.5" margin="4,0" />
               <label font="dialogue" text={:SkillName} max-lines="1" shadow-alpha="0.5" margin="4,0" />
             </lane>
-            <lane padding="4,0,4,4" orientation="Horizontal" layout="100% content" horizontal-content-alignment="Start" vertical-content-alignment="Middle">
-              <frame *repeat={ExpToNextFillLayouts} layout="40px 24px" margin="4" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
-                <image *if={:Show}
-                  sprite={@Mods/StardewUI/Sprites/White}
-                  horizontal-alignment="Start"
-                  tint="#BD114A"
-                  fit="Stretch"
-                  layout={:Layout}
-                />
-              </frame>
-            </lane>
+            <panel>
+              <lane *repeat={ExpToNextFillLayouts} padding="4,0,4,4" orientation="Horizontal" layout="100% content" horizontal-content-alignment="Start" vertical-content-alignment="Middle">
+                <frame *repeat={:this} layout="40px 24px" margin="4" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
+                  <image *if={:Show}
+                    sprite={@Mods/StardewUI/Sprites/White}
+                    horizontal-alignment="Start"
+                    tint={:Tint}
+                    fit="Stretch"
+                    layout={:Layout}
+                  />
+                </frame>
+              </lane>
+            </panel>
           </lane>
         </frame>
       </grid>
