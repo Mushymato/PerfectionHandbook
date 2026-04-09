@@ -32,6 +32,7 @@ public sealed class ModEntry : Mod
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
+        help.Events.Content.LocaleChanged += OnLocaleChanged;
 
         help.ConsoleCommands.Add(
             "ph-show",
@@ -52,20 +53,25 @@ public sealed class ModEntry : Mod
         InvalidateTracker.OnAssetInvalidated(e);
     }
 
-    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         MenuHandler.Register();
         ItemInfoCache.Setup();
         GoalSkillLeveledContext.Setup();
     }
 
-    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         // preload the cache
         var _ = ItemInfoCache.Cache;
     }
 
-    private void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
+    private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
+    {
+        DrawHelper.DisposeCache();
+    }
+
+    private static void OnLocaleChanged(object? sender, LocaleChangedEventArgs e)
     {
         DrawHelper.DisposeCache();
     }

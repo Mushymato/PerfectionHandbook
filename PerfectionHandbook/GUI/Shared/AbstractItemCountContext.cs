@@ -10,9 +10,22 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
 {
     [Notify]
     public Color displayTint = OwnedRepr != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
-    public Item ReprItem = OwnedRepr ?? new(Info.ReprItem.getOne());
 
-    public SDUITooltipData Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
+    public Item ReprItem => OwnedRepr ?? Info.ReprItem;
+
+    [Notify]
+    protected int count = OwnedRepr?.ReprStack ?? 0;
+
+    public bool HasCount => Count > 0;
+
+    public float DisplayShadow => DisplayTint == HandbookContext.ActiveColor ? 0.35f : 0f;
+
+    [Notify]
+    private float displayScale = 1f;
+
+    [Notify]
+    private bool tooltipShow = true;
+    public SDUITooltipData? Tooltip => TooltipShow ? new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem) : null;
 
     public virtual bool Needed { get; protected set; } = false;
 
@@ -31,9 +44,16 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
     }
 
     public bool SearchMatch(string txt) => Info.SearchMatch(txt);
+
+    #region detail
+
+    public virtual bool HasCropDetail => Info.FromCrop.Count > 0;
+    public CropDetailDisplay? CropDetail => Info.FromCrop.Count > 0 ? new(Info) : null;
+
+    #endregion
 }
 
-public abstract class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
+public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
     : AbstractGoalPageListContext<TDisplay>(goalCtx)
     where TDisplay : AbstractItemCountDisplay
 {
@@ -64,5 +84,28 @@ public abstract class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
     protected abstract TDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr);
 
     protected virtual IReadOnlyList<TDisplay> SortAllDisplay(List<TDisplay> displayList) =>
-        displayList.OrderBy(static disp => (disp.ReprItem.Category, disp.Info.Datum.QualifiedItemId)).ToList();
+        displayList.OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId)).ToList();
+
+    [Notify]
+    private TDisplay? hovered = null;
+
+    public void HoveredEnter(TDisplay display)
+    {
+        Hovered?.DisplayScale = 1f;
+        Hovered = display;
+        display.DisplayScale = 1.1f;
+    }
+
+    public virtual bool ShowDetail => false;
+
+    private bool tooltipShow = true;
+
+    public void ToggleTooltip()
+    {
+        tooltipShow = !tooltipShow;
+        foreach (AbstractItemCountDisplay display in AllDisplay)
+        {
+            display.TooltipShow = tooltipShow;
+        }
+    }
 }

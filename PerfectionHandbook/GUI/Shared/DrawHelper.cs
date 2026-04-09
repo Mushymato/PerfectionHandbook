@@ -73,4 +73,13 @@ public static class DrawHelper
 
         return renderTarget;
     }
+
+    public static Texture2D SafeLoad(string? assetName, Texture2D? fallbackTx)
+    {
+        if (string.IsNullOrEmpty(assetName))
+            return fallbackTx ?? Game1.mouseCursors;
+        if (!Game1.content.DoesAssetExist<Texture2D>(assetName))
+            return fallbackTx ?? Game1.mouseCursors;
+        return Game1.content.Load<Texture2D>(assetName);
+    }
 }

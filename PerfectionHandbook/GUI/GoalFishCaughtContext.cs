@@ -7,8 +7,7 @@ namespace PerfectionHandbook.GUI;
 
 public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : AbstractItemCountDisplay(Info, OwnedRepr)
 {
-    public override bool Needed => caughtCount == 0;
-    public int caughtCount = 0;
+    public override bool Needed => Count == 0;
     private int biggestCatch = 0;
     private IReadOnlyList<string>? canCatchIn = null;
 
@@ -16,15 +15,15 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
     {
         if (who.fishCaught.TryGetValue(Info.Datum.QualifiedItemId, out int[] pair))
         {
-            caughtCount = pair[0];
+            Count = pair[0];
             biggestCatch = pair[1];
         }
         else
         {
-            caughtCount = 0;
+            Count = 0;
             biggestCatch = 0;
         }
-        OwnedRepr?.SetReprStack(caughtCount);
+        OwnedRepr?.SetReprStack(Count);
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
@@ -39,12 +38,12 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
     public override string GetTooltipDesc()
     {
         sb.Append(Info.Datum.Description);
-        if (OwnedRepr != null && caughtCount != 0)
+        if (OwnedRepr != null && Count != 0)
         {
             sb.Append(Environment.NewLine);
             sb.Append(Environment.NewLine);
             sb.Append(
-                I18n.Ui_FishCatch(caughtCount, biggestCatch > 0 ? I18n.Ui_FishCatchLength(biggestCatch) : string.Empty)
+                I18n.Ui_FishCatch(Count, biggestCatch > 0 ? I18n.Ui_FishCatchLength(biggestCatch) : string.Empty)
             );
         }
         if (canCatchIn != null)
@@ -97,7 +96,11 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
                     canCatchIn.Add(fishSourceInfo.Location?.DisplayName ?? fishSourceInfo.LocationId);
                 }
                 disp.SetCanCatchIn(canCatchIn);
-                return (canCatchIn.Any() ? -int.MaxValue : 0, disp.ReprItem.Category, disp.Info.Datum.QualifiedItemId);
+                return (
+                    canCatchIn.Any() ? -int.MaxValue : 0,
+                    disp.Info.Datum.Category,
+                    disp.Info.Datum.QualifiedItemId
+                );
             })
             .ToList();
     }
