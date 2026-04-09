@@ -9,7 +9,7 @@
           padding="12"
           focusable="true"
           tooltip={:TooltipText}
-          background={@mushymato.PerfectionHandbook/sprites/cursors:shopBg}>
+          background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
           <panel>
             <image sprite={@Mods/StardewUI/Sprites/White} tint="#4CAF50" fit="Stretch" layout={QuestFillLayout}/>
             <lane padding="6" orientation="Horizontal" vertical-content-alignment="Middle">

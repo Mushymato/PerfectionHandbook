@@ -7,7 +7,7 @@
         <frame *repeat={FilteredDisplayPaginated}
           layout="100% content"
           border-thickness="12"
-          border={@mushymato.PerfectionHandbook/sprites/cursors:shopBg}>
+          border={@Mods/StardewUI/Sprites/ShopEntryBorder}>
           <lane orientation="Vertical">
             <lane padding="4,4,4,0" orientation="Horizontal" layout="content content" vertical-content-alignment="Middle">
               <image sprite={:SkillIcon} margin="8" layout="64px 64px" />

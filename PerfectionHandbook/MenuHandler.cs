@@ -1,10 +1,7 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
 
 namespace PerfectionHandbook;
 
@@ -17,7 +14,7 @@ public static class MenuHandler
     public static void Register()
     {
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
-        viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
+        // viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");
         viewEngine.PreloadAssets();
 #if DEBUG
