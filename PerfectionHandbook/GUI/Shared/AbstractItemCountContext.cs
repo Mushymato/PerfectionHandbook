@@ -16,7 +16,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
     [Notify]
     protected int count = OwnedRepr?.ReprStack ?? 0;
 
-    public bool HasCount => Count > 0;
+    public virtual bool HasCount => Count > 0;
 
     public float DisplayShadow => DisplayTint == HandbookContext.ActiveColor ? 0.35f : 0f;
 
@@ -25,7 +25,8 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
 
     [Notify]
     private bool tooltipShow = true;
-    public SDUITooltipData? Tooltip => TooltipShow ? new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem) : null;
+    public virtual SDUITooltipData? Tooltip =>
+        TooltipShow ? new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem) : null;
 
     public virtual bool Needed { get; protected set; } = false;
 
@@ -69,7 +70,7 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
         return SortAllDisplay(displayList);
     }
 
-    protected abstract bool ShouldInclude(ItemInfo itemInfo);
+    protected virtual bool ShouldInclude(ItemInfo itemInfo) => throw new NotImplementedException(nameof(ShouldInclude));
 
     protected virtual ReprObject? GetReprObject(ItemInfo itemInfo)
     {
@@ -81,7 +82,8 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
         return ownedRepr;
     }
 
-    protected abstract TDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr);
+    protected virtual TDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
+        throw new NotImplementedException(nameof(MakeDisplay));
 
     protected virtual IReadOnlyList<TDisplay> SortAllDisplay(List<TDisplay> displayList) =>
         displayList.OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId)).ToList();

@@ -1,65 +1,60 @@
-using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
-using PropertyChanged.SourceGenerator;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public partial record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerOwned OwnedInfo) : IPageDisplayEntry
+public sealed record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerOwned OwnedInfo)
+    : AbstractItemCountDisplay(Info, null)
 {
-    [Notify]
-    public Color displayTint = HandbookContext.ActiveColor;
-    public Item ReprItem => Info.ReprItem;
-
-    public readonly SDUITooltipData Tooltip = new(
-        " ",
-        Recipe.DisplayName + ((Recipe.numberProducedPerCraft > 1) ? " x" + Recipe.numberProducedPerCraft : ""),
-        CraftingRecipe: Recipe,
-        AdditionalCraftingMaterials: OwnedInfo.OwnedRepr
-    );
+    public override SDUITooltipData Tooltip =>
+        new(
+            " ",
+            Recipe.DisplayName + ((Recipe.numberProducedPerCraft > 1) ? " x" + Recipe.numberProducedPerCraft : ""),
+            CraftingRecipe: Recipe,
+            AdditionalCraftingMaterials: OwnedInfo.OwnedRepr
+        );
 
     public readonly bool CanCraft = Recipe.doesFarmerHaveIngredientsInInventory(OwnedInfo.OwnedRepr);
-    public bool Learnt { get; private set; } = false;
-    public bool Needed { get; private set; } = false;
+    public override bool HasCount => Recipe.numberProducedPerCraft > 1;
 
-    public void SetStatus(Farmer who)
+    public override void SetStatus(Farmer who)
     {
+        Count = Recipe.numberProducedPerCraft;
+        bool learnt;
         if (Recipe.isCookingRecipe)
         {
-            Learnt = who.cookingRecipes.ContainsKey(Recipe.name);
+            learnt = who.cookingRecipes.ContainsKey(Recipe.name);
             Needed = !who.recipesCooked.ContainsKey(Info.Datum.ItemId);
         }
         else
         {
             if (who.craftingRecipes.TryGetValue(Recipe.name, out int crafted))
             {
-                Learnt = true;
+                learnt = true;
                 Needed = crafted == 0;
             }
             else
             {
-                Learnt = false;
+                learnt = false;
                 Needed = true;
             }
         }
 
-        if (!Learnt)
+        if (!learnt)
             DisplayTint = HandbookContext.HiddenColor;
         else if (!CanCraft)
             DisplayTint = HandbookContext.InactiveColor;
         else
             DisplayTint = HandbookContext.ActiveColor;
     }
-
-    public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
-    : AbstractGoalPageListContext<RecipeDisplay>(goalCtx)
+    : AbstractItemCountContext<RecipeDisplay>(goalCtx)
 {
-    public readonly bool IsCooking = isCooking;
+    private readonly bool IsCooking = isCooking;
 
     protected override IReadOnlyList<RecipeDisplay> MakeAllDisplay()
     {
