@@ -1,6 +1,7 @@
 using Force.DeepCloner;
 using PerfectionHandbook;
 using StardewValley;
+using StardewValley.Extensions;
 using StardewValley.GameData;
 using StardewValley.Internal;
 using StardewValley.ItemTypeDefinitions;
@@ -31,7 +32,6 @@ internal static class GameQueryHelper
         ItemQueryContext iqContext = new(location, null, Random.Shared, "SimplifiedResolveAll");
         foreach (string needIQR in needsIQR)
         {
-            ModEntry.Log($"Try resolve on: {needIQR}");
             tmpSpawn.ItemId = needIQR;
             foreach (ItemQueryResult res in ItemQueryResolver.TryResolve(tmpSpawn, iqContext))
             {
@@ -59,8 +59,21 @@ internal static class GameQueryHelper
         "RANDOM", /*"SYNCED_RANDOM"*/
     ];
 
-    internal static bool GSQCheckNoRandom(string condition, GameLocation? location = null)
+    internal static bool ContextLocationCheckNoRandom(string condition, GameLocation location)
     {
-        return GameStateQuery.CheckConditions(condition, location: location, ignoreQueryKeys: GSQRandomKeys);
+        string[] parts = condition.Split(' ');
+        List<string> replaced = [];
+        foreach (string part in parts)
+        {
+            if (part.EqualsIgnoreCase("here"))
+                replaced.Add("Target");
+            else
+                replaced.Add(part);
+        }
+        return GameStateQuery.CheckConditions(
+            string.Join(' ', replaced),
+            location: location,
+            ignoreQueryKeys: GSQRandomKeys
+        );
     }
 }

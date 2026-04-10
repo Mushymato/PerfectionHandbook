@@ -75,7 +75,7 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
         return displayList
             .OrderBy(static disp =>
             {
-                List<string> canCatchIn = [];
+                HashSet<string> canCatchIn = [];
                 foreach (FishSourceInfo fishSourceInfo in disp.Info.FromFishing)
                 {
                     if (!Game1.player.locationsVisited.Contains(fishSourceInfo.Location!.NameOrUniqueName))
@@ -86,10 +86,7 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
                     string? condition = fishSourceInfo.Spawn?.Condition;
                     if (
                         condition != null
-                        && !GameQueryHelper.GSQCheckNoRandom(
-                            condition.Replace(" Here ", " Target "),
-                            fishSourceInfo.Location
-                        )
+                        && !GameQueryHelper.ContextLocationCheckNoRandom(condition, fishSourceInfo.Location)
                     )
                         continue;
                     if (disp.Info.FishReq is FishSpawnReq spawnReq)
@@ -103,7 +100,9 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCou
                     }
                     canCatchIn.Add(fishSourceInfo.Location?.DisplayName ?? fishSourceInfo.LocationId);
                 }
-                disp.SetCanCatchIn(canCatchIn);
+                List<string> canCatchInLst = canCatchIn.ToList();
+                canCatchInLst.Sort();
+                disp.SetCanCatchIn(canCatchInLst);
                 return (
                     canCatchIn.Any() ? -int.MaxValue : 0,
                     disp.Info.Datum.Category,

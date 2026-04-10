@@ -12,11 +12,14 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
 
     public readonly IReadOnlyList<TDisplay> AllDisplay;
 
-    public AbstractGoalPageListContext(GoalContext goalCtx)
+    public readonly bool CanToggleNeeded = true;
+
+    public AbstractGoalPageListContext(GoalContext goalCtx, bool canToggleNeeded = true)
     {
         GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
         ShowNeeded = !goalCtx.Fulfillments[0].Filled;
+        CanToggleNeeded = canToggleNeeded;
         UpdateDisplayingFulfillment(goalCtx.Fulfillments[0]);
     }
 

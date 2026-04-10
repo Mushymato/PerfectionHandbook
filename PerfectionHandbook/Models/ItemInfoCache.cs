@@ -281,7 +281,7 @@ public static class ItemInfoCache
 
             string[] fishReqs = fishReqStr.Split('/');
 
-            List<string>? crabPotsList = [];
+            List<string>? crabPotsList = null;
             List<(int, int)> timeRanges = [];
             bool? rain = null;
 

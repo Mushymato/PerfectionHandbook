@@ -21,12 +21,11 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
     public float DisplayShadow => DisplayTint == HandbookContext.ActiveColor ? 0.35f : 0f;
 
     [Notify]
-    private float displayScale = 1f;
+    private bool isHovered = false;
 
-    [Notify]
-    private bool tooltipShow = true;
-    public virtual SDUITooltipData? Tooltip =>
-        TooltipShow ? new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem) : null;
+    public float DisplayScale => IsHovered ? 1.1f : 1f;
+
+    public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
     public virtual bool Needed { get; protected set; } = false;
 
@@ -45,13 +44,6 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
     }
 
     public bool SearchMatch(string txt) => Info.SearchMatch(txt);
-
-    #region detail
-
-    public virtual bool HasCropDetail => Info.FromCrop.Count > 0;
-    public CropDetailDisplay? CropDetail => Info.FromCrop.Count > 0 ? new(Info) : null;
-
-    #endregion
 }
 
 public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
@@ -89,25 +81,12 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
         displayList.OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId)).ToList();
 
     [Notify]
-    private TDisplay? hovered = null;
+    protected TDisplay? hovered = null;
 
-    public void HoveredEnter(TDisplay display)
+    public virtual void HoveredEnter(TDisplay display)
     {
-        Hovered?.DisplayScale = 1f;
+        Hovered?.IsHovered = false;
         Hovered = display;
-        display.DisplayScale = 1.1f;
-    }
-
-    public virtual bool ShowDetail => false;
-
-    private bool tooltipShow = true;
-
-    public void ToggleTooltip()
-    {
-        tooltipShow = !tooltipShow;
-        foreach (AbstractItemCountDisplay display in AllDisplay)
-        {
-            display.TooltipShow = tooltipShow;
-        }
+        display.IsHovered = true;
     }
 }

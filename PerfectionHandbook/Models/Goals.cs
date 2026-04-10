@@ -327,7 +327,8 @@ public static class Goals
         public int AchievementId => 31;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalPolycultureContext(goalCtx);
+        public object? GetPageContext(GoalContext goalCtx) =>
+            new GoalCropListContext(goalCtx, CropListKind.Polyculture);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)188");
@@ -356,7 +357,8 @@ public static class Goals
         public int AchievementId => 32;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalMonocultureContext(goalCtx);
+        public object? GetPageContext(GoalContext goalCtx) =>
+            new GoalCropListContext(goalCtx, CropListKind.Monoculture);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)258");

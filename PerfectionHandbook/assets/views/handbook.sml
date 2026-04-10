@@ -29,9 +29,9 @@
   <!-- Achievement_Museum -->
   <include *case="Achievement_Museum" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Achievement_Polyculture -->
-  <include *case="Achievement_Polyculture" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
+  <include *case="Achievement_Polyculture" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
   <!-- Achievement_Monoculture -->
-  <include *case="Achievement_Monoculture" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
+  <include *case="Achievement_Monoculture" *context={:SelectedGoalCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
 </frame>
 
 <template name="goal-grid">
