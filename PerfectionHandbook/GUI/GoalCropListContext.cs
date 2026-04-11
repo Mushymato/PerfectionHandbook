@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
@@ -11,19 +12,37 @@ using StardewValley.ItemTypeDefinitions;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed class CropDetailDisplaySettings
+public sealed partial class CropDetailDisplaySettings
 {
     public int StartDay { get; set; } = Game1.dayOfMonth - 1;
 
-    public float SpeedGro { get; set; } = 0;
-    public bool UsePaddy { get; set; } = true;
-    public bool UseAgriculturist { get; set; } = false;
+    [Notify]
+    private int speedGroIdx = 0;
 
-    public float GetBoost(CropData crop) =>
-        SpeedGro + (UsePaddy && crop.IsPaddyCrop ? 0.25f : 0f) + (UseAgriculturist ? 0.1f : 0f);
+    public record SpeedGroKind(ParsedItemData Info, float Amount);
+
+    public List<SpeedGroKind> SpeedGroKinds =>
+        field ??= [
+            new(ItemRegistry.GetDataOrErrorItem("(O)368"), 0f),
+            new(ItemRegistry.GetDataOrErrorItem("(O)465"), 0.1f),
+            new(ItemRegistry.GetDataOrErrorItem("(O)466"), 0.25f),
+            new(ItemRegistry.GetDataOrErrorItem("(O)918"), 0.33f),
+        ];
+
+    [Notify]
+    public bool useAgriculturist = false;
+
+    public bool UsePaddy { get; set; } = true;
+
+    public float GetBoost(CropData crop)
+    {
+        return SpeedGroKinds[SpeedGroIdx].Amount
+            + (UsePaddy && crop.IsPaddyCrop ? 0.25f : 0f)
+            + (UseAgriculturist ? 0.1f : 0f);
+    }
 }
 
-public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplaySettings Settings)
+public sealed partial class CropDetailDisplay
 {
     public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest)
     {
@@ -32,17 +51,34 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
         public float DisplayShadow => IsHarvest ? 0.35f : 0f;
     }
 
-    public IReadOnlyList<IReadOnlyList<CropDay>> AllHarvestCells = MakeAllHarvestCells(Info, Settings);
+    public readonly ItemInfo Info;
+    public readonly CropDetailDisplaySettings Settings;
+    public IReadOnlyList<IReadOnlyList<CropDay>> AllHarvestCells;
+
+    public CropDetailDisplay(ItemInfo info, CropDetailDisplaySettings settings)
+    {
+        Info = info;
+        Settings = settings;
+        AllHarvestCells = MakeAllHarvestCells(info, settings);
+        settings.PropertyChanged += OnDisplaySettingsChanged;
+    }
+
+    private void OnDisplaySettingsChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        RefreshAllHarvestCells();
+        OnPropertyChanged(new(nameof(Month)));
+        OnPropertyChanged(new(nameof(HarvestCells)));
+    }
 
     private static IReadOnlyList<IReadOnlyList<CropDay>> MakeAllHarvestCells(
         ItemInfo info,
-        CropDetailDisplaySettings boost
+        CropDetailDisplaySettings settings
     )
     {
         CropData crop = info.FromCrop[0];
         Texture2D cropTx = DrawHelper.SafeLoad(crop.Texture, Game1.cropSpriteSheet);
 
-        int growDays = GetAdjustedGrowDays(crop, boost.GetBoost(crop));
+        int growDays = GetAdjustedGrowDays(crop, settings.GetBoost(crop));
 
         int regrowDays = crop.RegrowDays;
         int phase = -1;
@@ -114,19 +150,20 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
         }
     }
 
+    public void RefreshAllHarvestCells()
+    {
+        AllHarvestCells = MakeAllHarvestCells(Info, Settings);
+    }
+
     private static int GetAdjustedGrowDays(CropData crop, float speedBoost)
     {
         List<int> phaseDays = [.. crop.DaysInPhase];
-        int growDays = 0;
-        for (int i = 0; i < phaseDays.Count; i++)
-        {
-            growDays += phaseDays[i];
-        }
-        int speedGroDays = (int)Math.Ceiling((float)growDays * speedBoost);
+        int growDays = crop.DaysInPhase.Sum();
+        int speedGroDays = (int)Math.Ceiling(growDays * speedBoost);
         int phaseIdx = 0;
         while (speedGroDays > 0 && phaseIdx < 3)
         {
-            for (int j = 0; j <= phaseDays.Count; j++)
+            for (int j = 0; j < phaseDays.Count; j++)
             {
                 if ((j > 0 || phaseDays[j] > 1) && phaseDays[j] > 0)
                 {
@@ -254,7 +291,7 @@ public sealed partial record ShippedCountDisplay(
         }
     }
 
-    public CropDetailDisplay CropDetail => new(Info, CropCalendarSettings);
+    public CropDetailDisplay CropDetail => field ??= new(Info, CropCalendarSettings);
 }
 
 public enum CropListKind
@@ -277,17 +314,37 @@ public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKin
             _ => itemInfo.FromCrop.Any(),
         };
 
+    protected override void UpdateDisplayingFulfillment(GoalFulfillment fulfillment)
+    {
+        base.UpdateDisplayingFulfillment(fulfillment);
+        cropCalendarSettings.UseAgriculturist = fulfillment.Who?.professions.Contains(Farmer.agriculturist) ?? false;
+    }
+
     [Notify]
     private bool hoverable = true;
 
     public void ToggleHoverable(ShippedCountDisplay display)
     {
-        Hoverable = !Hoverable;
-        Hovered?.BorderTint = Color.Transparent;
         if (Hoverable)
-            return;
-        base.HoveredEnter(display);
-        Hovered?.BorderTint = Color.White;
+        {
+            Hoverable = false;
+            base.HoveredEnter(display);
+            Hovered?.BorderTint = Color.White;
+        }
+        else
+        {
+            if (display == Hovered)
+            {
+                Hoverable = true;
+                Hovered?.BorderTint = Color.Transparent;
+            }
+            else
+            {
+                Hovered?.BorderTint = Color.Transparent;
+                base.HoveredEnter(display);
+                Hovered?.BorderTint = Color.White;
+            }
+        }
     }
 
     public override void HoveredEnter(ShippedCountDisplay display)

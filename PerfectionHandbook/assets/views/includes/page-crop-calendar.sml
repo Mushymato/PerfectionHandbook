@@ -5,7 +5,16 @@
     <!-- Crop Calendar -->
     <lane *context={Hovered} padding="30,0,16,8" layout="500px 100%" orientation="Vertical">
       <banner text={:Info.Datum.DisplayName} padding="0,8"/>
-      <lane *context={:CropDetail}>
+      <lane *context={:CropDetail} orientation="Vertical">
+        <frame *context={:Settings} padding="4" tooltip="">
+          <segments balanced="true"
+            highlight={@Mods/StardewUI/Sprites/White}
+            highlight-tint="#39d"
+            highlight-transition="150ms EaseOutQuart"
+            selected-index={<>SpeedGroIdx}>
+            <image *repeat={SpeedGroKinds} sprite={:Info} layout="48px content" />
+          </segments>
+        </frame>
         <grid
           margin="8,8"
           layout="content content"

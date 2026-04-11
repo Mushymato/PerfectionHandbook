@@ -19,7 +19,7 @@
     <Description>UI for tracking perfection and achievements, plus getting more info about everything.</Description>
     <UniqueId>mushymato.PerfectionHandbook</UniqueId>
     <UpdateKeys>Nexus:???,GitHub:Mushymato/PerfectionHandbook</UpdateKeys>
-    <Version>0.2.0-alpha.4</Version>
+    <Version>0.2.0-alpha.5</Version>
     <BaseManifest>new</BaseManifest>
     <MinimumApiVersion_Behavior>Update</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
