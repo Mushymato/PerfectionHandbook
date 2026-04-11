@@ -1,15 +1,18 @@
 using System.Text;
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : AbstractItemCountDisplay(Info, OwnedRepr)
+public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override bool Needed => Count == 0;
     private int biggestCatch = 0;
     private IReadOnlyList<string>? canCatchIn = null;
+    public override Color DisplayTint =>
+        canCatchIn != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
 
     public override void SetStatus(Farmer who)
     {
@@ -23,14 +26,12 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
             Count = 0;
             biggestCatch = 0;
         }
-        OwnedRepr?.SetReprStack(Count);
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
     public void SetCanCatchIn(IReadOnlyList<string> canCatchIn)
     {
         this.canCatchIn = canCatchIn.Any() ? canCatchIn : null;
-        DisplayTint = this.canCatchIn != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
     }
 
     private static readonly StringBuilder sb = new();
@@ -38,7 +39,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
     public override string GetTooltipDesc()
     {
         sb.Append(Info.Datum.Description);
-        if (OwnedRepr != null && Count != 0)
+        if (Count > 0)
         {
             sb.Append(Environment.NewLine);
             sb.Append(Environment.NewLine);
@@ -61,14 +62,12 @@ public sealed record FishCaughtDisplay(ItemInfo Info, ReprObject? OwnedRepr) : A
     }
 }
 
-public sealed class GoalFishCaughtContext(GoalContext goalCtx) : AbstractItemCountContext<FishCaughtDisplay>(goalCtx)
+public sealed class GoalFishCaughtContext(GoalContext goalCtx)
+    : AbstractItemCountContext<FishCaughtDisplay>(goalCtx, false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsCatchableFish;
 
-    protected override ReprObject? GetReprObject(ItemInfo itemInfo) => new(itemInfo.ReprItem.getOne());
-
-    protected override FishCaughtDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
-        new(itemInfo, ownedRepr);
+    protected override FishCaughtDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) => new(itemInfo, ownedCount);
 
     protected override IReadOnlyList<FishCaughtDisplay> SortAllDisplay(List<FishCaughtDisplay> displayList)
     {

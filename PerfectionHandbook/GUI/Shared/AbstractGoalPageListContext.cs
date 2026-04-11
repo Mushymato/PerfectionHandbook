@@ -14,12 +14,19 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
 
     public readonly bool CanToggleNeeded = true;
 
-    public AbstractGoalPageListContext(GoalContext goalCtx, bool canToggleNeeded = true)
+    public readonly bool CanToggleCountMode = false;
+
+    public AbstractGoalPageListContext(
+        GoalContext goalCtx,
+        bool canToggleNeeded = true,
+        bool canToggleCountMode = false
+    )
     {
         GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
         ShowNeeded = !goalCtx.Fulfillments[0].Filled;
         CanToggleNeeded = canToggleNeeded;
+        CanToggleCountMode = canToggleCountMode;
         UpdateDisplayingFulfillment(goalCtx.Fulfillments[0]);
     }
 

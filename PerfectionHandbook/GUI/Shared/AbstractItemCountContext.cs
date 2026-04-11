@@ -6,15 +6,24 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObject? OwnedRepr) : IPageDisplayEntry
+public enum CountMode
 {
-    [Notify]
-    public Color displayTint = OwnedRepr != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
+    Owned,
+    Completed,
+}
 
-    public Item ReprItem => OwnedRepr ?? Info.ReprItem;
+public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int OwnedCount) : IPageDisplayEntry
+{
+    public virtual Item ReprItem => Info.ReprItem;
+
+    protected CountMode countMode = CountMode.Owned;
+
+    protected int completedCount = 0;
 
     [Notify]
-    protected int count = OwnedRepr?.ReprStack ?? 0;
+    protected int count = OwnedCount;
+
+    public virtual Color DisplayTint => Count > 0 ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
 
     public virtual bool HasCount => Count > 0;
 
@@ -27,27 +36,47 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, ReprObjec
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
-    public virtual bool Needed { get; protected set; } = false;
+    public virtual bool Needed => completedCount == 0;
 
     public abstract void SetStatus(Farmer who);
 
+    public virtual void SetCountMode(CountMode countMode)
+    {
+        this.countMode = countMode;
+        UpdateCount();
+        OnPropertyChanged(new(nameof(DisplayTint)));
+    }
+
+    public void UpdateCount()
+    {
+        switch (countMode)
+        {
+            case CountMode.Completed:
+                Count = completedCount;
+                break;
+            case CountMode.Owned:
+                Count = OwnedCount;
+                break;
+        }
+    }
+
     public virtual string GetTooltipDesc()
     {
-        if (OwnedRepr == null)
+        if (OwnedCount == 0)
             return Info.Datum.Description;
         return string.Concat(
             Info.Datum.Description,
             Environment.NewLine,
             Environment.NewLine,
-            I18n.Ui_OwnedCount(OwnedRepr.ReprStack)
+            I18n.Ui_OwnedCount(OwnedCount)
         );
     }
 
     public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
-public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goalCtx)
-    : AbstractGoalPageListContext<TDisplay>(goalCtx)
+public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goalCtx, bool canToggleCountMode = true)
+    : AbstractGoalPageListContext<TDisplay>(goalCtx, canToggleCountMode: canToggleCountMode)
     where TDisplay : AbstractItemCountDisplay
 {
     protected override IReadOnlyList<TDisplay> MakeAllDisplay()
@@ -57,24 +86,17 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
         {
             if (!ShouldInclude(itemInfo))
                 continue;
-            displayList.Add(MakeDisplay(itemInfo, GetReprObject(itemInfo)));
+            int ownedCount = 0;
+            if (GoalCtx.OwnedInfo.OwnedGroups.TryGetValue(itemInfo.Datum.QualifiedItemId, out OwnedItemGroup? group))
+                ownedCount = group.CountRepr.ReprStack;
+            displayList.Add(MakeDisplay(itemInfo, ownedCount));
         }
         return SortAllDisplay(displayList);
     }
 
     protected virtual bool ShouldInclude(ItemInfo itemInfo) => throw new NotImplementedException(nameof(ShouldInclude));
 
-    protected virtual ReprObject? GetReprObject(ItemInfo itemInfo)
-    {
-        ReprObject? ownedRepr = null;
-        if (GoalCtx.OwnedInfo.OwnedGroups.TryGetValue(itemInfo.Datum.QualifiedItemId, out OwnedItemGroup? group))
-        {
-            ownedRepr = group.CountRepr;
-        }
-        return ownedRepr;
-    }
-
-    protected virtual TDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
+    protected virtual TDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
         throw new NotImplementedException(nameof(MakeDisplay));
 
     protected virtual IReadOnlyList<TDisplay> SortAllDisplay(List<TDisplay> displayList) =>
@@ -88,5 +110,31 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
         Hovered?.IsHovered = false;
         Hovered = display;
         display.IsHovered = true;
+    }
+
+    public virtual string CompleteCountToggleText => string.Empty;
+
+    [Notify]
+    public string countToggleText = I18n.Ui_CountingOwned();
+
+    private CountMode countMode = CountMode.Owned;
+
+    public void ClickToggleCount()
+    {
+        switch (countMode)
+        {
+            case CountMode.Owned:
+                countMode = CountMode.Completed;
+                CountToggleText = CompleteCountToggleText;
+                break;
+            case CountMode.Completed:
+                countMode = CountMode.Owned;
+                CountToggleText = I18n.Ui_CountingOwned();
+                break;
+        }
+        foreach (TDisplay display in AllDisplay)
+        {
+            display.SetCountMode(countMode);
+        }
     }
 }

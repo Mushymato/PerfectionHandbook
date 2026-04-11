@@ -30,7 +30,7 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
 {
     private static readonly Dictionary<IAssetName, List<InvalidateTracker>> invalidateTrackers = [];
 
-    private int invalidatedTick = -1;
+    private bool isValid = false;
     public readonly IAssetName AssetName = assetName;
 
     public static InvalidateTracker GetInvalidateTracker(string name)
@@ -48,13 +48,12 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
 
     public bool CheckChanged()
     {
-        if (invalidatedTick != Game1.ticks)
+        if (!isValid)
         {
             ModEntry.Log($"{AssetName}: changed ({Game1.ticks})");
-            invalidatedTick = Game1.ticks;
-            return true;
+            isValid = true;
         }
-        return false;
+        return isValid;
     }
 
     internal static void OnAssetInvalidated(AssetsInvalidatedEventArgs e)
@@ -63,9 +62,8 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
         {
             if (invalidateTrackers.TryGetValue(assetName, out List<InvalidateTracker>? trackerList))
             {
-                ModEntry.Log($"MARK: {assetName}");
                 foreach (InvalidateTracker tracker in trackerList)
-                    tracker.invalidatedTick = Game1.ticks;
+                    tracker.isValid = false;
             }
         }
     }

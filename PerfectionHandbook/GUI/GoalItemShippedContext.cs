@@ -4,19 +4,21 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record ItemShippedDisplay(ItemInfo Info, ReprObject? OwnedRepr)
-    : AbstractItemCountDisplay(Info, OwnedRepr)
+public record ItemShippedDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override void SetStatus(Farmer who)
     {
-        Needed = !who.basicShipped.ContainsKey(Info.Datum.ItemId);
+        completedCount = who.basicShipped.GetValueOrDefault(Info.Datum.ItemId, 0);
+        UpdateCount();
+        OnPropertyChanged(new(nameof(Tooltip)));
     }
 }
 
 public sealed class GoalItemShippedContext(GoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)
 {
+    public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
+
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsPotentialShipped;
 
-    protected override ItemShippedDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
-        new(itemInfo, ownedRepr);
+    protected override ItemShippedDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) => new(itemInfo, ownedCount);
 }

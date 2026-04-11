@@ -5,19 +5,18 @@ using StardewValley.Locations;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record MuseumDonateDisplay(ItemInfo Info, ReprObject? OwnedRepr)
-    : AbstractItemCountDisplay(Info, OwnedRepr)
+public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
-    public override bool Needed { get; protected set; } = !LibraryMuseum.HasDonatedArtifact(Info.Datum.ItemId);
+    private readonly bool needed = !LibraryMuseum.HasDonatedArtifact(Info.Datum.ItemId);
+    public override bool Needed => needed;
 
     public override void SetStatus(Farmer who) { }
 }
 
 public sealed class GoalMuseumDonateContext(GoalContext goalCtx)
-    : AbstractItemCountContext<MuseumDonateDisplay>(goalCtx)
+    : AbstractItemCountContext<MuseumDonateDisplay>(goalCtx, false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsMuseumDonation;
 
-    protected override MuseumDonateDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
-        new(itemInfo, ownedRepr);
+    protected override MuseumDonateDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) => new(itemInfo, ownedCount);
 }

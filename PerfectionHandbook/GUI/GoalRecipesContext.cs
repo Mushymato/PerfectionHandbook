@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
@@ -6,8 +7,27 @@ using StardewValley;
 namespace PerfectionHandbook.GUI;
 
 public sealed record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerOwned OwnedInfo)
-    : AbstractItemCountDisplay(Info, null)
+    : AbstractItemCountDisplay(Info, Recipe.numberProducedPerCraft)
 {
+    public override Color DisplayTint
+    {
+        get
+        {
+            if (countMode == CountMode.Owned)
+            {
+                return base.DisplayTint;
+            }
+            else
+            {
+                return learnt
+                    ? CanCraft
+                        ? HandbookContext.ActiveColor
+                        : HandbookContext.InactiveColor
+                    : HandbookContext.HiddenColor;
+            }
+        }
+    }
+    public override bool Needed => completedCount == 0;
     public override SDUITooltipData Tooltip =>
         new(
             " ",
@@ -18,36 +38,30 @@ public sealed record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerO
 
     public readonly bool CanCraft = Recipe.doesFarmerHaveIngredientsInInventory(OwnedInfo.OwnedRepr);
     public override bool HasCount => Recipe.numberProducedPerCraft > 1;
+    private bool learnt;
 
     public override void SetStatus(Farmer who)
     {
-        Count = Recipe.numberProducedPerCraft;
-        bool learnt;
         if (Recipe.isCookingRecipe)
         {
             learnt = who.cookingRecipes.ContainsKey(Recipe.name);
-            Needed = !who.recipesCooked.ContainsKey(Info.Datum.ItemId);
+            completedCount = who.recipesCooked.GetValueOrDefault(Info.Datum.ItemId, 0);
         }
         else
         {
             if (who.craftingRecipes.TryGetValue(Recipe.name, out int crafted))
             {
                 learnt = true;
-                Needed = crafted == 0;
+                completedCount = crafted;
             }
             else
             {
                 learnt = false;
-                Needed = true;
+                completedCount = 0;
             }
         }
 
-        if (!learnt)
-            DisplayTint = HandbookContext.HiddenColor;
-        else if (!CanCraft)
-            DisplayTint = HandbookContext.InactiveColor;
-        else
-            DisplayTint = HandbookContext.ActiveColor;
+        UpdateCount();
     }
 }
 
@@ -55,6 +69,7 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
     : AbstractItemCountContext<RecipeDisplay>(goalCtx)
 {
     private readonly bool IsCooking = isCooking;
+    public override string CompleteCountToggleText => IsCooking ? I18n.Ui_CountingCooked() : I18n.Ui_CountingCrafted();
 
     protected override IReadOnlyList<RecipeDisplay> MakeAllDisplay()
     {

@@ -25,10 +25,11 @@ public sealed class CropDetailDisplaySettings
 
 public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplaySettings Settings)
 {
-    public sealed record CropDay(SDUISprite? Sprite)
+    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest)
     {
         public bool HasSprite = Sprite != null;
         public int DayOfMonth { get; set; } = 0;
+        public float DisplayShadow => IsHarvest ? 0.35f : 0f;
     }
 
     public IReadOnlyList<IReadOnlyList<CropDay>> AllHarvestCells = MakeAllHarvestCells(Info, Settings);
@@ -107,10 +108,6 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
             harvestCellsMonth.Add(cropDay);
             if (harvestCellsMonth.Count == WorldDate.DaysPerMonth)
             {
-                foreach (var cell in harvestCellsMonth)
-                {
-                    ModEntry.Log($"{cell.DayOfMonth}");
-                }
                 harvestcells.Add(harvestCellsMonth);
                 harvestCellsMonth = [];
             }
@@ -153,11 +150,10 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
     {
         get
         {
-            ModEntry.Log($"HarvestCells: {Settings.StartDay}");
             IReadOnlyList<CropDay> harvestCellsMonth = AllHarvestCells[0];
             List<CropDay> cropDay = [];
             for (int i = 0; i < Settings.StartDay; i++)
-                cropDay.Add(new(null) { DayOfMonth = i });
+                cropDay.Add(new(null, false) { DayOfMonth = i });
             for (int i = 0; i < WorldDate.DaysPerMonth - Settings.StartDay; i++)
             {
                 harvestCellsMonth[i].DayOfMonth = Settings.StartDay + i;
@@ -185,14 +181,16 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
                 new(spriteIndex % 2 * 128 + (phase == 0 ? day % 2 : phase + 1) * 16, spriteIndex / 2 * 32, 16, 32),
                 FixedEdges: SDUIEdges.NONE,
                 SliceSettings: new(Scale: 3)
-            )
+            ),
+            false
         );
     }
 
     private static CropDay GetHarvestSprite(ParsedItemData datum, int day)
     {
         return new(
-            new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3))
+            new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3)),
+            true
         );
     }
 
@@ -236,12 +234,12 @@ public sealed partial record CropDetailDisplay(ItemInfo Info, CropDetailDisplayS
 
 public sealed partial record ShippedCountDisplay(
     ItemInfo Info,
-    ReprObject? OwnedRepr,
+    int OwnedCount,
     int RequiredCount,
     CropDetailDisplaySettings CropCalendarSettings
-) : AbstractItemCountDisplay(Info, OwnedRepr)
+) : ItemShippedDisplay(Info, OwnedCount)
 {
-    public override bool Needed => Count < RequiredCount;
+    public override bool Needed => completedCount <= RequiredCount;
 
     public Color BorderTint
     {
@@ -254,26 +252,6 @@ public sealed partial record ShippedCountDisplay(
                 OnPropertyChanged(new(nameof(BorderTint)));
             }
         }
-    }
-
-    public override void SetStatus(Farmer who)
-    {
-        Count = who.basicShipped.GetValueOrDefault(Info.Datum.ItemId, 0);
-        OwnedRepr?.SetReprStack(Count);
-        DisplayTint = Count <= 0 ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
-        OnPropertyChanged(new(nameof(Tooltip)));
-    }
-
-    public override string GetTooltipDesc()
-    {
-        if (OwnedRepr == null)
-            return Info.Datum.Description;
-        return string.Concat(
-            Info.Datum.Description,
-            Environment.NewLine,
-            Environment.NewLine,
-            I18n.Ui_ShippedCount(OwnedRepr.ReprStack)
-        );
     }
 
     public CropDetailDisplay CropDetail => new(Info, CropCalendarSettings);
@@ -289,6 +267,8 @@ public enum CropListKind
 public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKind kind)
     : AbstractItemCountContext<ShippedCountDisplay>(goalCtx)
 {
+    public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
+
     protected override bool ShouldInclude(ItemInfo itemInfo) =>
         kind switch
         {
@@ -296,8 +276,6 @@ public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKin
             CropListKind.Polyculture => itemInfo.CountForPolyculture,
             _ => itemInfo.FromCrop.Any(),
         };
-
-    protected override ReprObject? GetReprObject(ItemInfo itemInfo) => new(itemInfo.ReprItem.getOne());
 
     [Notify]
     private bool hoverable = true;
@@ -320,10 +298,10 @@ public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKin
 
     private readonly CropDetailDisplaySettings cropCalendarSettings = new();
 
-    protected override ShippedCountDisplay MakeDisplay(ItemInfo itemInfo, ReprObject? ownedRepr) =>
+    protected override ShippedCountDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
         new(
             itemInfo,
-            ownedRepr,
+            ownedCount,
             kind switch
             {
                 CropListKind.Monoculture => 300,

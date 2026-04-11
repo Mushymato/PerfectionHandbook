@@ -21,7 +21,13 @@
             margin="-4"
             border-thickness="12,4"
             left-click=|^ChangeStartDay(this)|>
-            <image fit="Contain" vertical-alignment="Middle" sprite={:Sprite} layout="48px 96px"/>
+            <image sprite={:Sprite}
+              fit="Contain"
+              vertical-alignment="Middle"
+              layout="48px 96px"
+              shadow-alpha={:DisplayShadow}
+              shadow-offset="-4,4"
+            />
           </frame>
         </grid>
         <label *if={:ShowMonth} font="dialogue" text={DisplayMonth} shadow-alpha="0.8"/>

@@ -10,6 +10,14 @@
     +state:needed={^ShowNeeded}
     +state:needed:text={#ui.showing-need}
   />
+  <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+    *if={:^CanToggleCountMode}
+    font="dialogue"
+    layout="165px content"
+    margin="4,0"
+    text={^CountToggleText}
+    left-click=|^ClickToggleCount()|
+  />
   <frame *repeat={:Fulfillments}
     left-click=|^^ClickFulfilment(this)|
     background={@Mods/StardewUI/Sprites/MenuSlotTransparent}
