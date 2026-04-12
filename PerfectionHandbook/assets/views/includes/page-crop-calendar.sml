@@ -33,34 +33,14 @@
             margin="-4"
             border-thickness="12,4"
             left-click=|^ChangeStartDay(this)|>
-            <panel>
-              <image *if={:ShowDirt}
-                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:base}
-                fit="Contain"
-                vertical-alignment="End"
-                layout="48px 96px"
-              />
-              <image *if={:ShowDirt}
-                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:wet}
-                fit="Contain"
-                vertical-alignment="End"
-                layout="48px 96px"
-              />
-              <image *if={:ShowPaddy}
-                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:paddy}
-                fit="Contain"
-                vertical-alignment="End"
-                layout="48px 96px"
-              />
-              <image sprite={:Sprite}
-                fit="Contain"
-                vertical-alignment="Middle"
-                layout="48px 96px"
-                shadow-alpha={:DisplayShadow}
-                shadow-offset="-4,4"
-                z-index="2"
-              />
-            </panel>
+            <image sprite={:Sprite}
+              fit="Contain"
+              vertical-alignment="Middle"
+              layout="48px 96px"
+              shadow-alpha={:DisplayShadow}
+              shadow-offset="-4,4"
+              z-index="2"
+            />
           </frame>
         </grid>
         <label *if={:ShowMonth} font="dialogue" text={DisplayMonth} shadow-alpha="0.8"/>

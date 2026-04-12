@@ -14,7 +14,7 @@ namespace PerfectionHandbook.GUI;
 
 public sealed partial class CropDetailDisplaySettings
 {
-    public int StartDay { get; set; } = Game1.dayOfMonth - 1;
+    public int StartDay { get; set; } = 0;
 
     [Notify]
     private int speedGroIdx = 0;
@@ -49,11 +49,8 @@ public sealed partial class CropDetailDisplaySettings
 
 public sealed partial class CropDetailDisplay
 {
-    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest, bool IsPaddy)
+    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest)
     {
-        public bool ShowDirt = Sprite != null && !IsHarvest;
-        public bool ShowPaddy => ShowDirt && IsPaddy;
-
         public int DayOfMonth { get; set; } = 0;
         public float DisplayShadow => IsHarvest ? 0.35f : 0f;
         public Color CellBorderTint
@@ -117,7 +114,7 @@ public sealed partial class CropDetailDisplay
                 CropDay cropDay;
                 if (day % growDays == 0)
                 {
-                    cropDay = GetHarvestSprite(info.Datum, harvestCellsMonth.Count);
+                    cropDay = GetHarvestSprite(info.Datum);
                     phase = -1;
                     UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                 }
@@ -142,14 +139,14 @@ public sealed partial class CropDetailDisplay
                     GetPhaseSprite(crop, cropTx, phase, harvestCells.Count)
                 );
             }
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetHarvestSprite(info.Datum, 0));
+            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetHarvestSprite(info.Datum));
             for (int day = 1; day < daysToShow - growDays; day++)
             {
                 AddToHarvestCells(
                     ref harvestCellsMonth,
                     harvestCells,
                     day % regrowDays == 0
-                        ? GetHarvestSprite(info.Datum, harvestCellsMonth.Count)
+                        ? GetHarvestSprite(info.Datum)
                         : GetPhaseSprite(crop, cropTx, phase, harvestCellsMonth.Count)
                 );
             }
@@ -217,7 +214,7 @@ public sealed partial class CropDetailDisplay
             IReadOnlyList<CropDay> harvestCellsMonth = AllHarvestCells[0];
             List<CropDay> cropDay = [];
             for (int i = 0; i < Settings.StartDay; i++)
-                cropDay.Add(new(null, false, false) { DayOfMonth = i });
+                cropDay.Add(new(null, false) { DayOfMonth = i });
             for (int i = 0; i < WorldDate.DaysPerMonth - Settings.StartDay; i++)
             {
                 harvestCellsMonth[i].DayOfMonth = Settings.StartDay + i;
@@ -249,17 +246,15 @@ public sealed partial class CropDetailDisplay
                 FixedEdges: SDUIEdges.NONE,
                 SliceSettings: new(Scale: 3)
             ),
-            false,
-            crop.IsPaddyCrop
+            false
         );
     }
 
-    private static CropDay GetHarvestSprite(ParsedItemData datum, int day)
+    private static CropDay GetHarvestSprite(ParsedItemData datum)
     {
         return new(
             new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3)),
-            true,
-            false
+            true
         );
     }
 
