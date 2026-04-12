@@ -65,18 +65,10 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
     }
 }
 
-public sealed class GoalRecipesContext : AbstractItemCountContext<RecipeDisplay>
+public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
+    : AbstractItemCountContext<RecipeDisplay>(goalCtx, defaultCountMode: CountMode.Completed)
 {
-    private readonly bool IsCooking;
-
-    public GoalRecipesContext(GoalContext goalCtx, bool isCooking)
-        : base(goalCtx)
-    {
-        IsCooking = isCooking;
-        // switch to CountMode.Completed as default
-        if (CanToggleCountMode)
-            ClickToggleCount();
-    }
+    private readonly bool IsCooking = isCooking;
 
     public override string CompleteCountToggleText => IsCooking ? I18n.Ui_CountingCooked() : I18n.Ui_CountingCrafted();
 

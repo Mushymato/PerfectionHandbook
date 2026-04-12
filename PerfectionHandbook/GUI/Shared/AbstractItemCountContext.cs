@@ -75,10 +75,20 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
-public abstract partial class AbstractItemCountContext<TDisplay>(IGoalContext goalCtx, bool canToggleCountMode = true)
-    : AbstractPageListContext<TDisplay>(goalCtx, canToggleCountMode: canToggleCountMode)
+public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>
     where TDisplay : AbstractItemCountDisplay
 {
+    public AbstractItemCountContext(
+        IGoalContext goalCtx,
+        bool canToggleCountMode = true,
+        CountMode defaultCountMode = CountMode.Owned
+    )
+        : base(goalCtx, canToggleCountMode: canToggleCountMode)
+    {
+        if (defaultCountMode != CountMode.Owned && canToggleCountMode)
+            ClickToggleCount();
+    }
+
     protected override IReadOnlyList<TDisplay> MakeAllDisplay()
     {
         List<TDisplay> displayList = [];

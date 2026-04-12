@@ -48,7 +48,7 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public bool CountForMonoculture = false;
 
     public List<CraftingRecipe> FromRecipe = [];
-    public List<CropData> FromCrop = [];
+    public Dictionary<string, CropData> FromCrop = [];
     public List<FishSourceInfo> FromFishing = [];
     public List<FishAreaSourceInfo> FromFishAreas = [];
     public FishSpawnReq? FishReq = null;
@@ -207,7 +207,7 @@ public static class ItemInfoCache
                 itemInfo.FromCrop.Clear();
             }
         IAssetName cropSheetName = ModEntry.help.GameContent.ParseAssetName(Game1.cropSpriteSheet.Name);
-        foreach (CropData cropData in Game1.cropData.Values)
+        foreach ((string seedId, CropData cropData) in Game1.cropData)
         {
             // hardcoding: skip vanilla wild seeds
             if (cropSheetName.IsEquivalentTo(cropData.Texture) && cropData.SpriteIndex == 23)
@@ -216,7 +216,17 @@ public static class ItemInfoCache
                 continue;
             itemInfo.CountForPolyculture |= cropData.CountForPolyculture;
             itemInfo.CountForMonoculture |= cropData.CountForMonoculture;
-            itemInfo.FromCrop.Add(cropData);
+            itemInfo.FromCrop[seedId] = cropData;
+        }
+        foreach (ItemInfo itemInfo in cacheRet.Values)
+        {
+            if (itemInfo.FromCrop.Count > 1)
+            {
+                ModEntry.Log(
+                    $"Item '{itemInfo.Datum.QualifiedItemId}' can be harvested from multiple crops: {string.Join(',', itemInfo.FromCrop.Keys)}",
+                    LogLevel.Info
+                );
+            }
         }
     }
 
@@ -234,7 +244,10 @@ public static class ItemInfoCache
         foreach ((string locationName, LocationData locationData) in Game1.locationData)
         {
             if (Game1.getLocationFromName(locationName) is not GameLocation location)
+            {
+                ModEntry.Log($"locationName {locationName}");
                 continue;
+            }
             // fish
             foreach (SpawnFishData spawnFishData in locationData.Fish ?? [])
             {

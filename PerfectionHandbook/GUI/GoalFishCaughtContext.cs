@@ -77,7 +77,7 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                 HashSet<string> canCatchIn = [];
                 foreach (FishSourceInfo fishSourceInfo in disp.Info.FromFishing)
                 {
-                    if (!Game1.player.locationsVisited.Contains(fishSourceInfo.Location!.NameOrUniqueName))
+                    if (!Game1.player.locationsVisited.Contains(fishSourceInfo.Location.NameOrUniqueName))
                         continue;
                     Season? season = fishSourceInfo.Spawn?.Season;
                     if (season != null && season != Game1.GetSeasonForLocation(fishSourceInfo.Location))
@@ -93,11 +93,24 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                         if (
                             spawnReq.CrabPotGroups == null
                             && spawnReq.Rain != null
-                            && spawnReq.Rain != (fishSourceInfo.Location?.IsRainingHere())
+                            && spawnReq.Rain != fishSourceInfo.Location.IsRainingHere()
                         )
                             continue;
                     }
-                    canCatchIn.Add(fishSourceInfo.Location?.DisplayName ?? fishSourceInfo.LocationId);
+                    canCatchIn.Add(fishSourceInfo.Location.DisplayName ?? fishSourceInfo.LocationId);
+                }
+                // mines fish hardcoding
+                switch (disp.Info.Datum.QualifiedItemId)
+                {
+                    case "(O)158":
+                        canCatchIn.Add(I18n.Location_Mines_20());
+                        break;
+                    case "(O)161":
+                        canCatchIn.Add(I18n.Location_Mines_60());
+                        break;
+                    case "(O)162":
+                        canCatchIn.Add(I18n.Location_Mines_100());
+                        break;
                 }
                 List<string> canCatchInLst = canCatchIn.ToList();
                 canCatchInLst.Sort();

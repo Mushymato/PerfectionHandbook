@@ -1,0 +1,9 @@
+{
+  "Texture": "LooseSprites/Cursors",
+  "Sprites": {
+    "agriculturist": {
+      "SourceRect": "80,624,16,16",
+      "Scale": 3
+    }
+  }
+}

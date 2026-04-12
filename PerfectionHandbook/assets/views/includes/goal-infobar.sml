@@ -13,7 +13,7 @@
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     *if={:^CanToggleCountMode}
     font="dialogue"
-    layout="165px content"
+    layout="180px content"
     margin="4,0"
     text={^CountToggleText}
     left-click=|^ClickToggleCount()|
@@ -28,9 +28,9 @@
     focusable="true"
     margin="4"
     padding="12">
-    <panel>
+    <lane>
       <image *if={:HasMiniIcon} padding="0,-5,0,0" sprite={:MiniIcon}/>
-      <label margin="48,0,0,0" font="dialogue" text={:DisplayText} />
-    </panel>
+      <label font="dialogue" text={:DisplayText} />
+    </lane>
   </frame>
 </lane>

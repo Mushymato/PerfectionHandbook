@@ -3,19 +3,42 @@
   <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,8,0" fit="Stretch"/>
   <lane layout="stretch 100%">
     <!-- Crop Calendar -->
-    <lane *context={Hovered} padding="30,0,16,8" layout="500px 100%" orientation="Vertical">
-      <banner text={:Info.Datum.DisplayName} padding="0,8"/>
-      <lane *context={:CropDetail} orientation="Vertical">
-        <lane *context={:Settings} padding="2">
-          <segments highlight={@Mods/StardewUI/Sprites/White}
-            highlight-tint="#39d"
-            highlight-transition="150ms EaseOutQuart"
-            selected-index={<>SpeedGroIdx}>
-            <image *repeat={:SpeedGroKinds} sprite={:Info} tooltip={:Tooltip} layout="48px 48px" margin="4"/>
-          </segments>
-          <checkbox layout="content 32px" margin="12,12,4,4"
-            label-text={:LabelAgriculturist}
-            is-checked={<>UseAgriculturist} />
+    <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="500px 100%" orientation="Vertical">
+      <banner text={:Seed.DisplayName} padding="0,8"/>
+      <lane orientation="Vertical">
+        <lane margin="4" vertical-content-alignment="Middle">
+          <frame *context={:Settings} border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
+            <segments highlight={@Mods/StardewUI/Sprites/White}
+              highlight-tint="#11bd84"
+              highlight-transition="150ms EaseOutQuart"
+              selected-index={<>SpeedGroIdx}>
+              <image *repeat={:SpeedGroKinds} sprite={:Info} tooltip={:Tooltip} layout="48px 48px" margin="4"/>
+            </segments>
+          </frame>
+          <frame *context={:Settings} border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
+            <checkbox layout="48px 48px" margin="4"
+              tooltip={:LabelAgriculturist}
+              checked-sprite={@mushymato.PerfectionHandbook/sprites/cursors:agriculturist}
+              unchecked-sprite={@mushymato.PerfectionHandbook/sprites/cursors:agriculturist}
+              is-checked={<>UseAgriculturist}
+              opacity="0.5"
+              +state:checked={UseAgriculturist}
+              +state:checked:opacity="1"/>
+          </frame>
+          <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
+            <segments highlight={@Mods/StardewUI/Sprites/White}
+              highlight-tint="#bd114a"
+              highlight-transition="150ms EaseOutQuart"
+              selected-index={<>Month}>
+              <image *repeat={:CropSeasonSprites}
+                sprite={:Sprite}
+                tooltip={:Name}
+                vertical-alignment="Middle"
+                fit="Contain"
+                layout="48px 48px"
+                margin="4"/>
+            </segments>
+          </frame>
         </lane>
         <grid
           margin="8,8"
@@ -30,20 +53,52 @@
             border-tint={:CellBorderTint}
             scroll-with-children="Horizontal"
             focusable="true"
-            margin="-4"
+            margin="-4,-4"
             border-thickness="12,4"
             left-click=|^ChangeStartDay(this)|>
-            <image sprite={:Sprite}
-              fit="Contain"
-              vertical-alignment="Middle"
-              layout="48px 96px"
-              shadow-alpha={:DisplayShadow}
-              shadow-offset="-4,4"
-              z-index="2"
-            />
+            <panel>
+              <image *if={:ShowDirt}
+                  sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:base}
+                  fit="Contain"
+                  vertical-alignment="End"
+                  layout="48px 96px"
+                />
+              <image *if={:ShowDirt}
+                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:wet}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 96px"
+              />
+              <image *if={:ShowPaddy}
+                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:paddy}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 96px"
+              />
+              <image *if={:IsHarvest}
+                sprite={:^Basket}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 80px"
+                margin="0,8"
+              />
+              <image *if={:IsHarvest}
+                sprite={:Sprite}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 70px"
+                z-index="2"
+              />
+              <image *!if={:IsHarvest}
+                sprite={:Sprite}
+                fit="Contain"
+                vertical-alignment="Middle"
+                layout="48px 96px"
+                z-index="2"
+              />
+            </panel>
           </frame>
         </grid>
-        <label *if={:ShowMonth} font="dialogue" text={DisplayMonth} shadow-alpha="0.8"/>
       </lane>
     </lane>
     <!-- Scroll -->

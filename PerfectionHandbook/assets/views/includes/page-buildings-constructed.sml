@@ -8,7 +8,7 @@
           <image layout="256px 256px" fit="Contain" horizontal-alignment="middle" vertical-alignment="end"
             sprite={:BuildingSprite}
             tint={:DisplayTint}/>
-          <label focusable="true" font="dialogue" text={:BuildingName} shadow-alpha="0.8"/>
+          <label layout="128px content" focusable="true" font="dialogue" text={:BuildingName} shadow-alpha="0.8"/>
         </lane>
       </grid>
     </scrollable>

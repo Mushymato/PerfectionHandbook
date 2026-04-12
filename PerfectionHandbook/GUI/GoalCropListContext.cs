@@ -32,7 +32,8 @@ public sealed partial class CropDetailDisplaySettings
             new(ItemRegistry.GetDataOrErrorItem("(O)918"), 0.33f),
         ];
 
-    public string LabelAgriculturist => Game1.content.LoadString("Strings/UI:LevelUp_ProfessionName_Agriculturist");
+    public string LabelAgriculturist =>
+        $"{Game1.content.LoadString("Strings/UI:LevelUp_ProfessionName_Agriculturist")} ({0.1f:P2})";
 
     [Notify]
     public bool useAgriculturist = false;
@@ -49,47 +50,74 @@ public sealed partial class CropDetailDisplaySettings
 
 public sealed partial class CropDetailDisplay
 {
-    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest)
+    public ParsedItemData Basket => ItemRegistry.GetDataOrErrorItem("(O)790");
+
+    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest, bool IsPaddy)
     {
-        public int DayOfMonth { get; set; } = 0;
+        public bool ShowDirt = Sprite != null && !IsHarvest;
+        public bool ShowPaddy => ShowDirt && IsPaddy;
+
+        public int Day { get; set; } = 0;
+        public Season ThisSeason { get; set; } = Season.Spring;
         public float DisplayShadow => IsHarvest ? 0.35f : 0f;
         public Color CellBorderTint
         {
             get
             {
+                if (ThisSeason < Game1.season)
+                    return Color.Gray * 0.25f;
                 int today = Game1.dayOfMonth - 1;
-                if (DayOfMonth < today)
+                if (ThisSeason == Game1.season && Day % WorldDate.DaysPerMonth < today)
                     return Color.Gray * 0.25f;
                 return Color.White;
             }
         }
     }
 
-    public readonly ItemInfo Info;
+    public readonly ItemInfo HarvestInfo;
+    public readonly ParsedItemData Seed;
+    public readonly CropData Crop;
     public readonly CropDetailDisplaySettings Settings;
-    public IReadOnlyList<IReadOnlyList<CropDay>> AllHarvestCells;
 
-    public CropDetailDisplay(ItemInfo info, CropDetailDisplaySettings settings)
+    [Notify]
+    private int month = 0;
+    public readonly List<Season> CropSeasons;
+    public IReadOnlyList<SeasonSprite> CropSeasonSprites =>
+        CropSeasons.Select(season => DrawHelper.GetSeasonSprite(season)).ToList();
+
+    public CropDetailDisplay(ItemInfo harvestInfo, CropDetailDisplaySettings settings)
     {
-        Info = info;
+        HarvestInfo = harvestInfo;
         Settings = settings;
-        AllHarvestCells = MakeAllHarvestCells(info, settings);
+        KeyValuePair<string, CropData> cropPair = harvestInfo.FromCrop.FirstOrDefault();
+        Seed = ItemRegistry.GetDataOrErrorItem(cropPair.Key);
+        Crop = cropPair.Value;
+        CropSeasons = Crop.Seasons?.Any() ?? false ? Crop.Seasons : [Game1.season];
+        CropSeasons.Sort();
+        int month = CropSeasons.IndexOf(Game1.season);
+        Month = month > -1 ? month : 0;
+
         settings.PropertyChanged += OnDisplaySettingsChanged;
     }
 
     private void OnDisplaySettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
-        RefreshAllHarvestCells();
+        allHarvestCells = null;
         OnPropertyChanged(new(nameof(Month)));
         OnPropertyChanged(new(nameof(HarvestCells)));
     }
 
-    private static IReadOnlyList<IReadOnlyList<CropDay>> MakeAllHarvestCells(
-        ItemInfo info,
+    public IReadOnlyList<CropDay>? allHarvestCells = null;
+    public IReadOnlyList<CropDay> AllHarvestCells =>
+        allHarvestCells ??= MakeAllHarvestCells(Crop, CropSeasons, HarvestInfo.Datum, Settings);
+
+    private static IReadOnlyList<CropDay> MakeAllHarvestCells(
+        CropData crop,
+        List<Season> cropSeasons,
+        ParsedItemData harvestItem,
         CropDetailDisplaySettings settings
     )
     {
-        CropData crop = info.FromCrop[0];
         Texture2D cropTx = DrawHelper.SafeLoad(crop.Texture, Game1.cropSpriteSheet);
 
         GetAdjustedGrowDays(crop, settings.GetBoost(crop), out int growDays, out List<int> daysInPhase);
@@ -97,81 +125,88 @@ public sealed partial class CropDetailDisplay
         int regrowDays = crop.RegrowDays;
         int phase = -1;
         UpdatePhase(daysInPhase, 0, ref phase, out int nextPhaseDay);
-        int maxMonths = (int)MathF.Ceiling((float)(growDays + 1) / WorldDate.DaysPerMonth);
-        int daysToShow = maxMonths * WorldDate.DaysPerMonth;
 
-        List<IReadOnlyList<CropDay>> harvestCells = [];
-        List<CropDay> harvestCellsMonth = [];
-
-        if (regrowDays < 1)
+        List<CropDay> seasonCropDay = [];
+        Season? prevSeason = null;
+        int contDay = 0;
+        foreach (Season season in cropSeasons)
         {
-            // non-regrowing
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(crop, cropTx, phase, 0));
-            for (int day = 1; day < daysToShow; day++)
+            if (prevSeason != null && season != prevSeason + 1)
             {
-                if (day >= nextPhaseDay)
-                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
-                CropDay cropDay;
-                if (day % growDays == 0)
+                contDay = 0;
+            }
+            if (regrowDays < 1)
+            {
+                // non-regrowing
+                if (contDay == 0)
+                    AddCropDay(ref contDay, seasonCropDay, GetPhaseSprite(crop, cropTx, phase, 0));
+                for (int day = contDay % WorldDate.DaysPerMonth; day < WorldDate.DaysPerMonth; day++)
                 {
-                    cropDay = GetHarvestSprite(info.Datum);
-                    phase = -1;
-                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                    if (day >= nextPhaseDay)
+                        UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                    CropDay cropDay;
+                    if (day % growDays == 0)
+                    {
+                        cropDay = GetHarvestSprite(harvestItem);
+                        phase = -1;
+                        UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                    }
+                    else
+                    {
+                        cropDay = GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count);
+                    }
+                    AddCropDay(ref contDay, seasonCropDay, cropDay);
+                }
+            }
+            else
+            {
+                // regrowing
+                if (contDay == 0)
+                {
+                    AddCropDay(ref contDay, seasonCropDay, GetPhaseSprite(crop, cropTx, phase, 0));
+                    for (int day = contDay; day < growDays; day++)
+                    {
+                        if (day >= nextPhaseDay)
+                            UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                        AddCropDay(
+                            ref contDay,
+                            seasonCropDay,
+                            GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
+                        );
+                    }
+                    int matureDay = contDay;
+                    AddCropDay(ref contDay, seasonCropDay, GetHarvestSprite(harvestItem));
+                    for (int day = 1; day < WorldDate.DaysPerMonth - growDays; day++)
+                    {
+                        seasonCropDay.Add(
+                            day % regrowDays == 0
+                                ? GetHarvestSprite(harvestItem)
+                                : GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
+                        );
+                    }
                 }
                 else
                 {
-                    cropDay = GetPhaseSprite(crop, cropTx, phase, harvestCellsMonth.Count);
+                    for (int day = 0; day < WorldDate.DaysPerMonth; day++)
+                    {
+                        seasonCropDay.Add(
+                            (day + contDay) % regrowDays == 0
+                                ? GetHarvestSprite(harvestItem)
+                                : GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
+                        );
+                    }
                 }
-                AddToHarvestCells(ref harvestCellsMonth, harvestCells, cropDay);
             }
+            prevSeason = season;
         }
-        else
+
+        return seasonCropDay;
+
+        static void AddCropDay(ref int contDay, List<CropDay> seasonCropDay, CropDay cropDay)
         {
-            // regrowing
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(crop, cropTx, phase, 0));
-            for (int day = 1; day < growDays; day++)
-            {
-                if (day >= nextPhaseDay)
-                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
-                AddToHarvestCells(
-                    ref harvestCellsMonth,
-                    harvestCells,
-                    GetPhaseSprite(crop, cropTx, phase, harvestCells.Count)
-                );
-            }
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetHarvestSprite(info.Datum));
-            for (int day = 1; day < daysToShow - growDays; day++)
-            {
-                AddToHarvestCells(
-                    ref harvestCellsMonth,
-                    harvestCells,
-                    day % regrowDays == 0
-                        ? GetHarvestSprite(info.Datum)
-                        : GetPhaseSprite(crop, cropTx, phase, harvestCellsMonth.Count)
-                );
-            }
+            seasonCropDay.Add(cropDay);
+            contDay++;
         }
-
-        return harvestCells;
-
-        static void AddToHarvestCells(
-            ref List<CropDay> harvestCellsMonth,
-            List<IReadOnlyList<CropDay>> harvestcells,
-            CropDay cropDay
-        )
-        {
-            harvestCellsMonth.Add(cropDay);
-            if (harvestCellsMonth.Count == WorldDate.DaysPerMonth)
-            {
-                harvestcells.Add(harvestCellsMonth);
-                harvestCellsMonth = [];
-            }
-        }
-    }
-
-    public void RefreshAllHarvestCells()
-    {
-        AllHarvestCells = MakeAllHarvestCells(Info, Settings);
     }
 
     private static void GetAdjustedGrowDays(
@@ -204,27 +239,32 @@ public sealed partial class CropDetailDisplay
         growDays = daysInPhase.Sum();
     }
 
-    [Notify]
-    private int month = 0;
-
     public IReadOnlyList<CropDay> HarvestCells
     {
         get
         {
-            IReadOnlyList<CropDay> harvestCellsMonth = AllHarvestCells[0];
-            List<CropDay> cropDay = [];
-            for (int i = 0; i < Settings.StartDay; i++)
-                cropDay.Add(new(null, false) { DayOfMonth = i });
-            for (int i = 0; i < WorldDate.DaysPerMonth - Settings.StartDay; i++)
+            Season thisSeason = CropSeasons[Month];
+            List<CropDay> cropDays = [];
+            int startIdx = WorldDate.DaysPerMonth * Month;
+            int startDay = Settings.StartDay;
+            for (int i = startIdx; i < startIdx + WorldDate.DaysPerMonth; i++)
             {
-                harvestCellsMonth[i].DayOfMonth = Settings.StartDay + i;
-                cropDay.Add(harvestCellsMonth[i]);
+                CropDay cropDay;
+                if (i < startDay)
+                {
+                    cropDay = new(null, false, false) { Day = i, ThisSeason = thisSeason };
+                }
+                else
+                {
+                    cropDay = AllHarvestCells[i - startDay];
+                    cropDay.Day = i;
+                    cropDay.ThisSeason = thisSeason;
+                }
+                cropDays.Add(cropDay);
             }
-            return cropDay;
+            return cropDays;
         }
     }
-    public bool ShowMonth => Month > 0;
-    public string DisplayMonth => I18n.Ui_Crop_Month(Month);
 
     private static void UpdatePhase(List<int> daysInPhase, int day, ref int phase, out int nextPhaseDay)
     {
@@ -246,7 +286,8 @@ public sealed partial class CropDetailDisplay
                 FixedEdges: SDUIEdges.NONE,
                 SliceSettings: new(Scale: 3)
             ),
-            false
+            false,
+            crop.IsPaddyCrop
         );
     }
 
@@ -254,7 +295,8 @@ public sealed partial class CropDetailDisplay
     {
         return new(
             new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3)),
-            true
+            true,
+            false
         );
     }
 
@@ -276,7 +318,7 @@ public sealed partial class CropDetailDisplay
 
     private void NextMonth()
     {
-        if (Month < AllHarvestCells.Count - 1)
+        if (Month < CropSeasons.Count - 1)
             Month++;
     }
 
@@ -288,9 +330,9 @@ public sealed partial class CropDetailDisplay
 
     public void ChangeStartDay(CropDay cropDay)
     {
-        if (Settings.StartDay != cropDay.DayOfMonth)
+        if (Settings.StartDay != cropDay.Day)
         {
-            Settings.StartDay = cropDay.DayOfMonth;
+            Settings.StartDay = cropDay.Day;
             OnPropertyChanged(new(nameof(HarvestCells)));
         }
     }
@@ -343,9 +385,15 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     protected override IReadOnlyList<ShippedCountDisplay> SortAllDisplay(List<ShippedCountDisplay> displayList)
     {
-        IReadOnlyList<ShippedCountDisplay> sorted = base.SortAllDisplay(displayList);
+        IReadOnlyList<ShippedCountDisplay> sorted = displayList
+            .OrderBy(static disp =>
+            {
+                Season firstSeason = disp.CropDetail.CropSeasons.First();
+                return (firstSeason, disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId);
+            })
+            .ToList();
         if (sorted.Any())
-            Hovered = sorted[0];
+            Hovered = sorted.FirstOrDefault(info => info.CropDetail.CropSeasons.Contains(Game1.season)) ?? sorted[0];
         return sorted;
     }
 

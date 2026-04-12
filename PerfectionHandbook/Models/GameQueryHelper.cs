@@ -1,5 +1,4 @@
 using Force.DeepCloner;
-using PerfectionHandbook;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData;
@@ -61,17 +60,16 @@ internal static class GameQueryHelper
 
     internal static bool ContextLocationCheckNoRandom(string condition, GameLocation location)
     {
-        string[] parts = condition.Split(' ');
-        List<string> replaced = [];
-        foreach (string part in parts)
+        List<string> parts = ArgUtility
+            .SplitQuoteAware(condition, ' ', StringSplitOptions.None, keepQuotesAndEscapes: true)
+            .ToList();
+        for (int i = 0; i < parts.Count; i++)
         {
-            if (part.EqualsIgnoreCase("here"))
-                replaced.Add("Target");
-            else
-                replaced.Add(part);
+            if (parts[0].EqualsIgnoreCase("here"))
+                parts[0] = "Target";
         }
         return GameStateQuery.CheckConditions(
-            string.Join(' ', replaced),
+            ArgUtility.UnsplitQuoteAware(parts.ToArray(), ' '),
             location: location,
             ignoreQueryKeys: GSQRandomKeys
         );
