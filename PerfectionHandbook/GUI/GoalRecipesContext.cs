@@ -6,8 +6,8 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerOwned OwnedInfo)
-    : AbstractItemCountDisplay(Info, Recipe.numberProducedPerCraft)
+public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe Recipe, PlayerOwned OwnedInfo)
+    : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override Color DisplayTint
     {
@@ -65,10 +65,19 @@ public sealed record RecipeDisplay(CraftingRecipe Recipe, ItemInfo Info, PlayerO
     }
 }
 
-public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
-    : AbstractItemCountContext<RecipeDisplay>(goalCtx)
+public sealed class GoalRecipesContext : AbstractItemCountContext<RecipeDisplay>
 {
-    private readonly bool IsCooking = isCooking;
+    private readonly bool IsCooking;
+
+    public GoalRecipesContext(GoalContext goalCtx, bool isCooking)
+        : base(goalCtx)
+    {
+        IsCooking = isCooking;
+        // switch to CountMode.Completed as default
+        if (CanToggleCountMode)
+            ClickToggleCount();
+    }
+
     public override string CompleteCountToggleText => IsCooking ? I18n.Ui_CountingCooked() : I18n.Ui_CountingCrafted();
 
     protected override IReadOnlyList<RecipeDisplay> MakeAllDisplay()
@@ -80,7 +89,15 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
             {
                 if (recipe.isCookingRecipe == IsCooking)
                 {
-                    recipeDisplayList.Add(new(recipe, itemInfo, GoalCtx.OwnedInfo));
+                    int ownedCount = 0;
+                    if (
+                        GoalCtx.OwnedInfo.OwnedGroups.TryGetValue(
+                            itemInfo.Datum.QualifiedItemId,
+                            out OwnedItemGroup? group
+                        )
+                    )
+                        ownedCount = group.CountRepr.ReprStack;
+                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe, GoalCtx.OwnedInfo));
                 }
             }
         }
