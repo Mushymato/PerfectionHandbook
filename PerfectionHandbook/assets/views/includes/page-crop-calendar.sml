@@ -6,15 +6,17 @@
     <lane *context={Hovered} padding="30,0,16,8" layout="500px 100%" orientation="Vertical">
       <banner text={:Info.Datum.DisplayName} padding="0,8"/>
       <lane *context={:CropDetail} orientation="Vertical">
-        <frame *context={:Settings} padding="4" tooltip="">
-          <segments balanced="true"
-            highlight={@Mods/StardewUI/Sprites/White}
+        <lane *context={:Settings} padding="2">
+          <segments highlight={@Mods/StardewUI/Sprites/White}
             highlight-tint="#39d"
             highlight-transition="150ms EaseOutQuart"
             selected-index={<>SpeedGroIdx}>
-            <image *repeat={SpeedGroKinds} sprite={:Info} layout="48px content" />
+            <image *repeat={:SpeedGroKinds} sprite={:Info} tooltip={:Tooltip} layout="48px 48px" margin="4"/>
           </segments>
-        </frame>
+          <checkbox layout="content 32px" margin="12,12,4,4"
+            label-text={:LabelAgriculturist}
+            is-checked={<>UseAgriculturist} />
+        </lane>
         <grid
           margin="8,8"
           layout="content content"
@@ -25,18 +27,40 @@
           <frame *repeat={HarvestCells}
             layout="content content"
             border={@Mods/StardewUI/Sprites/MenuSlotInset}
+            border-tint={:CellBorderTint}
             scroll-with-children="Horizontal"
             focusable="true"
             margin="-4"
             border-thickness="12,4"
             left-click=|^ChangeStartDay(this)|>
-            <image sprite={:Sprite}
-              fit="Contain"
-              vertical-alignment="Middle"
-              layout="48px 96px"
-              shadow-alpha={:DisplayShadow}
-              shadow-offset="-4,4"
-            />
+            <panel>
+              <image *if={:ShowDirt}
+                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:base}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 96px"
+              />
+              <image *if={:ShowDirt}
+                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:wet}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 96px"
+              />
+              <image *if={:ShowPaddy}
+                sprite={@mushymato.PerfectionHandbook/sprites/hoeDirt:paddy}
+                fit="Contain"
+                vertical-alignment="End"
+                layout="48px 96px"
+              />
+              <image sprite={:Sprite}
+                fit="Contain"
+                vertical-alignment="Middle"
+                layout="48px 96px"
+                shadow-alpha={:DisplayShadow}
+                shadow-offset="-4,4"
+                z-index="2"
+              />
+            </panel>
           </frame>
         </grid>
         <label *if={:ShowMonth} font="dialogue" text={DisplayMonth} shadow-alpha="0.8"/>
@@ -50,13 +74,12 @@
       peeking="128"
       scrollbar-margin="-26,0,0,0"
       z-index="2">
-      <grid margin="4" item-layout="length: 72" item-spacing="4,4" layout="stretch content">
+      <grid margin="4" item-layout="length: 72" layout="stretch content">
         <frame *repeat={FilteredDisplayPaginated}
-          border={@Mods/StardewUI/Sprites/ControlBorder}
-          border-thickness="4"
+          border={@Mods/StardewUI/Sprites/MenuSlotOutset}
+          border-thickness="10"
           layout="64px 64px"
           border-tint={BorderTint}
-          padding="6"
           focusable="true">
           <panel
             horizontal-content-alignment="End"

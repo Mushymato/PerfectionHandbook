@@ -198,7 +198,6 @@ public static class ItemInfoCache
     {
         if (!hashCrop.CheckChanged() && useCached)
             return;
-        ModEntry.Log($"UpdateFromCrop({useCached})");
         // when using prior cache, clear previous crop data
         if (useCached)
             foreach (ItemInfo itemInfo in cacheRet.Values)
@@ -207,12 +206,14 @@ public static class ItemInfoCache
                 itemInfo.CountForPolyculture = false;
                 itemInfo.FromCrop.Clear();
             }
+        IAssetName cropSheetName = ModEntry.help.GameContent.ParseAssetName(Game1.cropSpriteSheet.Name);
         foreach (CropData cropData in Game1.cropData.Values)
         {
-            if (!cacheRet.TryGetValue(ItemRegistry.QualifyItemId(cropData.HarvestItemId), out ItemInfo? itemInfo))
-            {
+            // hardcoding: skip vanilla wild seeds
+            if (cropSheetName.IsEquivalentTo(cropData.Texture) && cropData.SpriteIndex == 23)
                 continue;
-            }
+            if (!cacheRet.TryGetValue(ItemRegistry.QualifyItemId(cropData.HarvestItemId), out ItemInfo? itemInfo))
+                continue;
             itemInfo.CountForPolyculture |= cropData.CountForPolyculture;
             itemInfo.CountForMonoculture |= cropData.CountForMonoculture;
             itemInfo.FromCrop.Add(cropData);

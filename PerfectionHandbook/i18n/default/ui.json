@@ -18,7 +18,9 @@
   "ui.counting-crafted": "Crafted",
   "ui.title.perfection": "Perfection",
   "ui.title.achievements": "Achievements",
+  "ui.title.miscellaneous": "Miscellaneous",
   "ui.goals.item-shipped": "Items Shipped",
   "ui.goals.buildings-constructed": "Buildings Constructed",
+  "ui.misc.crop-calendar": "Crop Calendar",
   "ui.crop.month": "Month: {{month}}"
 }

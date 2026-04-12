@@ -19,7 +19,10 @@ public sealed partial class CropDetailDisplaySettings
     [Notify]
     private int speedGroIdx = 0;
 
-    public record SpeedGroKind(ParsedItemData Info, float Amount);
+    public record SpeedGroKind(ParsedItemData Info, float Amount)
+    {
+        public string Tooltip = $"{Info.DisplayName} ({Amount:P2})";
+    }
 
     public List<SpeedGroKind> SpeedGroKinds =>
         field ??= [
@@ -28,6 +31,8 @@ public sealed partial class CropDetailDisplaySettings
             new(ItemRegistry.GetDataOrErrorItem("(O)466"), 0.25f),
             new(ItemRegistry.GetDataOrErrorItem("(O)918"), 0.33f),
         ];
+
+    public string LabelAgriculturist => Game1.content.LoadString("Strings/UI:LevelUp_ProfessionName_Agriculturist");
 
     [Notify]
     public bool useAgriculturist = false;
@@ -44,11 +49,23 @@ public sealed partial class CropDetailDisplaySettings
 
 public sealed partial class CropDetailDisplay
 {
-    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest)
+    public sealed record CropDay(SDUISprite? Sprite, bool IsHarvest, bool IsPaddy)
     {
-        public bool HasSprite = Sprite != null;
+        public bool ShowDirt = Sprite != null && !IsHarvest;
+        public bool ShowPaddy => ShowDirt && IsPaddy;
+
         public int DayOfMonth { get; set; } = 0;
         public float DisplayShadow => IsHarvest ? 0.35f : 0f;
+        public Color CellBorderTint
+        {
+            get
+            {
+                int today = Game1.dayOfMonth - 1;
+                if (DayOfMonth < today)
+                    return Color.Gray * 0.25f;
+                return Color.White;
+            }
+        }
     }
 
     public readonly ItemInfo Info;
@@ -78,11 +95,11 @@ public sealed partial class CropDetailDisplay
         CropData crop = info.FromCrop[0];
         Texture2D cropTx = DrawHelper.SafeLoad(crop.Texture, Game1.cropSpriteSheet);
 
-        int growDays = GetAdjustedGrowDays(crop, settings.GetBoost(crop));
+        GetAdjustedGrowDays(crop, settings.GetBoost(crop), out int growDays, out List<int> daysInPhase);
 
         int regrowDays = crop.RegrowDays;
         int phase = -1;
-        UpdatePhase(crop, 0, ref phase, out int nextPhaseDay);
+        UpdatePhase(daysInPhase, 0, ref phase, out int nextPhaseDay);
         int maxMonths = (int)MathF.Ceiling((float)(growDays + 1) / WorldDate.DaysPerMonth);
         int daysToShow = maxMonths * WorldDate.DaysPerMonth;
 
@@ -92,32 +109,37 @@ public sealed partial class CropDetailDisplay
         if (regrowDays < 1)
         {
             // non-regrowing
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(cropTx, crop.SpriteIndex, phase, 0));
+            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(crop, cropTx, phase, 0));
             for (int day = 1; day < daysToShow; day++)
             {
                 if (day >= nextPhaseDay)
-                    UpdatePhase(crop, day, ref phase, out nextPhaseDay);
-                AddToHarvestCells(
-                    ref harvestCellsMonth,
-                    harvestCells,
-                    day % growDays == 0
-                        ? GetHarvestSprite(info.Datum, harvestCellsMonth.Count)
-                        : GetPhaseSprite(cropTx, crop.SpriteIndex, phase, harvestCellsMonth.Count)
-                );
+                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                CropDay cropDay;
+                if (day % growDays == 0)
+                {
+                    cropDay = GetHarvestSprite(info.Datum, harvestCellsMonth.Count);
+                    phase = -1;
+                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
+                }
+                else
+                {
+                    cropDay = GetPhaseSprite(crop, cropTx, phase, harvestCellsMonth.Count);
+                }
+                AddToHarvestCells(ref harvestCellsMonth, harvestCells, cropDay);
             }
         }
         else
         {
             // regrowing
-            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(cropTx, crop.SpriteIndex, phase, 0));
+            AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetPhaseSprite(crop, cropTx, phase, 0));
             for (int day = 1; day < growDays; day++)
             {
                 if (day >= nextPhaseDay)
-                    UpdatePhase(crop, day, ref phase, out nextPhaseDay);
+                    UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                 AddToHarvestCells(
                     ref harvestCellsMonth,
                     harvestCells,
-                    GetPhaseSprite(cropTx, crop.SpriteIndex, phase, harvestCells.Count)
+                    GetPhaseSprite(crop, cropTx, phase, harvestCells.Count)
                 );
             }
             AddToHarvestCells(ref harvestCellsMonth, harvestCells, GetHarvestSprite(info.Datum, 0));
@@ -128,7 +150,7 @@ public sealed partial class CropDetailDisplay
                     harvestCells,
                     day % regrowDays == 0
                         ? GetHarvestSprite(info.Datum, harvestCellsMonth.Count)
-                        : GetPhaseSprite(cropTx, crop.SpriteIndex, phase, harvestCellsMonth.Count)
+                        : GetPhaseSprite(crop, cropTx, phase, harvestCellsMonth.Count)
                 );
             }
         }
@@ -155,19 +177,24 @@ public sealed partial class CropDetailDisplay
         AllHarvestCells = MakeAllHarvestCells(Info, Settings);
     }
 
-    private static int GetAdjustedGrowDays(CropData crop, float speedBoost)
+    private static void GetAdjustedGrowDays(
+        CropData crop,
+        float speedBoost,
+        out int growDays,
+        out List<int> daysInPhase
+    )
     {
-        List<int> phaseDays = [.. crop.DaysInPhase];
-        int growDays = crop.DaysInPhase.Sum();
+        daysInPhase = crop.DaysInPhase.ToList();
+        growDays = daysInPhase.Sum();
         int speedGroDays = (int)Math.Ceiling(growDays * speedBoost);
         int phaseIdx = 0;
         while (speedGroDays > 0 && phaseIdx < 3)
         {
-            for (int j = 0; j < phaseDays.Count; j++)
+            for (int j = 0; j < daysInPhase.Count; j++)
             {
-                if ((j > 0 || phaseDays[j] > 1) && phaseDays[j] > 0)
+                if ((j > 0 || daysInPhase[j] > 1) && daysInPhase[j] > 0)
                 {
-                    phaseDays[j]--;
+                    daysInPhase[j]--;
                     speedGroDays--;
                 }
                 if (speedGroDays <= 0)
@@ -177,7 +204,7 @@ public sealed partial class CropDetailDisplay
             }
             phaseIdx++;
         }
-        return phaseDays.Sum();
+        growDays = daysInPhase.Sum();
     }
 
     [Notify]
@@ -190,7 +217,7 @@ public sealed partial class CropDetailDisplay
             IReadOnlyList<CropDay> harvestCellsMonth = AllHarvestCells[0];
             List<CropDay> cropDay = [];
             for (int i = 0; i < Settings.StartDay; i++)
-                cropDay.Add(new(null, false) { DayOfMonth = i });
+                cropDay.Add(new(null, false, false) { DayOfMonth = i });
             for (int i = 0; i < WorldDate.DaysPerMonth - Settings.StartDay; i++)
             {
                 harvestCellsMonth[i].DayOfMonth = Settings.StartDay + i;
@@ -202,16 +229,19 @@ public sealed partial class CropDetailDisplay
     public bool ShowMonth => Month > 0;
     public string DisplayMonth => I18n.Ui_Crop_Month(Month);
 
-    private static void UpdatePhase(CropData crop, int day, ref int phase, out int nextPhaseDay)
+    private static void UpdatePhase(List<int> daysInPhase, int day, ref int phase, out int nextPhaseDay)
     {
         phase++;
-        if (phase >= crop.DaysInPhase.Count)
+        while (phase < daysInPhase.Count && daysInPhase[phase] == 0)
+            phase++;
+        if (phase >= daysInPhase.Count)
             phase = 0;
-        nextPhaseDay = day + crop.DaysInPhase[phase];
+        nextPhaseDay = day + daysInPhase[phase];
     }
 
-    private static CropDay GetPhaseSprite(Texture2D cropTx, int spriteIndex, int phase, int day)
+    private static CropDay GetPhaseSprite(CropData crop, Texture2D cropTx, int phase, int day)
     {
+        int spriteIndex = crop.SpriteIndex;
         return new(
             new(
                 cropTx,
@@ -219,7 +249,8 @@ public sealed partial class CropDetailDisplay
                 FixedEdges: SDUIEdges.NONE,
                 SliceSettings: new(Scale: 3)
             ),
-            false
+            false,
+            crop.IsPaddyCrop
         );
     }
 
@@ -227,7 +258,8 @@ public sealed partial class CropDetailDisplay
     {
         return new(
             new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3)),
-            true
+            true,
+            false
         );
     }
 
@@ -301,7 +333,7 @@ public enum CropListKind
     Polyculture,
 }
 
-public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKind kind)
+public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKind kind)
     : AbstractItemCountContext<ShippedCountDisplay>(goalCtx)
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
@@ -313,6 +345,14 @@ public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKin
             CropListKind.Polyculture => itemInfo.CountForPolyculture,
             _ => itemInfo.FromCrop.Any(),
         };
+
+    protected override IReadOnlyList<ShippedCountDisplay> SortAllDisplay(List<ShippedCountDisplay> displayList)
+    {
+        IReadOnlyList<ShippedCountDisplay> sorted = base.SortAllDisplay(displayList);
+        if (sorted.Any())
+            Hovered = sorted[0];
+        return sorted;
+    }
 
     protected override void UpdateDisplayingFulfillment(GoalFulfillment fulfillment)
     {
@@ -363,7 +403,7 @@ public sealed partial class GoalCropListContext(GoalContext goalCtx, CropListKin
             {
                 CropListKind.Monoculture => 300,
                 CropListKind.Polyculture => 15,
-                _ => 0,
+                _ => int.MaxValue,
             },
             cropCalendarSettings
         );

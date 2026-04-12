@@ -1,44 +1,10 @@
 using Microsoft.Xna.Framework;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
-
-public sealed record GoalContext(
-    IGoal Goal,
-    IReadOnlyList<GoalFulfillment> Fulfillments,
-    GoalFulfillment BestFulfillment,
-    PlayerOwned OwnedInfo
-)
-{
-    public static GoalContext Make(Farmer who, IGoal goal, PlayerOwned ownedInfo)
-    {
-        GoalFulfillment myFulfillment = goal.GetFulfillment(who);
-        if (goal.IsShared)
-        {
-            return new(goal, [myFulfillment], myFulfillment, ownedInfo);
-        }
-        List<GoalFulfillment> allFulfilments = [];
-        foreach (Farmer otherFarmer in Game1.getAllFarmers())
-        {
-            if (otherFarmer == who || !otherFarmer.isCustomized.Value)
-                continue;
-            allFulfilments.Add(goal.GetFulfillment(otherFarmer));
-        }
-        allFulfilments.Sort();
-        GoalFulfillment bestFulfillment;
-        if (allFulfilments.Any())
-            bestFulfillment = myFulfillment.Percent >= allFulfilments[0].Percent ? myFulfillment : allFulfilments[0];
-        else
-            bestFulfillment = myFulfillment;
-        allFulfilments.Insert(0, myFulfillment);
-        return new(goal, allFulfilments, bestFulfillment, ownedInfo);
-    }
-
-    public string PageName => Goal.GetType().Name;
-    public object? PageCtx => field ??= Goal.GetPageContext(this);
-}
 
 public sealed partial class HandbookContext(Farmer who)
 {
@@ -56,22 +22,37 @@ public sealed partial class HandbookContext(Farmer who)
     {
         get => field ??= Goals.AchievementGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
     } = null;
+    public IReadOnlyList<MiscContext> MiscPages
+    {
+        get =>
+            field ??= [
+                new MiscContext(
+                    who,
+                    playerOwned,
+                    "Misc_Crop_Calendar",
+                    I18n.Ui_Misc_CropCalendar(),
+                    ItemRegistry.GetDataOrErrorItem("(O)889"),
+                    string.Empty,
+                    (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
+                ),
+            ];
+    } = null;
 
     [Notify]
-    private GoalContext? selectedGoalCtx = null;
-    public string PageName => SelectedGoalCtx?.PageName ?? "Main";
+    private IGoalContext? selectedCtx = null;
+    public string PageName => SelectedCtx?.PageName ?? "Main";
 
-    public void ChangePage(GoalContext goalCtx)
+    public void ChangePage(IGoalContext ctx)
     {
-        if (goalCtx.PageCtx != null)
-            SelectedGoalCtx = goalCtx;
+        if (ctx.PageCtx != null)
+            SelectedCtx = ctx;
     }
 
     internal void CloseAction()
     {
-        if (SelectedGoalCtx != null)
+        if (SelectedCtx != null)
         {
-            SelectedGoalCtx = null;
+            SelectedCtx = null;
         }
         else
         {

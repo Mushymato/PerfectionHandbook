@@ -64,7 +64,7 @@ public interface IAchievementGoal : IGoal
 
 public static class Goals
 {
-    #region defs
+    #region perfection
     public sealed class Perfection_ItemShipped : IPerfectionGoal
     {
         public float PercentWeight => 15f;
@@ -308,6 +308,22 @@ public static class Goals
             new(null, Game1.netWorldState.Value.GoldenWalnutsFound, 130);
     }
 
+    public static readonly List<IPerfectionGoal> PerfectionGoals =
+    [
+        new Perfection_ItemShipped(),
+        new Perfection_RecipesCooked(),
+        new Perfection_RecipesCrafted(),
+        new Perfection_FishCaught(),
+        new Perfection_MonsterSlayered(),
+        new Perfection_BestFriendsMade(),
+        new Perfection_SkillLeveled(),
+        new Perfection_BuildingsConstructed(),
+        new Perfection_StardropsFound(),
+        new Perfection_GoldenWalnutsFound(),
+    ];
+    #endregion
+
+    #region achievements
     public sealed class Achievement_Museum : IAchievementGoal
     {
         public int AchievementId => 5;
@@ -385,25 +401,7 @@ public static class Goals
             return new(who, count, total) { Notes = notes };
         }
     }
-    #endregion
 
-    #region perfection
-    public static readonly List<IPerfectionGoal> PerfectionGoals =
-    [
-        new Perfection_ItemShipped(),
-        new Perfection_RecipesCooked(),
-        new Perfection_RecipesCrafted(),
-        new Perfection_FishCaught(),
-        new Perfection_MonsterSlayered(),
-        new Perfection_BestFriendsMade(),
-        new Perfection_SkillLeveled(),
-        new Perfection_BuildingsConstructed(),
-        new Perfection_StardropsFound(),
-        new Perfection_GoldenWalnutsFound(),
-    ];
-    #endregion
-
-    #region achievements
     public static readonly List<IAchievementGoal> AchievementGoals =
     [
         new Achievement_Museum(),

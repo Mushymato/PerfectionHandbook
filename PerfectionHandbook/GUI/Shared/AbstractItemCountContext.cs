@@ -75,8 +75,8 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     public bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
-public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goalCtx, bool canToggleCountMode = true)
-    : AbstractGoalPageListContext<TDisplay>(goalCtx, canToggleCountMode: canToggleCountMode)
+public abstract partial class AbstractItemCountContext<TDisplay>(IGoalContext goalCtx, bool canToggleCountMode = true)
+    : AbstractPageListContext<TDisplay>(goalCtx, canToggleCountMode: canToggleCountMode)
     where TDisplay : AbstractItemCountDisplay
 {
     protected override IReadOnlyList<TDisplay> MakeAllDisplay()
@@ -104,6 +104,8 @@ public abstract partial class AbstractItemCountContext<TDisplay>(GoalContext goa
 
     [Notify]
     protected TDisplay? hovered = null;
+
+    public bool HasHovered => Hovered != null;
 
     public virtual void HoveredEnter(TDisplay display)
     {

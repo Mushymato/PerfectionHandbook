@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
@@ -14,7 +15,7 @@ public static class MenuHandler
     public static void Register()
     {
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
-        // viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
+        viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");
         viewEngine.PreloadAssets();
 #if DEBUG
@@ -40,10 +41,18 @@ public static class MenuHandler
     {
         if (!Context.IsWorldReady)
             return;
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        IMenuController menuCtrl = GetHandbookMenuControl();
+        Game1.activeClickableMenu = menuCtrl.Menu;
+        DelayedAction.functionAfterDelay(() => ModEntry.Log($"ShowHandbook {stopwatch.Elapsed}", LogLevel.Info), 0);
+    }
+
+    public static IMenuController GetHandbookMenuControl()
+    {
         HandbookContext context = new(Game1.player);
         IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
         menuCtrl.CloseAction = context.CloseAction;
         menuCtrl.EnableCloseButton();
-        Game1.activeClickableMenu = menuCtrl.Menu;
+        return menuCtrl;
     }
 }

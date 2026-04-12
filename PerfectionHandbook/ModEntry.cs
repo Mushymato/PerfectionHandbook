@@ -2,11 +2,9 @@ global using SObject = StardewValley.Object;
 using System.Diagnostics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
-using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
 
 namespace PerfectionHandbook;
 
@@ -64,6 +62,7 @@ public sealed class ModEntry : Mod
     {
         // preload the cache
         var _ = ItemInfoCache.Cache;
+        MenuHandler.GetHandbookMenuControl();
     }
 
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)

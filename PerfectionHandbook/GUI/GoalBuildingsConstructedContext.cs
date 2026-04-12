@@ -30,7 +30,7 @@ public sealed record BuildingsBuiltDisplay(
 }
 
 public sealed class GoalBuildingsConstructedContext(GoalContext goalCtx)
-    : AbstractGoalPageListContext<BuildingsBuiltDisplay>(goalCtx)
+    : AbstractPageListContext<BuildingsBuiltDisplay>(goalCtx)
 {
     private static readonly string[] ObelisksAndClock =
     [

@@ -1,0 +1,17 @@
+{
+  "Texture": "TerrainFeatures/hoeDirt",
+  "Sprites": {
+    "base": {
+      "SourceRect": "0,0,16,16",
+      "Scale": 4
+    },
+    "wet": {
+      "SourceRect": "64,0,16,16",
+      "Scale": 4
+    },
+    "paddy": {
+      "SourceRect": "128,0,16,16",
+      "Scale": 4
+    }
+  }
+}

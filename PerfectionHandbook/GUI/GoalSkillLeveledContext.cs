@@ -122,7 +122,7 @@ public sealed record SpacecoreSkillDisplay(string SkillId)
 }
 
 public sealed class GoalSkillLeveledContext(GoalContext goalCtx)
-    : AbstractGoalPageListContext<AbstractSkillDisplay>(goalCtx)
+    : AbstractPageListContext<AbstractSkillDisplay>(goalCtx)
 {
     internal static int VanillaMaxLevel = 10;
     internal static Func<int, int> GetExpForLevel = Farmer.getBaseExperienceForLevel;

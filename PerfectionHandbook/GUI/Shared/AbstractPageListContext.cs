@@ -1,14 +1,15 @@
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
+using StardewValley;
 using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public abstract partial class AbstractGoalPageListContext<TDisplay>
+public abstract partial class AbstractPageListContext<TDisplay>
     where TDisplay : IPageDisplayEntry
 {
-    public readonly GoalContext GoalCtx;
+    public readonly IGoalContext GoalCtx;
 
     public readonly IReadOnlyList<TDisplay> AllDisplay;
 
@@ -16,18 +17,24 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
 
     public readonly bool CanToggleCountMode = false;
 
-    public AbstractGoalPageListContext(
-        GoalContext goalCtx,
-        bool canToggleNeeded = true,
-        bool canToggleCountMode = false
-    )
+    public AbstractPageListContext(IGoalContext pageCtx, bool canToggleNeeded = true, bool canToggleCountMode = false)
     {
-        GoalCtx = goalCtx;
+        GoalCtx = pageCtx;
         AllDisplay = MakeAllDisplay();
-        ShowNeeded = !goalCtx.Fulfillments[0].Filled;
         CanToggleNeeded = canToggleNeeded;
         CanToggleCountMode = canToggleCountMode;
-        UpdateDisplayingFulfillment(goalCtx.Fulfillments[0]);
+
+        if (pageCtx.Fulfillments.Any())
+        {
+            ShowNeeded = !pageCtx.Fulfillments[0].Filled;
+            UpdateDisplayingFulfillment(pageCtx.Fulfillments[0]);
+        }
+        else
+        {
+            ShowNeeded = true;
+            CanToggleNeeded = false;
+            UpdateAllStatus(pageCtx.Who);
+        }
     }
 
     public string SearchText
@@ -108,13 +115,18 @@ public abstract partial class AbstractGoalPageListContext<TDisplay>
         {
             filteredDisplay = null;
             displayingFulfillment = fulfillment;
-            if (fulfillment.Who != null)
-                foreach (TDisplay display in AllDisplay)
-                    display.SetStatus(fulfillment.Who);
+            UpdateAllStatus(fulfillment.Who);
             foreach (GoalFulfillment eachful in GoalCtx.Fulfillments)
                 eachful.DisplayTint = eachful == displayingFulfillment ? Color.White : Color.Transparent;
             OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
         }
+    }
+
+    private void UpdateAllStatus(Farmer? who)
+    {
+        if (who != null)
+            foreach (TDisplay display in AllDisplay)
+                display.SetStatus(who);
     }
 
     protected abstract IReadOnlyList<TDisplay> MakeAllDisplay();
