@@ -13,7 +13,9 @@ public sealed partial class HandbookContext(Farmer who)
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
 
-    private readonly PlayerOwned playerOwned = ItemOwnedCache.GetPlayerOwned();
+    private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
+        ? new(new Dictionary<string, OwnedItemGroup>(), [])
+        : ItemOwnedCache.GetPlayerOwned();
     public IReadOnlyList<GoalContext> PerfectionGoals
     {
         get => field ??= Goals.PerfectionGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();

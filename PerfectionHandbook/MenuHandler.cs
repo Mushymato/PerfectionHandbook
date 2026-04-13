@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
+using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewValley;
 
@@ -41,18 +44,56 @@ public static class MenuHandler
     {
         if (!Context.IsWorldReady)
             return;
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        IMenuController menuCtrl = GetHandbookMenuControl();
-        Game1.activeClickableMenu = menuCtrl.Menu;
-        DelayedAction.functionAfterDelay(() => ModEntry.Log($"ShowHandbook {stopwatch.Elapsed}", LogLevel.Info), 0);
-    }
-
-    public static IMenuController GetHandbookMenuControl()
-    {
         HandbookContext context = new(Game1.player);
         IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
         menuCtrl.CloseAction = context.CloseAction;
         menuCtrl.EnableCloseButton();
-        return menuCtrl;
+        Game1.activeClickableMenu = menuCtrl.Menu;
+    }
+
+    public static bool IsPreloading { get; private set; } = false;
+
+    public static void PreloadHandbook()
+    {
+        if (Context.IsSplitScreen && !Context.IsMainPlayer)
+            return;
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        var _ = ItemInfoCache.Cache;
+        IsPreloading = true;
+        try
+        {
+            HandbookContext context = new(Game1.player);
+            IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
+            menuCtrl.HideHUD = false;
+            menuCtrl.OpenSound = string.Empty;
+            GameTime gameTime = new();
+            TimeSpan oneTick = TimeSpan.FromTicks(1);
+            menuCtrl.Menu.update(gameTime);
+            foreach (GoalContext ctx in context.PerfectionGoals)
+                PreloadUpdatePage(context, menuCtrl, gameTime, oneTick, ctx);
+            foreach (GoalContext ctx in context.AchievementGoals)
+                PreloadUpdatePage(context, menuCtrl, gameTime, oneTick, ctx);
+            foreach (MiscContext ctx in context.MiscPages)
+                PreloadUpdatePage(context, menuCtrl, gameTime, oneTick, ctx);
+            menuCtrl.Dispose();
+            ModEntry.Log($"PreloadHandbook {stopwatch.Elapsed}", LogLevel.Info);
+        }
+        finally
+        {
+            IsPreloading = false;
+        }
+    }
+
+    private static void PreloadUpdatePage(
+        HandbookContext context,
+        IMenuController menuCtrl,
+        GameTime gameTime,
+        TimeSpan oneTick,
+        IGoalContext ctx
+    )
+    {
+        context.SelectedCtx = ctx;
+        menuCtrl.Menu.update(gameTime);
+        gameTime.TotalGameTime.Add(oneTick);
     }
 }

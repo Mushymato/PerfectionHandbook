@@ -245,7 +245,6 @@ public static class ItemInfoCache
         {
             if (Game1.getLocationFromName(locationName) is not GameLocation location)
             {
-                ModEntry.Log($"locationName {locationName}");
                 continue;
             }
             // fish

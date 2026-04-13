@@ -91,6 +91,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
             {
                 OnPropertyChanged(new(nameof(ScrollPage)));
                 OnPropertyChanged(new(nameof(ScrollProgress)));
+                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
             }
         }
     }
@@ -162,13 +163,11 @@ public abstract partial class AbstractPageListContext<TDisplay>
             if (filteredDisplay.Count == 0)
                 return filteredDisplay;
             int actualPage = ScrollPage - 1;
-            int nextPageSize = Math.Min(
-                HandbookContext.MAX_SHOWN,
-                filteredDisplay.Count - actualPage * HandbookContext.MAX_SHOWN
-            );
+            int startIdx = actualPage * HandbookContext.MAX_SHOWN;
+            int nextPageSize = Math.Min(HandbookContext.MAX_SHOWN, filteredDisplay.Count - startIdx);
             if (nextPageSize == 0)
                 return [];
-            return filteredDisplay.GetRange(actualPage * HandbookContext.MAX_SHOWN, nextPageSize);
+            return filteredDisplay.GetRange(startIdx, nextPageSize);
         }
     }
 }

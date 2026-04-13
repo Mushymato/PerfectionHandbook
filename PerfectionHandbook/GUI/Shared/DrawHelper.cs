@@ -24,7 +24,7 @@ public static class DrawHelper
 
     public static RenderTarget2D? GetFarmerMiniIcon(Farmer? who)
     {
-        if (who == null)
+        if (MenuHandler.IsPreloading || who == null)
             return null;
         if (
             !cachedMiniIconRT.TryGetValue(who.UniqueMultiplayerID, out RenderTarget2D? renderTarget)

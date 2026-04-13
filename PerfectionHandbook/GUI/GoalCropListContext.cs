@@ -354,7 +354,7 @@ public sealed partial class CropDetailDisplay
     }
 }
 
-public sealed partial record ShippedCountDisplay(
+public sealed partial record CropDisplay(
     ItemInfo Info,
     int OwnedCount,
     int RequiredCount,
@@ -387,7 +387,7 @@ public enum CropListKind
 }
 
 public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKind kind)
-    : AbstractItemCountContext<ShippedCountDisplay>(goalCtx)
+    : AbstractItemCountContext<CropDisplay>(goalCtx)
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
 
@@ -399,9 +399,9 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
             _ => itemInfo.FromCrop.Any(),
         };
 
-    protected override IReadOnlyList<ShippedCountDisplay> SortAllDisplay(List<ShippedCountDisplay> displayList)
+    protected override IReadOnlyList<CropDisplay> SortAllDisplay(List<CropDisplay> displayList)
     {
-        IReadOnlyList<ShippedCountDisplay> sorted = displayList
+        IReadOnlyList<CropDisplay> sorted = displayList
             .OrderBy(static disp =>
             {
                 Season firstSeason = disp.CropDetail.CropSeasons.First();
@@ -422,7 +422,7 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
     [Notify]
     private bool hoverable = true;
 
-    public void ToggleHoverable(ShippedCountDisplay display)
+    public void ToggleHoverable(CropDisplay display)
     {
         if (Hoverable)
         {
@@ -446,7 +446,7 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
         }
     }
 
-    public override void HoveredEnter(ShippedCountDisplay display)
+    public override void HoveredEnter(CropDisplay display)
     {
         if (Hoverable)
             base.HoveredEnter(display);
@@ -454,7 +454,7 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     private readonly CropDetailDisplaySettings cropCalendarSettings = new();
 
-    protected override ShippedCountDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
+    protected override CropDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
         new(
             itemInfo,
             ownedCount,
