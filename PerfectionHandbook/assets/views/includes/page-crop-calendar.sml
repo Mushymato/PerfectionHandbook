@@ -3,19 +3,25 @@
   <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,8,0" fit="Stretch"/>
   <lane layout="stretch 100%">
     <!-- Crop Calendar -->
-    <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="500px 100%" orientation="Vertical">
+    <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" orientation="Vertical">
       <banner text={:Seed.DisplayName} padding="0,8"/>
       <lane orientation="Vertical">
-        <lane margin="4" vertical-content-alignment="Middle">
-          <frame *context={:Settings} border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
+        <lane *context={:Settings} margin="4" vertical-content-alignment="Middle">
+          <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
             <segments highlight={@Mods/StardewUI/Sprites/White}
-              highlight-tint="#11bd84"
+              highlight-tint="#11bd2e"
               highlight-transition="150ms EaseOutQuart"
               selected-index={<>SpeedGroIdx}>
               <image *repeat={:SpeedGroKinds} sprite={:Info} tooltip={:Tooltip} layout="48px 48px" margin="4"/>
             </segments>
           </frame>
-          <frame *context={:Settings} border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
+          <frame 
+            border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4"
+            background={@Mods/StardewUI/Sprites/White}
+            background-tint="Transparent"
+            +state:checked={UseAgriculturist}
+            +state:checked:background-tint="#11a0bd"
+          >
             <checkbox layout="48px 48px" margin="4"
               tooltip={:LabelAgriculturist}
               checked-sprite={@mushymato.PerfectionHandbook/sprites/cursors:agriculturist}
@@ -29,8 +35,8 @@
             <segments highlight={@Mods/StardewUI/Sprites/White}
               highlight-tint="#bd114a"
               highlight-transition="150ms EaseOutQuart"
-              selected-index={<>Month}>
-              <image *repeat={:CropSeasonSprites}
+              selected-index={<>^Month}>
+              <image *repeat={:^CropSeasonSprites}
                 sprite={:Sprite}
                 tooltip={:Name}
                 vertical-alignment="Middle"
@@ -41,7 +47,7 @@
           </frame>
         </lane>
         <grid
-          margin="8,8"
+          margin="12,8,0,0"
           layout="content content"
           item-layout="count: 7"
           item-spacing="0,0"
@@ -53,8 +59,8 @@
             border-tint={:CellBorderTint}
             scroll-with-children="Horizontal"
             focusable="true"
-            margin="-4,-4"
-            border-thickness="12,4"
+            margin="-4,-2"
+            border-thickness="14,4"
             left-click=|^ChangeStartDay(this)|>
             <panel>
               <image *if={:ShowDirt}
@@ -102,14 +108,14 @@
       </lane>
     </lane>
     <!-- Scroll -->
-    <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" margin="4,0" fit="Stretch"/>
+    <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" fit="Stretch"/>
     <!-- Scroll -->
     <scrollable progress={<>ScrollProgress} 
       layout="stretch 100%"
       peeking="128"
       scrollbar-margin="-26,0,0,0"
       z-index="2">
-      <grid margin="4" item-layout="length: 72" layout="stretch content">
+      <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content">
         <frame *repeat={FilteredDisplayPaginated}
           border={@Mods/StardewUI/Sprites/MenuSlotOutset}
           border-thickness="10"

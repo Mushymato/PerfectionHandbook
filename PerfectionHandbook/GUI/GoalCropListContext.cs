@@ -94,6 +94,11 @@ public sealed partial class CropDetailDisplay
         Crop = cropPair.Value;
         CropSeasons = Crop.Seasons?.Any() ?? false ? Crop.Seasons : [Game1.season];
         CropSeasons.Sort();
+        if (CropSeasons.Count < 4 && CropSeasons[0] == Season.Spring && CropSeasons[^1] == Season.Winter)
+        {
+            CropSeasons.RemoveAt(0);
+            CropSeasons.Add(Season.Spring);
+        }
         int month = CropSeasons.IndexOf(Game1.season);
         Month = month > -1 ? month : 0;
 
@@ -131,23 +136,28 @@ public sealed partial class CropDetailDisplay
         int contDay = 0;
         foreach (Season season in cropSeasons)
         {
-            if (prevSeason != null && season != prevSeason + 1)
+            if (prevSeason != null)
             {
-                contDay = 0;
+                if (season == Season.Spring)
+                {
+                    if (prevSeason != Season.Winter)
+                        contDay = 0;
+                }
+                else if (season != prevSeason + 1)
+                {
+                    contDay = 0;
+                }
             }
             if (regrowDays < 1)
             {
                 // non-regrowing
-                if (contDay == 0)
-                    AddCropDay(ref contDay, seasonCropDay, GetPhaseSprite(crop, cropTx, phase, 0));
-                for (int day = contDay % WorldDate.DaysPerMonth; day < WorldDate.DaysPerMonth; day++)
+                int startContDay = contDay;
+                for (int day = 0; day < WorldDate.DaysPerMonth; day++)
                 {
-                    if (day >= nextPhaseDay)
-                        UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                     CropDay cropDay;
-                    if (day % growDays == 0)
+                    if ((day + startContDay) % growDays == 0 && contDay != 0)
                     {
-                        cropDay = GetHarvestSprite(harvestItem);
+                        cropDay = GetHarvestSprite(harvestItem, seasonCropDay.Count);
                         phase = -1;
                         UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                     }
@@ -156,6 +166,8 @@ public sealed partial class CropDetailDisplay
                         cropDay = GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count);
                     }
                     AddCropDay(ref contDay, seasonCropDay, cropDay);
+                    if (day >= nextPhaseDay)
+                        UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                 }
             }
             else
@@ -163,24 +175,23 @@ public sealed partial class CropDetailDisplay
                 // regrowing
                 if (contDay == 0)
                 {
-                    AddCropDay(ref contDay, seasonCropDay, GetPhaseSprite(crop, cropTx, phase, 0));
-                    for (int day = contDay; day < growDays; day++)
+                    for (int day = 0; day < growDays; day++)
                     {
-                        if (day >= nextPhaseDay)
-                            UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                         AddCropDay(
                             ref contDay,
                             seasonCropDay,
                             GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
                         );
+                        if (day >= nextPhaseDay)
+                            UpdatePhase(daysInPhase, day, ref phase, out nextPhaseDay);
                     }
                     int matureDay = contDay;
-                    AddCropDay(ref contDay, seasonCropDay, GetHarvestSprite(harvestItem));
+                    AddCropDay(ref contDay, seasonCropDay, GetHarvestSprite(harvestItem, seasonCropDay.Count));
                     for (int day = 1; day < WorldDate.DaysPerMonth - growDays; day++)
                     {
                         seasonCropDay.Add(
                             day % regrowDays == 0
-                                ? GetHarvestSprite(harvestItem)
+                                ? GetHarvestSprite(harvestItem, seasonCropDay.Count)
                                 : GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
                         );
                     }
@@ -191,7 +202,7 @@ public sealed partial class CropDetailDisplay
                     {
                         seasonCropDay.Add(
                             (day + contDay) % regrowDays == 0
-                                ? GetHarvestSprite(harvestItem)
+                                ? GetHarvestSprite(harvestItem, seasonCropDay.Count)
                                 : GetPhaseSprite(crop, cropTx, phase, seasonCropDay.Count)
                         );
                     }
@@ -206,6 +217,35 @@ public sealed partial class CropDetailDisplay
         {
             seasonCropDay.Add(cropDay);
             contDay++;
+        }
+
+        static CropDay GetPhaseSprite(CropData crop, Texture2D cropTx, int phase, int day)
+        {
+            int spriteIndex = crop.SpriteIndex;
+            return new(
+                new(
+                    cropTx,
+                    new(spriteIndex % 2 * 128 + (phase == 0 ? day % 2 : phase + 1) * 16, spriteIndex / 2 * 32, 16, 32),
+                    FixedEdges: SDUIEdges.NONE,
+                    SliceSettings: new(Scale: 3)
+                ),
+                false,
+                crop.IsPaddyCrop
+            );
+        }
+
+        static CropDay GetHarvestSprite(ParsedItemData datum, int _)
+        {
+            return new(
+                new(
+                    datum.GetTexture(),
+                    datum.GetSourceRect(),
+                    FixedEdges: SDUIEdges.NONE,
+                    SliceSettings: new(Scale: 3)
+                ),
+                true,
+                false
+            );
         }
     }
 
@@ -274,30 +314,6 @@ public sealed partial class CropDetailDisplay
         if (phase >= daysInPhase.Count)
             phase = 0;
         nextPhaseDay = day + daysInPhase[phase];
-    }
-
-    private static CropDay GetPhaseSprite(CropData crop, Texture2D cropTx, int phase, int day)
-    {
-        int spriteIndex = crop.SpriteIndex;
-        return new(
-            new(
-                cropTx,
-                new(spriteIndex % 2 * 128 + (phase == 0 ? day % 2 : phase + 1) * 16, spriteIndex / 2 * 32, 16, 32),
-                FixedEdges: SDUIEdges.NONE,
-                SliceSettings: new(Scale: 3)
-            ),
-            false,
-            crop.IsPaddyCrop
-        );
-    }
-
-    private static CropDay GetHarvestSprite(ParsedItemData datum)
-    {
-        return new(
-            new(datum.GetTexture(), datum.GetSourceRect(), FixedEdges: SDUIEdges.NONE, SliceSettings: new(Scale: 3)),
-            true,
-            false
-        );
     }
 
     public void ScrollMonth(SDUIDirection direction)

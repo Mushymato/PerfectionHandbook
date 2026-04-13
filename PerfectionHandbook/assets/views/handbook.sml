@@ -27,7 +27,9 @@
   <!-- Perfection_SkillLeveled -->
   <include *case="Perfection_SkillLeveled" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-skills" />
   <!-- Perfection_BuildingsConstructed -->
-  <include *case="Perfection_BuildingsConstructed" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-buildings-constructed" />
+  <include *case="Perfection_BuildingsConstructed" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-buildings" />
+  <!-- Perfection_StardropsFound -->
+  <include *case="Perfection_StardropsFound" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-stardrops" />
   <!-- Achievement_Museum -->
   <include *case="Achievement_Museum" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Achievement_Polyculture -->

@@ -60,9 +60,7 @@ internal static class GameQueryHelper
 
     internal static bool ContextLocationCheckNoRandom(string condition, GameLocation location)
     {
-        List<string> parts = ArgUtility
-            .SplitQuoteAware(condition, ' ', StringSplitOptions.None, keepQuotesAndEscapes: true)
-            .ToList();
+        List<string> parts = ArgUtility.SplitQuoteAware(condition, ' ', StringSplitOptions.None).ToList();
         for (int i = 0; i < parts.Count; i++)
         {
             if (parts[0].EqualsIgnoreCase("here"))
