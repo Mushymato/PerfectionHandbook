@@ -1,7 +1,7 @@
 <frame layout="80%[1280..] 85%[700..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
-  border-thickness="32, 36, 24, 36"
+  border-thickness="32, 36, 32, 36"
   *switch={PageName}>
   <!-- Main -->
   <scrollable *case="Main">

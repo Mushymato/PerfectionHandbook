@@ -27,9 +27,9 @@ public static class MenuHandler
         )
         {
             iconic.AddToolbarIcon(
-                $"{ModEntry.ModId}/AnimalManage",
+                ModEntry.ModId,
                 "LooseSprites/emojis",
-                new(0, 126, 9, 9),
+                new(27, 54, 9, 9),
                 I18n.Ui_Mod_Name,
                 I18n.Ui_Mod_Desc,
                 ShowHandbook

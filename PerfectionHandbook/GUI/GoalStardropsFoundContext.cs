@@ -4,20 +4,22 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record StardropsFoundDisplay(string FoundFlag, string Desc) : IPageDisplayEntry
+public sealed record StardropsFoundDisplay(string FoundFlag) : IPageDisplayEntry
 {
-    public bool Needed => throw new NotImplementedException();
+    public string Description = I18n.GetByKey(string.Concat("Stardrop.Desc.", FoundFlag));
+    private bool needed = false;
+    public bool Needed => needed;
 
     public bool SearchMatch(string txt)
     {
         if (string.IsNullOrEmpty(txt))
             return true;
-        return Desc.ContainsIgnoreCase(txt);
+        return Description.ContainsIgnoreCase(txt);
     }
 
     public void SetStatus(Farmer who)
     {
-        throw new NotImplementedException();
+        needed = !who.hasOrWillReceiveMail(FoundFlag);
     }
 }
 
@@ -37,6 +39,6 @@ public sealed class GoalStardropsFoundContext(GoalContext goalCtx)
 
     protected override IReadOnlyList<StardropsFoundDisplay> MakeAllDisplay()
     {
-        return [];
+        return StardropMailflags.Select(flag => new StardropsFoundDisplay(flag)).ToList();
     }
 }

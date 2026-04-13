@@ -194,7 +194,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalStardropsFoundContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Stardrops");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)434");

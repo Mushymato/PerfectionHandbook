@@ -1,6 +1,6 @@
 <lane layout="stretch stretch" orientation="Vertical">
   <include *context={:this} name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
-  <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,8,0" fit="Stretch"/>
+  <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
   <lane layout="stretch 100%">
     <!-- Crop Calendar -->
     <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" orientation="Vertical">
@@ -113,7 +113,7 @@
     <scrollable progress={<>ScrollProgress} 
       layout="stretch 100%"
       peeking="128"
-      scrollbar-margin="-26,0,0,0"
+      scrollbar-margin="-18,0,0,0"
       z-index="2">
       <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content">
         <frame *repeat={FilteredDisplayPaginated}

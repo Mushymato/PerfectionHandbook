@@ -1,12 +1,12 @@
 <lane layout="stretch stretch" orientation="Vertical">
   <include *context={:this} name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
-  <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,8,0" fit="Stretch"/>
+  <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
   <lane layout="stretch 100%">
     <!-- Scroll -->
     <scrollable progress={<>ScrollProgress} 
       layout="stretch 100%"
       peeking="128"
-      scrollbar-margin="-26,0,0,0"
+      scrollbar-margin="-18,0,0,0"
       z-index="2">
       <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content">
         <panel *repeat={FilteredDisplayPaginated}
