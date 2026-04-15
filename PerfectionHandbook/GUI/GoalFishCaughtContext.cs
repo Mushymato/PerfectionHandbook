@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewValley;
+using StardewValley.GameData.Locations;
 
 namespace PerfectionHandbook.GUI;
 
@@ -75,29 +76,26 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
             .OrderBy(static disp =>
             {
                 HashSet<string> canCatchIn = [];
-                foreach (FishSourceInfo fishSourceInfo in disp.Info.FromFishing)
+                foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
                 {
-                    if (!Game1.player.locationsVisited.Contains(fishSourceInfo.Location.NameOrUniqueName))
+                    if (!Game1.player.locationsVisited.Contains(locInfo.Location.NameOrUniqueName))
                         continue;
-                    Season? season = fishSourceInfo.Spawn?.Season;
-                    if (season != null && season != Game1.GetSeasonForLocation(fishSourceInfo.Location))
+                    Season? season = spawn.Season;
+                    if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
                         continue;
-                    string? condition = fishSourceInfo.Spawn?.Condition;
-                    if (
-                        condition != null
-                        && !GameQueryHelper.ContextLocationCheckNoRandom(condition, fishSourceInfo.Location)
-                    )
+                    string? condition = spawn.Condition;
+                    if (condition != null && !GameQueryHelper.ContextLocationCheckNoRandom(condition, locInfo.Location))
                         continue;
                     if (disp.Info.FishReq is FishSpawnReq spawnReq)
                     {
                         if (
                             spawnReq.CrabPotGroups == null
                             && spawnReq.Rain != null
-                            && spawnReq.Rain != fishSourceInfo.Location.IsRainingHere()
+                            && spawnReq.Rain != locInfo.Location.IsRainingHere()
                         )
                             continue;
                     }
-                    canCatchIn.Add(fishSourceInfo.Location.DisplayName ?? fishSourceInfo.LocationId);
+                    canCatchIn.Add(locInfo.Location.DisplayName ?? locInfo.LocationId);
                 }
                 // mines fish hardcoding
                 switch (disp.Info.Datum.QualifiedItemId)

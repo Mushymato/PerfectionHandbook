@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
@@ -59,7 +60,7 @@ public static class ItemOwnedCache
             ownedItemGroups.Values.Select(value => (Item)value.CountRepr).ToList()
         );
 
-        ModEntry.Log($"OwnedItems: gathered in {stopwatch.Elapsed}", LogLevel.Info);
+        ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}", LogLevel.Info);
         return result;
     }
 }

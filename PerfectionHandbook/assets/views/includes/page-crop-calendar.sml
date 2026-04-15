@@ -3,9 +3,8 @@
   <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
   <lane layout="stretch 100%">
     <!-- Crop Calendar -->
-    <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" orientation="Vertical">
-      <label font="dialogue" text={:Seed.DisplayName} padding="0,8" shadow-alpha="0.8"/>
-      <lane orientation="Vertical">
+    <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
+      <lane orientation="Vertical" layout="100% content">
         <lane *context={:Settings} margin="4" vertical-content-alignment="Middle">
           <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
             <segments highlight={@Mods/StardewUI/Sprites/White}
@@ -106,6 +105,11 @@
           </frame>
         </grid>
       </lane>
+      <banner background={@Mods/StardewUI/Sprites/BannerBackground}
+        background-border-thickness="24,0"
+        margin="0,4,-8,4"
+        padding="0,12"
+        text={:Seed.DisplayName} />
     </lane>
     <!-- Scroll -->
     <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" fit="Stretch"/>

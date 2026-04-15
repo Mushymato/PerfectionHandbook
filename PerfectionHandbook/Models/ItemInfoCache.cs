@@ -11,25 +11,6 @@ using StardewValley.Locations;
 
 namespace PerfectionHandbook.Models;
 
-public interface ILocationSourceInfo
-{
-    string LocationId { get; }
-    GameLocation Location { get; }
-}
-
-public sealed record FishSourceInfo(
-    string LocationId,
-    GameLocation Location,
-    SpawnFishData? Spawn,
-    FishAreaData? FishArea
-) : ILocationSourceInfo;
-
-public sealed record ForageSourceInfo(string LocationId, GameLocation Location, SpawnForageData Spawn)
-    : ILocationSourceInfo;
-
-public sealed record FishAreaSourceInfo(string LocationId, GameLocation Location, FishAreaData Area)
-    : ILocationSourceInfo;
-
 public sealed record FishSpawnReq(
     bool? Rain,
     int MinFishing,
@@ -49,10 +30,8 @@ public sealed record ItemInfo(ParsedItemData Datum)
 
     public List<CraftingRecipe> FromRecipe = [];
     public Dictionary<string, CropData> FromCrop = [];
-    public List<FishSourceInfo> FromFishing = [];
-    public List<FishAreaSourceInfo> FromFishAreas = [];
+    public List<(LocationInfo, SpawnFishData)> FromFishing = [];
     public FishSpawnReq? FishReq = null;
-    public List<ForageSourceInfo> FromForage = [];
 
     public bool SearchMatch(string txt)
     {
@@ -80,9 +59,9 @@ public static class ItemInfoCache
         nameof(Game1.cropData),
         static () => Game1.cropData.GetHashCode()
     );
-    private static readonly HashTracker hashLocation = new(
-        nameof(Game1.locationData),
-        static () => Game1.locationData.GetHashCode()
+    private static readonly HashTracker hashLocationInfo = new(
+        "LocationInfoCache",
+        static () => LocationInfoCache.Cache.GetHashCode()
     );
     private static readonly InvalidateTracker invalFish = InvalidateTracker.GetInvalidateTracker("Data/Fish");
 
@@ -120,7 +99,7 @@ public static class ItemInfoCache
     private static Dictionary<string, ItemInfo>? cache = null;
     public static IReadOnlyDictionary<string, ItemInfo> Cache => GetItemInfo();
 
-    internal static Dictionary<string, ItemInfo> GetItemInfo()
+    internal static IReadOnlyDictionary<string, ItemInfo> GetItemInfo()
     {
         Stopwatch? stopwatch = null;
 
@@ -143,7 +122,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.Log($"ItemInfoCache: refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.Log($"LocationInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
         return cacheRet;
     }
 
@@ -236,57 +215,31 @@ public static class ItemInfoCache
         foreach (ItemInfo itemInfo in cache.Values)
         {
             itemInfo.FromFishing.Clear();
-            itemInfo.FromForage.Clear();
         }
-        hashLocation.Reset();
     }
 
     private static void UpdateFromLocation(Dictionary<string, ItemInfo> cacheRet, bool useCached)
     {
         if (!Context.IsWorldReady)
             return;
-        if (!hashLocation.CheckChanged() && useCached)
+        if (!hashLocationInfo.CheckChanged() && useCached)
             return;
         if (useCached)
             foreach (ItemInfo itemInfo in cacheRet.Values)
             {
                 itemInfo.FromFishing.Clear();
-                itemInfo.FromForage.Clear();
             }
         ModEntry.Log($"UpdateFromLocation({useCached})");
-        foreach ((string locationName, LocationData locationData) in Game1.locationData)
+
+        foreach (LocationInfo locationInfo in LocationInfoCache.Cache.Values)
         {
-            if (Game1.getLocationFromName(locationName) is not GameLocation location)
-            {
+            if (!(locationInfo.Fishes?.Any() ?? false))
                 continue;
-            }
-            // fish
-            foreach (SpawnFishData spawnFishData in locationData.Fish ?? [])
+            foreach ((string qId, SpawnFishData spawnFishData) in locationInfo.Fishes)
             {
-                FishAreaData? fishAreaData = null;
-                if (spawnFishData.Id != null)
+                if (cacheRet.TryGetValue(qId, out ItemInfo? itemInfo))
                 {
-                    locationData.FishAreas.TryGetValue(spawnFishData.Id, out fishAreaData);
-                }
-                foreach (ParsedItemData parsedItemData in GameQueryHelper.SimplifiedResolveAll(spawnFishData, location))
-                {
-                    if (cacheRet.TryGetValue(parsedItemData.QualifiedItemId, out ItemInfo? itemInfo))
-                    {
-                        itemInfo.FromFishing.Add(new(locationName, location, spawnFishData, fishAreaData));
-                    }
-                }
-            }
-            // forage
-            foreach (SpawnForageData spawnForageData in locationData.Forage ?? [])
-            {
-                foreach (
-                    ParsedItemData parsedItemData in GameQueryHelper.SimplifiedResolveAll(spawnForageData, location)
-                )
-                {
-                    if (cacheRet.TryGetValue(parsedItemData.QualifiedItemId, out ItemInfo? itemInfo))
-                    {
-                        itemInfo.FromForage.Add(new(locationName, location, spawnForageData));
-                    }
+                    itemInfo.FromFishing.Add((locationInfo, spawnFishData));
                 }
             }
         }
