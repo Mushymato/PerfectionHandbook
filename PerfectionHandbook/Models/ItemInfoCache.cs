@@ -118,34 +118,33 @@ public static class ItemInfoCache
     }
 
     private static Dictionary<string, ItemInfo>? cache = null;
-    public static IReadOnlyDictionary<string, ItemInfo> Cache
+    public static IReadOnlyDictionary<string, ItemInfo> Cache => GetItemInfo();
+
+    internal static Dictionary<string, ItemInfo> GetItemInfo()
     {
-        get
+        Stopwatch? stopwatch = null;
+
+        Dictionary<string, ItemInfo> cacheRet;
+        bool useCached = false;
+        if (hashObject.CheckChanged() || cache == null)
         {
-            Stopwatch? stopwatch = null;
-
-            Dictionary<string, ItemInfo> cacheRet;
-            bool useCached = false;
-            if (hashObject.CheckChanged() || cache == null)
-            {
-                stopwatch = Stopwatch.StartNew();
-                cacheRet = cache = RefreshCache();
-            }
-            else
-            {
-                cacheRet = cache;
-                useCached = true;
-            }
-
-            UpdateFromRecipes(cacheRet, useCached);
-            UpdateFromCrop(cacheRet, useCached);
-            UpdateFromLocation(cacheRet, useCached);
-            UpdateFishReq(cacheRet, useCached);
-
-            if (stopwatch != null)
-                ModEntry.Log($"ItemInfoCache: refreshed in {stopwatch.Elapsed}", LogLevel.Info);
-            return cacheRet;
+            stopwatch = Stopwatch.StartNew();
+            cacheRet = cache = RefreshCache();
         }
+        else
+        {
+            cacheRet = cache;
+            useCached = true;
+        }
+
+        UpdateFromRecipes(cacheRet, useCached);
+        UpdateFromCrop(cacheRet, useCached);
+        UpdateFromLocation(cacheRet, useCached);
+        UpdateFishReq(cacheRet, useCached);
+
+        if (stopwatch != null)
+            ModEntry.Log($"ItemInfoCache: refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+        return cacheRet;
     }
 
     private static Dictionary<string, ItemInfo> RefreshCache()
@@ -230,8 +229,22 @@ public static class ItemInfoCache
         }
     }
 
+    internal static void ClearLocationCache()
+    {
+        if (cache == null)
+            return;
+        foreach (ItemInfo itemInfo in cache.Values)
+        {
+            itemInfo.FromFishing.Clear();
+            itemInfo.FromForage.Clear();
+        }
+        hashLocation.Reset();
+    }
+
     private static void UpdateFromLocation(Dictionary<string, ItemInfo> cacheRet, bool useCached)
     {
+        if (!Context.IsWorldReady)
+            return;
         if (!hashLocation.CheckChanged() && useCached)
             return;
         if (useCached)

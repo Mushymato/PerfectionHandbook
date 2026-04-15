@@ -4,7 +4,7 @@
   <lane layout="stretch 100%">
     <!-- Crop Calendar -->
     <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" orientation="Vertical">
-      <banner text={:Seed.DisplayName} padding="0,8"/>
+      <label font="dialogue" text={:Seed.DisplayName} padding="0,8" shadow-alpha="0.8"/>
       <lane orientation="Vertical">
         <lane *context={:Settings} margin="4" vertical-content-alignment="Middle">
           <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">

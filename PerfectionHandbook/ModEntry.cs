@@ -29,6 +29,7 @@ public sealed class ModEntry : Mod
         help = helper;
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
+        help.Events.GameLoop.UpdateTicked += OnUpdateTicked_PreloadHandbook;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
@@ -60,15 +61,25 @@ public sealed class ModEntry : Mod
         GoalSkillLeveledContext.Setup();
     }
 
+    private void OnUpdateTicked_PreloadHandbook(object? sender, UpdateTickedEventArgs e)
+    {
+        if (Game1.ticks > 2)
+        {
+            MenuHandler.PreloadHandbook();
+            help.Events.GameLoop.UpdateTicked -= OnUpdateTicked_PreloadHandbook;
+        }
+    }
+
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
-        // preload the handbook
-        DelayedAction.functionAfterDelay(MenuHandler.PreloadHandbook, 0);
+        // preload the cache
+        DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
     }
 
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
     {
         DrawHelper.DisposeCache();
+        ItemInfoCache.ClearLocationCache();
     }
 
     private static void OnLocaleChanged(object? sender, LocaleChangedEventArgs e)

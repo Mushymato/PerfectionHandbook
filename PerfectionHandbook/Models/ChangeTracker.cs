@@ -7,6 +7,7 @@ namespace PerfectionHandbook.Models;
 public interface IChangeTracker
 {
     bool CheckChanged();
+    void Reset();
 }
 
 public sealed class HashTracker(string logName, Func<int> getHash) : IChangeTracker
@@ -24,6 +25,8 @@ public sealed class HashTracker(string logName, Func<int> getHash) : IChangeTrac
         }
         return false;
     }
+
+    public void Reset() => lastHash = -1;
 }
 
 public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
@@ -67,4 +70,6 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
             }
         }
     }
+
+    public void Reset() => isValid = false;
 }

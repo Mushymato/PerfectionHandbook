@@ -57,9 +57,9 @@ public static class MenuHandler
     {
         if (Context.IsSplitScreen && !Context.IsMainPlayer)
             return;
-        Stopwatch stopwatch = Stopwatch.StartNew();
         var _ = ItemInfoCache.Cache;
         IsPreloading = true;
+        Stopwatch stopwatch = Stopwatch.StartNew();
         try
         {
             HandbookContext context = new(Game1.player);
@@ -92,8 +92,12 @@ public static class MenuHandler
         IGoalContext ctx
     )
     {
+        if (ctx.PageCtx == null)
+            return;
+        Stopwatch stopwatch = Stopwatch.StartNew();
         context.SelectedCtx = ctx;
         menuCtrl.Menu.update(gameTime);
         gameTime.TotalGameTime.Add(oneTick);
+        ModEntry.Log($"PreloadUpdatePage({ctx.PageName}) {stopwatch.Elapsed}", LogLevel.Info);
     }
 }
