@@ -159,6 +159,8 @@ public abstract partial class AbstractPageListContext<TDisplay>
     {
         get
         {
+            if (MenuHandler.IsPreloading)
+                return FilteredDisplay.GetRange(0, Math.Min(10, FilteredDisplay.Count));
             List<TDisplay> filteredDisplay = FilteredDisplay;
             if (filteredDisplay.Count == 0)
                 return filteredDisplay;

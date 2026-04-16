@@ -49,6 +49,18 @@ public static class LocationInfoCache
         nameof(Game1.locations),
         static () => Game1.locationData.GetHashCode()
     );
+    private static int lastUpdatedTick = -1;
+
+    internal static bool CheckLastUpdatedTick(ref int lastUpdate)
+    {
+        GetLocationInfo();
+        if (lastUpdate != lastUpdatedTick)
+        {
+            lastUpdate = lastUpdatedTick;
+            return true;
+        }
+        return false;
+    }
 
     private static Dictionary<string, LocationInfo>? cache = null;
     public static IReadOnlyDictionary<string, LocationInfo> Cache => GetLocationInfo();
@@ -66,6 +78,7 @@ public static class LocationInfoCache
             hashLocationData.CheckChanged();
             stopwatch = Stopwatch.StartNew();
             cacheRet = cache = RefreshCache();
+            lastUpdatedTick = Game1.ticks;
         }
         else
         {
@@ -76,6 +89,7 @@ public static class LocationInfoCache
                 {
                     locationInfo.ReloadLocationData();
                 }
+                lastUpdatedTick = Game1.ticks;
             }
         }
 

@@ -59,11 +59,8 @@ public static class ItemInfoCache
         nameof(Game1.cropData),
         static () => Game1.cropData.GetHashCode()
     );
-    private static readonly HashTracker hashLocationInfo = new(
-        "LocationInfoCache",
-        static () => LocationInfoCache.Cache.GetHashCode()
-    );
     private static readonly InvalidateTracker invalFish = InvalidateTracker.GetInvalidateTracker("Data/Fish");
+    private static int lastLocationUpdatedTick = -2;
 
     private static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
 
@@ -122,7 +119,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.Log($"LocationInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
         return cacheRet;
     }
 
@@ -222,7 +219,7 @@ public static class ItemInfoCache
     {
         if (!Context.IsWorldReady)
             return;
-        if (!hashLocationInfo.CheckChanged() && useCached)
+        if (!LocationInfoCache.CheckLastUpdatedTick(ref lastLocationUpdatedTick) && useCached)
             return;
         if (useCached)
             foreach (ItemInfo itemInfo in cacheRet.Values)
