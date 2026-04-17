@@ -12,9 +12,12 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
 {
     public LocationData? Data { get; private set; }
     public IReadOnlyDictionary<string, SpawnFishData>? Fishes { get; private set; }
+    public string? EventAsset { get; private set; }
+    public Dictionary<string, string>? Events { get; private set; }
 
     public void ReloadLocationData()
     {
+        Fishes = null;
         Data = Location.GetData();
         if (Data == null)
             return;
@@ -36,7 +39,23 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
         Fishes = fishes;
     }
 
-    public void ReloadEventData() { }
+    public void ReloadEventData()
+    {
+        if (Location.TryGetLocationEvents(out string assetName, out Dictionary<string, string> events))
+        {
+            EventAsset = assetName;
+            Events = events;
+        }
+        foreach (string eventid in events.Keys)
+        {
+            string[] array = Event.SplitPreconditions(eventid);
+            ModEntry.Log($"EVENT: {array[0]}");
+            for (int i = 1; i < array.Length; i++)
+            {
+                ModEntry.Log($"- {array[i]}");
+            }
+        }
+    }
 }
 
 public static class LocationInfoCache

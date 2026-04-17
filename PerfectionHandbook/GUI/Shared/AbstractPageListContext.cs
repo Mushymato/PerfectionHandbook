@@ -84,7 +84,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
             else if (value >= 1 && (scrollPage * HandbookContext.MAX_SHOWN < FilteredDisplay.Count))
             {
                 scrollPage++;
-                field = 0f;
+                field = 0.0001f;
                 changed = true;
             }
             if (changed)
