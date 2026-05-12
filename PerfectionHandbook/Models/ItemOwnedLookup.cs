@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
@@ -22,7 +21,7 @@ public sealed record OwnedItemGroup(IReadOnlyList<OwnedItem> Things)
 
 public sealed record PlayerOwned(IReadOnlyDictionary<string, OwnedItemGroup> OwnedGroups, IList<Item> OwnedRepr);
 
-public static class ItemOwnedCache
+public static class ItemOwnedLookup
 {
     public static PlayerOwned GetPlayerOwned()
     {

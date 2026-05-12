@@ -148,7 +148,7 @@ public static class Goals
         public float PercentWeight => 11f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalFriendsMadeContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GreatFriends");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)StardropTea");
@@ -157,17 +157,14 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
-            foreach (KeyValuePair<string, CharacterData> characterDatum in Game1.characterData)
+            foreach (NPCInfo npcInfo in NPCInfoCache.Cache.Values)
             {
-                string key = characterDatum.Key;
-                CharacterData value = characterDatum.Value;
-                if (!value.PerfectionScore || GameStateQuery.IsImmutablyFalse(value.CanSocialize))
+                if (!npcInfo.CountForPerfection)
                     continue;
                 total++;
-                if (who.friendshipData.TryGetValue(key, out Friendship? friendship))
+                if (who.friendshipData.TryGetValue(npcInfo.Name, out Friendship? friendship))
                 {
-                    int maxPoints = (value.CanBeRomanced ? 8 : 10) * 250;
-                    if (friendship != null && friendship.Points >= maxPoints)
+                    if (friendship != null && friendship.Points >= npcInfo.MaxPoints)
                         count++;
                 }
             }

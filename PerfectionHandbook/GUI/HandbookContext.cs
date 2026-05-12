@@ -15,7 +15,7 @@ public sealed partial class HandbookContext(Farmer who)
 
     private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
         ? new(new Dictionary<string, OwnedItemGroup>(), [])
-        : ItemOwnedCache.GetPlayerOwned();
+        : ItemOwnedLookup.GetPlayerOwned();
     public IReadOnlyList<GoalContext> PerfectionGoals
     {
         get => field ??= Goals.PerfectionGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();

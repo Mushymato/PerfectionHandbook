@@ -19,7 +19,7 @@ public sealed class HashTracker(string logName, Func<int> getHash) : IChangeTrac
         int newHash = getHash();
         if (newHash != lastHash)
         {
-            ModEntry.Log($"{logName}: changed ({newHash})");
+            ModEntry.LogDebug($"{logName}: changed ({newHash})");
             lastHash = newHash;
             return true;
         }
@@ -53,7 +53,7 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
     {
         if (!isValid)
         {
-            ModEntry.Log($"{AssetName}: changed ({Game1.ticks})");
+            ModEntry.LogDebug($"{AssetName}: changed ({Game1.ticks})");
             isValid = true;
         }
         return isValid;

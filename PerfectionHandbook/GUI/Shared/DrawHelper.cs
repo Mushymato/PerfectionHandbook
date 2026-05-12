@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;
@@ -95,7 +96,7 @@ public static class DrawHelper
     {
         if ((seasonSprites ??= GetAllSeasonSprites()).TryGetValue(season, out SeasonSprite? sprite))
             return sprite;
-        ModEntry.Log($"Unrecognized season: {season}");
+        ModEntry.Log($"Unrecognized season: {season}", LogLevel.Error);
         return seasonSprites[Season.Spring];
     }
 

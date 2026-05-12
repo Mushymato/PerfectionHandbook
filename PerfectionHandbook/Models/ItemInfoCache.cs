@@ -119,7 +119,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.LogDebug($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
         return cacheRet;
     }
 
@@ -142,7 +142,7 @@ public static class ItemInfoCache
         if (!cookingChanged && !craftingChanged && useCached)
             return;
 
-        ModEntry.Log($"UpdateFromRecipes({useCached})");
+        ModEntry.LogDebug($"UpdateFromRecipes({useCached})");
         // when using prior cache, clear previous recipe data
         if (useCached)
             foreach (ItemInfo itemInfo in cacheRet.Values)
@@ -193,16 +193,6 @@ public static class ItemInfoCache
             itemInfo.CountForMonoculture |= cropData.CountForMonoculture;
             itemInfo.FromCrop[seedId] = cropData;
         }
-        foreach (ItemInfo itemInfo in cacheRet.Values)
-        {
-            if (itemInfo.FromCrop.Count > 1)
-            {
-                ModEntry.Log(
-                    $"Item '{itemInfo.Datum.QualifiedItemId}' can be harvested from multiple crops: {string.Join(',', itemInfo.FromCrop.Keys)}",
-                    LogLevel.Info
-                );
-            }
-        }
     }
 
     internal static void ClearLocationCache()
@@ -226,7 +216,7 @@ public static class ItemInfoCache
             {
                 itemInfo.FromFishing.Clear();
             }
-        ModEntry.Log($"UpdateFromLocation({useCached})");
+        ModEntry.LogDebug($"UpdateFromLocation({useCached})");
 
         foreach (LocationInfo locationInfo in LocationInfoCache.Cache.Values)
         {

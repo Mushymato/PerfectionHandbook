@@ -76,7 +76,7 @@ public static class MenuHandler
             foreach (MiscContext ctx in context.MiscPages)
                 PreloadUpdatePage(context, menuCtrl, gameTime, oneTick, ctx);
             menuCtrl.Dispose();
-            ModEntry.Log($"PreloadHandbook {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.LogDebug($"PreloadHandbook {stopwatch.Elapsed}");
         }
         finally
         {
@@ -94,10 +94,8 @@ public static class MenuHandler
     {
         if (ctx.PageCtx == null)
             return;
-        Stopwatch stopwatch = Stopwatch.StartNew();
         context.SelectedCtx = ctx;
         menuCtrl.Menu.update(gameTime);
         gameTime.TotalGameTime.Add(oneTick);
-        ModEntry.Log($"PreloadUpdatePage({ctx.PageName}) {stopwatch.Elapsed}", LogLevel.Info);
     }
 }

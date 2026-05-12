@@ -24,6 +24,8 @@
   <include *case="Perfection_FishCaught" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_MonsterSlayered -->
   <include *case="Perfection_MonsterSlayered" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-monster-slayer" />
+  <!-- Perfection_BestFriendsMade -->
+  <include *case="Perfection_BestFriendsMade" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-friends-made" />
   <!-- Perfection_SkillLeveled -->
   <include *case="Perfection_SkillLeveled" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-skills" />
   <!-- Perfection_BuildingsConstructed -->
