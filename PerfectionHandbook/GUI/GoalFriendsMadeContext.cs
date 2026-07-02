@@ -22,6 +22,10 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
         }
     }
     public bool Needed => CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints;
+    public string FriendshipFillLayout =>
+        CurrentFriendship == null
+            ? "0% stretch"
+            : $"{100f * MathF.Min(CurrentFriendship.Points, NpcInfo.MaxPoints) / NpcInfo.MaxPoints}% stretch";
 
     public readonly string DisplayName = NpcInfo.Chara.displayName;
 

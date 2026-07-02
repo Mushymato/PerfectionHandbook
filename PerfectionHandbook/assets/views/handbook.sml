@@ -4,7 +4,7 @@
   border-thickness="32, 36, 32, 36"
   *switch={PageName}>
   <!-- Main -->
-  <scrollable *case="Main">
+  <scrollable scrollbar-margin="-18,0,0,0" *case="Main">
     <lane layout="stretch content" orientation="Vertical">
       <banner margin="16,8" text={#ui.title.perfection}/>
       <goal-grid goals={:PerfectionGoals}/>
