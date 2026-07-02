@@ -2,7 +2,6 @@ global using SObject = StardewValley.Object;
 using System.Diagnostics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
-using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -21,19 +20,25 @@ public sealed class ModEntry : Mod
     public const string ModId = "mushymato.PerfectionHandbook";
     private static IMonitor mon = null!;
     internal static IModHelper help = null!;
+    internal static ModConfig config = new();
 
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
         mon = Monitor;
         help = helper;
+        config = help.ReadConfig<ModConfig>();
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
-        help.Events.GameLoop.UpdateTicked += OnUpdateTicked_PreloadHandbook;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
         help.Events.Content.LocaleChanged += OnLocaleChanged;
+        help.Events.Input.ButtonsChanged += OnButtonsChanged;
+
+        help.Events.GameLoop.UpdateTicked += OnUpdateTicked_PreloadHandbook;
+
+        // AssetManager.Register();
 
         help.ConsoleCommands.Add(
             "ph-show",
@@ -85,6 +90,14 @@ public sealed class ModEntry : Mod
     private static void OnLocaleChanged(object? sender, LocaleChangedEventArgs e)
     {
         DrawHelper.DisposeCache();
+    }
+
+    private static void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
+    {
+        if (config.ShowHandbookKey.JustPressed())
+        {
+            MenuHandler.ShowHandbook();
+        }
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>

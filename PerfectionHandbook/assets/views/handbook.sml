@@ -38,6 +38,8 @@
   <include *case="Achievement_Polyculture" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
   <!-- Achievement_Monoculture -->
   <include *case="Achievement_Monoculture" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
+  <!-- Misc_Mod_Config -->
+  <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
   <!-- Misc_Crop_Calendar -->
   <include *case="Misc_Crop_Calendar" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
 </frame>

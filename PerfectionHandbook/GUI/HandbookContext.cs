@@ -8,7 +8,6 @@ namespace PerfectionHandbook.GUI;
 
 public sealed partial class HandbookContext(Farmer who)
 {
-    public const int MAX_SHOWN = 15 * 80;
     public static readonly Color ActiveColor = Color.White;
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
@@ -28,6 +27,15 @@ public sealed partial class HandbookContext(Farmer who)
     {
         get =>
             field ??= [
+                new MiscContext(
+                    who,
+                    playerOwned,
+                    "Misc_Mod_Config",
+                    I18n.Ui_Misc_ModConfig(),
+                    ItemRegistry.GetDataOrErrorItem("(O)112"),
+                    string.Empty,
+                    (ctx) => new ModConfigContext(ModEntry.config)
+                ),
                 new MiscContext(
                     who,
                     playerOwned,

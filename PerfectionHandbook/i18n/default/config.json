@@ -1,0 +1,6 @@
+{
+  "config.label.item-per-page": "Item Per Page",
+  "config.tooltip.item-per-page": "Number of rows to display per page on subpages with many items.",
+  "config.label.show-handbook-key": "Show Handbook Key",
+  "config.tooltip.show-handbook-key": "Press this key to display the perfection handbook.",
+}

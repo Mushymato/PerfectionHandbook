@@ -187,8 +187,16 @@ public static class ItemInfoCache
             // hardcoding: skip vanilla wild seeds
             if (cropSheetName.IsEquivalentTo(cropData.Texture) && cropData.SpriteIndex == 23)
                 continue;
-            if (!cacheRet.TryGetValue(ItemRegistry.QualifyItemId(cropData.HarvestItemId), out ItemInfo? itemInfo))
+            string? qId = ItemRegistry.QualifyItemId(cropData.HarvestItemId);
+            if (qId == null)
+            {
+                ModEntry.LogOnce($"Failed to qualify HarvestItemId '{qId}' from crop '{seedId}'", LogLevel.Warn);
                 continue;
+            }
+            if (!cacheRet.TryGetValue(qId, out ItemInfo? itemInfo))
+            {
+                continue;
+            }
             itemInfo.CountForPolyculture |= cropData.CountForPolyculture;
             itemInfo.CountForMonoculture |= cropData.CountForMonoculture;
             itemInfo.FromCrop[seedId] = cropData;
