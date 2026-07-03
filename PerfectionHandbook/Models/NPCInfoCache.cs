@@ -1,15 +1,35 @@
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Characters;
 
 namespace PerfectionHandbook.Models;
 
-public record NPCInfo(string Name, CharacterData Data, NPC Chara)
+public record NPCInfo(string Name, CharacterData Data, NPC? Chara)
 {
     public readonly bool CountForPerfection =
         Data.PerfectionScore && !GameStateQuery.IsImmutablyFalse(Data.CanSocialize);
     public readonly int MaxPoints = (Data.CanBeRomanced ? 8 : 10) * 250;
+
+    public SDUISprite? GetMugShot()
+    {
+        if (Chara == null)
+        {
+            string textureName = "Characters\\" + NPC.getTextureNameForCharacter(Name);
+            if (Game1.content.DoesAssetExist<Texture2D>(textureName))
+            {
+                return new(
+                    Game1.content.Load<Texture2D>(textureName),
+                    Data.MugShotSourceRect ?? new Rectangle(0, (Data.Age == NpcAge.Child) ? 4 : 0, 16, 24)
+                );
+            }
+            return null;
+        }
+        return new(Chara.Sprite.Texture, Chara.getMugShotSourceRect());
+    }
 }
 
 public static class NPCInfoCache
@@ -55,6 +75,13 @@ public static class NPCInfoCache
             cacheRet[chara.Name] = new(chara.Name, data, chara);
             return true;
         });
+        foreach ((string key, CharacterData data) in Game1.characterData)
+        {
+            if (!cacheRet.ContainsKey(key))
+            {
+                cacheRet[key] = new(key, data, null);
+            }
+        }
         return cacheRet;
     }
 }

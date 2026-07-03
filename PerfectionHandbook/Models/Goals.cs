@@ -5,7 +5,6 @@ using PerfectionHandbook.GUI.Shared;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData;
-using StardewValley.GameData.Characters;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Locations;
 

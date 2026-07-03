@@ -45,6 +45,11 @@ public sealed class ModEntry : Mod
             "Debug show the handbook",
             static (cmd, args) => MenuHandler.ShowHandbook()
         );
+        help.ConsoleCommands.Add(
+            "ph-qicat",
+            "Debug show the vanilla perfection tracker",
+            static (cmd, args) => Game1.currentLocation?.ShowQiCat()
+        );
 #if DEBUG
         help.ConsoleCommands.Add(
             "ph-invalidate",

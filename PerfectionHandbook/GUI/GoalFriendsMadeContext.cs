@@ -5,6 +5,7 @@ using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
@@ -27,9 +28,9 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
             ? "0% stretch"
             : $"{100f * MathF.Min(CurrentFriendship.Points, NpcInfo.MaxPoints) / NpcInfo.MaxPoints}% stretch";
 
-    public readonly string DisplayName = NpcInfo.Chara.displayName;
+    public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
 
-    public SDUISprite MugShotSprite = new(NpcInfo.Chara.Sprite.Texture, NpcInfo.Chara.getMugShotSourceRect());
+    public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
 
     public bool SearchMatch(string txt)
     {
@@ -56,8 +57,11 @@ public sealed class GoalFriendsMadeContext(GoalContext goalCtx) : AbstractPageLi
         {
             if (!npcInfo.CountForPerfection)
                 continue;
-            friendDisplay.Add(new(npcInfo));
+            FriendDisplay display = new(npcInfo);
+            if (display.MugShotSprite != null)
+                friendDisplay.Add(display);
         }
+        friendDisplay = friendDisplay.OrderBy(npcInfo => TokenParser.ParseText(npcInfo.DisplayName)).ToList();
         return friendDisplay;
     }
 }

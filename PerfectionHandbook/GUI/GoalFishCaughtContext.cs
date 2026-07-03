@@ -4,6 +4,7 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewValley;
 using StardewValley.GameData.Locations;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
@@ -117,9 +118,10 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                 canCatchInLst.Sort();
                 disp.SetCanCatchIn(canCatchInLst);
                 return (
-                    canCatchIn.Any() ? -int.MaxValue : 0,
-                    disp.Info.Datum.Category,
-                    disp.Info.Datum.QualifiedItemId
+                    TokenParser.ParseText(disp.Info.Datum.DisplayName)
+                // canCatchIn.Any() ? -int.MaxValue : 0,
+                // disp.Info.Datum.Category,
+                // disp.Info.Datum.QualifiedItemId
                 );
             })
             .ToList();
