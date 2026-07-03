@@ -79,8 +79,10 @@ public static class Goals
             int total = 0;
             foreach (ItemInfo sobj in ItemInfoCache.Cache.Values)
             {
+                if (!sobj.IsPotentialShipped)
+                    continue;
                 total++;
-                if (sobj.IsPotentialShipped && who.basicShipped.ContainsKey(sobj.Datum.ItemId))
+                if (who.basicShipped.ContainsKey(sobj.Datum.ItemId))
                     count++;
             }
             return new(who, count, total);
@@ -278,13 +280,12 @@ public static class Goals
             int total = 0;
             foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
             {
-                if (itemInfo.IsCatchableFish)
+                if (!itemInfo.IsCatchableFish)
+                    continue;
+                total++;
+                if (who.fishCaught.ContainsKey(itemInfo.Datum.QualifiedItemId))
                 {
-                    total++;
-                    if (who.fishCaught.ContainsKey(itemInfo.Datum.QualifiedItemId))
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
             return new(who, count, total);
