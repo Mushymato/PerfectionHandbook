@@ -8,11 +8,12 @@ using StardewValley.GameData.Characters;
 
 namespace PerfectionHandbook.Models;
 
-public record NPCInfo(string Name, CharacterData Data, NPC? Chara)
+public sealed record NPCInfo(string Name, CharacterData Data)
 {
     public readonly bool CountForPerfection =
         Data.PerfectionScore && !GameStateQuery.IsImmutablyFalse(Data.CanSocialize);
     public readonly int MaxPoints = (Data.CanBeRomanced ? 8 : 10) * 250;
+    public NPC? Chara { get; set; } = null;
 
     public SDUISprite? GetMugShot()
     {
@@ -53,6 +54,7 @@ public static class NPCInfoCache
         {
             stopwatch = Stopwatch.StartNew();
             cacheRet = cache = RefreshCache();
+            RecheckNPCInstances();
         }
         else
         {
@@ -68,20 +70,26 @@ public static class NPCInfoCache
     private static Dictionary<string, NPCInfo> RefreshCache()
     {
         Dictionary<string, NPCInfo> cacheRet = [];
-        Utility.ForEachVillager(chara =>
-        {
-            if (!Game1.characterData.TryGetValue(chara.Name, out CharacterData? data))
-                return true;
-            cacheRet[chara.Name] = new(chara.Name, data, chara);
-            return true;
-        });
         foreach ((string key, CharacterData data) in Game1.characterData)
         {
             if (!cacheRet.ContainsKey(key))
             {
-                cacheRet[key] = new(key, data, null);
+                cacheRet[key] = new(key, data);
             }
         }
         return cacheRet;
+    }
+
+    public static void RecheckNPCInstances()
+    {
+        if (cache == null || !Context.IsWorldReady)
+            return;
+        Utility.ForEachVillager(chara =>
+        {
+            if (!cache.TryGetValue(chara.Name, out NPCInfo? npcInfo))
+                return true;
+            npcInfo.Chara = chara;
+            return true;
+        });
     }
 }

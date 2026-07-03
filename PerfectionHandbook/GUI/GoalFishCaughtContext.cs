@@ -79,8 +79,6 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                 HashSet<string> canCatchIn = [];
                 foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
                 {
-                    if (!Game1.player.locationsVisited.Contains(locInfo.Location.NameOrUniqueName))
-                        continue;
                     Season? season = spawn.Season;
                     if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
                         continue;
@@ -102,16 +100,13 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                 switch (disp.Info.Datum.QualifiedItemId)
                 {
                     case "(O)158":
-                        if (Game1.player.deepestMineLevel >= 20)
-                            canCatchIn.Add(I18n.Location_Mines_20());
+                        canCatchIn.Add(I18n.Location_Mines_20());
                         break;
                     case "(O)161":
-                        if (Game1.player.deepestMineLevel >= 60)
-                            canCatchIn.Add(I18n.Location_Mines_60());
+                        canCatchIn.Add(I18n.Location_Mines_60());
                         break;
                     case "(O)162":
-                        if (Game1.player.deepestMineLevel >= 100)
-                            canCatchIn.Add(I18n.Location_Mines_100());
+                        canCatchIn.Add(I18n.Location_Mines_100());
                         break;
                 }
                 List<string> canCatchInLst = canCatchIn.ToList();

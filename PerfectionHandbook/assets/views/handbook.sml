@@ -18,7 +18,7 @@
   <include *case="Perfection_ItemShipped" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_RecipesCooked -->
   <include *case="Perfection_RecipesCooked" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
-  <!-- Perfection_RecipesCooked -->
+  <!-- Perfection_RecipesCrafted -->
   <include *case="Perfection_RecipesCrafted" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_FishCaught -->
   <include *case="Perfection_FishCaught" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />

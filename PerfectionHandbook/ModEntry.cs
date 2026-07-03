@@ -35,6 +35,7 @@ public sealed class ModEntry : Mod
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
         help.Events.Content.LocaleChanged += OnLocaleChanged;
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
+        help.Events.GameLoop.DayStarted += OnDayStarted;
 
         help.Events.GameLoop.UpdateTicked += OnUpdateTicked_PreloadHandbook;
 
@@ -103,6 +104,11 @@ public sealed class ModEntry : Mod
         {
             MenuHandler.ShowHandbook();
         }
+    }
+
+    private void OnDayStarted(object? sender, DayStartedEventArgs e)
+    {
+        NPCInfoCache.RecheckNPCInstances();
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>
