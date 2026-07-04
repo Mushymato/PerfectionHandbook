@@ -19,14 +19,15 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
     {
         if (who.fishCaught.TryGetValue(Info.Datum.QualifiedItemId, out int[] pair))
         {
-            Count = pair[0];
+            completedCount = pair[0];
             biggestCatch = pair[1];
         }
         else
         {
-            Count = 0;
+            completedCount = 0;
             biggestCatch = 0;
         }
+        Count = completedCount;
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
@@ -64,8 +65,15 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
-    : AbstractItemCountContext<FishCaughtDisplay>(goalCtx, canToggleNeeded: true, canToggleCountMode: false)
+    : AbstractItemCountContext<FishCaughtDisplay>(
+        goalCtx,
+        canToggleNeeded: true,
+        canToggleCountMode: true,
+        defaultCountMode: CountMode.Completed
+    )
 {
+    public override string CompleteCountToggleText => I18n.Ui_CountingFished();
+
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsCatchableFish;
 
     protected override FishCaughtDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) => new(itemInfo, ownedCount);

@@ -14,7 +14,7 @@ public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : Abstra
 }
 
 public sealed class GoalMuseumDonateContext(IGoalContext goalCtx)
-    : AbstractItemCountContext<MuseumDonateDisplay>(goalCtx, false)
+    : AbstractItemCountContext<MuseumDonateDisplay>(goalCtx, canToggleNeeded: true, canToggleCountMode: false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsMuseumDonation;
 

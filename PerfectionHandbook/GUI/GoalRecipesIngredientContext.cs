@@ -13,8 +13,8 @@ public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedC
 {
     [Notify]
     public int neededCount = 0;
-    public virtual bool HasNeededCount => NeededCount > 0;
     public override bool Needed => NeededCount > 0;
+    public Color DigitTint => Count >= NeededCount ? Color.LimeGreen : Color.White;
     private List<NeededForInfo> notYetCrafted = [];
 
     public override Color DisplayTint =>

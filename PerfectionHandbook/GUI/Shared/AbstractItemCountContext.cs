@@ -86,7 +86,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     )
         : base(goalCtx, canToggleNeeded: canToggleNeeded, canToggleCountMode: canToggleCountMode)
     {
-        if (defaultCountMode != CountMode.Owned && canToggleCountMode)
+        if (defaultCountMode != CountMode.Owned)
             ClickToggleCount();
         else
             SetAllCountMode();

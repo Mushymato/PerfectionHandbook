@@ -113,7 +113,15 @@ public static class ItemInfoCache
 
     private static Dictionary<string, ItemInfo>? cache = null;
     public static IReadOnlyDictionary<string, ItemInfo> Cache => GetItemInfo();
-    public static Dictionary<string, NeededForInfoGroup> NeededForRecipe { get; private set; } = [];
+    private static readonly Dictionary<string, NeededForInfoGroup> neededForRecipe = [];
+    public static Dictionary<string, NeededForInfoGroup> NeededForRecipe
+    {
+        get
+        {
+            GetItemInfo();
+            return neededForRecipe;
+        }
+    }
 
     internal static IReadOnlyDictionary<string, ItemInfo> GetItemInfo()
     {
@@ -191,7 +199,7 @@ public static class ItemInfoCache
                 itemInfo.FromRecipe.Clear();
             }
         }
-        NeededForRecipe.Clear();
+        neededForRecipe.Clear();
         // cooking
         PopulateRecipes(cacheRet, true);
         // crafting
@@ -263,11 +271,18 @@ public static class ItemInfoCache
                         if (qId == null)
                         {
                             // spacecore recipe overrides?
-                            ModEntry.Log($"spacecore? {ingrediantId}");
                             key = $"{ModEntry.ModId}/contexttag_{ingrediantId}";
                             ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
                                 itemInfo.ReprItem.HasContextTag(ingrediantId)
                             );
+                            if (ingredientInfo == null)
+                            {
+                                ModEntry.LogOnce(
+                                    $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
+                                    LogLevel.Warn
+                                );
+                                continue;
+                            }
                             getOwned = static (info, owned) =>
                             {
                                 int ownedCount = 0;
@@ -297,10 +312,10 @@ public static class ItemInfoCache
                             };
                         }
                     }
-                    if (!NeededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
+                    if (!neededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
                     {
                         neededForGroup = new(ingredientInfo, ingrediantId, getOwned);
-                        NeededForRecipe[key] = neededForGroup;
+                        neededForRecipe[key] = neededForGroup;
                     }
                     neededForGroup.Recipes.Add(new(count, recipe, itemInfo));
                 }
