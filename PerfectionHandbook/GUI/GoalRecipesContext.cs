@@ -42,25 +42,8 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
 
     public override void SetStatus(Farmer who)
     {
-        if (Recipe.isCookingRecipe)
-        {
-            learnt = who.cookingRecipes.ContainsKey(Recipe.name);
-            completedCount = who.recipesCooked.GetValueOrDefault(Info.Datum.ItemId, 0);
-        }
-        else
-        {
-            if (who.craftingRecipes.TryGetValue(Recipe.name, out int crafted))
-            {
-                learnt = true;
-                completedCount = crafted;
-            }
-            else
-            {
-                learnt = false;
-                completedCount = 0;
-            }
-        }
-
+        int completed = Recipe.GetRecipeCraftedCount(Info, who);
+        learnt = completed >= 0;
         UpdateCount();
     }
 }

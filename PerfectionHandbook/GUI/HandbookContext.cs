@@ -45,6 +45,15 @@ public sealed partial class HandbookContext(Farmer who)
                     string.Empty,
                     (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
                 ),
+                new MiscContext(
+                    who,
+                    playerOwned,
+                    "Misc_Required_Ingredients",
+                    I18n.Ui_Misc_Ingredients(),
+                    ItemRegistry.GetDataOrErrorItem("(O)419"),
+                    string.Empty,
+                    (ctx) => new GoalRecipesIngredientContext(ctx)
+                ),
             ];
     } = null;
 

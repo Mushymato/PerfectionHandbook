@@ -1,8 +1,8 @@
 <lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" margin="0,0,16,0">
-  <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="400px stretch" />
+  <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="400px content" />
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     *if={:^CanToggleNeeded}
-    font="dialogue"
+    font="small"
     layout="120px content"
     margin="4,0"
     text={#ui.showing-done}
@@ -12,8 +12,8 @@
   />
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     *if={:^CanToggleCountMode}
-    font="dialogue"
-    layout="180px content"
+    font="small"
+    layout="120px content"
     margin="4,0"
     text={^CountToggleText}
     left-click=|^ClickToggleCount()|

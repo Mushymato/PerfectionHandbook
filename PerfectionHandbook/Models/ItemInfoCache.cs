@@ -18,6 +18,24 @@ public sealed record FishSpawnReq(
     IReadOnlyList<string>? CrabPotGroups
 );
 
+public sealed record NeededForInfo(int Count, CraftingRecipe Recipe, ItemInfo ResultItem);
+
+public sealed record NeededForInfoGroup(
+    ItemInfo ReprInfo,
+    string RawId,
+    Func<NeededForInfoGroup, PlayerOwned, int> GetOwnedFunc
+)
+{
+    public List<NeededForInfo> Recipes = [];
+
+    public string? CraftingDesc => Recipes.FirstOrDefault()?.Recipe.getNameFromIndex(RawId);
+
+    public List<NeededForInfo> GetNotYetCrafted(Farmer who) =>
+        Recipes.Where(recipe => recipe.Recipe.GetRecipeCraftedCount(recipe.ResultItem, who) <= 0).ToList();
+
+    public int GetOwned(PlayerOwned owned) => GetOwnedFunc(this, owned);
+}
+
 public sealed record ItemInfo(ParsedItemData Datum)
 {
     public Item ReprItem = ItemRegistry.Create(Datum.QualifiedItemId);
@@ -95,6 +113,7 @@ public static class ItemInfoCache
 
     private static Dictionary<string, ItemInfo>? cache = null;
     public static IReadOnlyDictionary<string, ItemInfo> Cache => GetItemInfo();
+    public static Dictionary<string, NeededForInfoGroup> NeededForRecipe { get; private set; } = [];
 
     internal static IReadOnlyDictionary<string, ItemInfo> GetItemInfo()
     {
@@ -119,7 +138,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.LogDebug($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
         return cacheRet;
     }
 
@@ -135,6 +154,27 @@ public static class ItemInfoCache
         return cache;
     }
 
+    public static int GetRecipeCraftedCount(this CraftingRecipe recipe, ItemInfo itemInfo, Farmer who)
+    {
+        if (recipe.isCookingRecipe)
+        {
+            if (!who.cookingRecipes.ContainsKey(recipe.name))
+                return -1;
+            return who.recipesCooked.GetValueOrDefault(itemInfo.Datum.ItemId, 0);
+        }
+        else
+        {
+            if (who.craftingRecipes.TryGetValue(recipe.name, out int crafted))
+            {
+                return crafted;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+
     private static void UpdateFromRecipes(Dictionary<string, ItemInfo> cacheRet, bool useCached)
     {
         bool cookingChanged = hashCooking.CheckChanged();
@@ -145,8 +185,13 @@ public static class ItemInfoCache
         ModEntry.LogDebug($"UpdateFromRecipes({useCached})");
         // when using prior cache, clear previous recipe data
         if (useCached)
+        {
             foreach (ItemInfo itemInfo in cacheRet.Values)
+            {
                 itemInfo.FromRecipe.Clear();
+            }
+        }
+        NeededForRecipe.Clear();
         // cooking
         PopulateRecipes(cacheRet, true);
         // crafting
@@ -165,6 +210,78 @@ public static class ItemInfoCache
                     newCache[datum.QualifiedItemId] = itemInfo;
                 }
                 itemInfo.FromRecipe.Add(recipe);
+
+                foreach ((string itemId, int count) in recipe.recipeList)
+                {
+                    string? key = null;
+                    ItemInfo? ingredientInfo;
+                    Func<NeededForInfoGroup, PlayerOwned, int> getOwned;
+                    if (int.TryParse(itemId, out int ingredientNum))
+                    {
+                        if (ingredientNum == -777)
+                        {
+                            if (!newCache.TryGetValue("(O)495", out ingredientInfo))
+                                continue;
+                            getOwned = static (info, owned) =>
+                            {
+                                int ownedCount = 0;
+                                if (owned.OwnedGroups.TryGetValue("(O)495", out OwnedItemGroup? group))
+                                    ownedCount += group.CountRepr.ReprStack;
+                                if (owned.OwnedGroups.TryGetValue("(O)496", out group))
+                                    ownedCount += group.CountRepr.ReprStack;
+                                if (owned.OwnedGroups.TryGetValue("(O)497", out group))
+                                    ownedCount += group.CountRepr.ReprStack;
+                                if (owned.OwnedGroups.TryGetValue("(O)495", out group))
+                                    ownedCount += group.CountRepr.ReprStack;
+                                return ownedCount;
+                            };
+                            key = $"{ModEntry.ModId}_wild_seeds";
+                        }
+                        else
+                        {
+                            ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
+                                itemInfo.Datum.Category == ingredientNum
+                            );
+                            if (ingredientInfo == null)
+                                continue;
+                            getOwned = static (info, owned) =>
+                            {
+                                int ownedCount = 0;
+                                foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
+                                {
+                                    if (group.CountRepr.Category.ToString() == info.RawId)
+                                        ownedCount += group.CountRepr.ReprStack;
+                                }
+                                return ownedCount;
+                            };
+                            key = $"{ModEntry.ModId}_category_{ingredientNum}";
+                        }
+                    }
+                    else
+                    {
+                        string qId = ItemRegistry.QualifyItemId(itemId);
+                        if (qId == null || !newCache.TryGetValue(qId, out ingredientInfo))
+                            continue;
+                        key = qId;
+                        getOwned = static (info, owned) =>
+                        {
+                            if (
+                                owned.OwnedGroups.TryGetValue(
+                                    info.ReprInfo.Datum.QualifiedItemId,
+                                    out OwnedItemGroup? group
+                                )
+                            )
+                                return group.CountRepr.ReprStack;
+                            return 0;
+                        };
+                    }
+                    if (!NeededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
+                    {
+                        neededForGroup = new(ingredientInfo, itemId, getOwned);
+                        NeededForRecipe[key] = neededForGroup;
+                    }
+                    neededForGroup.Recipes.Add(new(count, recipe, itemInfo));
+                }
             }
         }
     }

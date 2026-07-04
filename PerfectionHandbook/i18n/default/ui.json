@@ -22,6 +22,8 @@
   "ui.goals.item-shipped": "Items Shipped",
   "ui.goals.buildings-constructed": "Buildings Constructed",
   "ui.misc.crop-calendar": "Crop Calendar",
+  "ui.misc.ingredients": "Ingredients",
+  "ui.misc.needed-for": "Needed for:",
   "ui.crop.month": "Month: {{month}}",
   "ui.misc.mod-config": "Mod Config"
 }

@@ -121,7 +121,7 @@ public sealed record SpacecoreSkillDisplay(string SkillId)
     protected override int GetSkillExperience(Farmer who) => spaceCoreApi!.GetExperienceForCustomSkill(who, SkillId);
 }
 
-public sealed class GoalSkillLeveledContext(GoalContext goalCtx)
+public sealed class GoalSkillLeveledContext(IGoalContext goalCtx)
     : AbstractPageListContext<AbstractSkillDisplay>(goalCtx)
 {
     internal static int VanillaMaxLevel = 10;

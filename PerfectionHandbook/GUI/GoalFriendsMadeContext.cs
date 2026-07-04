@@ -48,7 +48,7 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
     }
 }
 
-public sealed class GoalFriendsMadeContext(GoalContext goalCtx) : AbstractPageListContext<FriendDisplay>(goalCtx)
+public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendDisplay>(goalCtx)
 {
     protected override IReadOnlyList<FriendDisplay> MakeAllDisplay()
     {

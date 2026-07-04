@@ -42,6 +42,8 @@
   <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
   <!-- Misc_Crop_Calendar -->
   <include *case="Misc_Crop_Calendar" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
+  <!-- Misc_Required_Ingredients -->
+  <include *case="Misc_Required_Ingredients" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-ingredient-count" />
 </frame>
 
 <template name="goal-grid">

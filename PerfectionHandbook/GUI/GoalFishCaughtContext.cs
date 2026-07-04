@@ -4,7 +4,6 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using StardewValley;
 using StardewValley.GameData.Locations;
-using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
@@ -64,7 +63,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
     }
 }
 
-public sealed class GoalFishCaughtContext(GoalContext goalCtx)
+public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
     : AbstractItemCountContext<FishCaughtDisplay>(goalCtx, false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsCatchableFish;
@@ -113,10 +112,9 @@ public sealed class GoalFishCaughtContext(GoalContext goalCtx)
                 canCatchInLst.Sort();
                 disp.SetCanCatchIn(canCatchInLst);
                 return (
-                    TokenParser.ParseText(disp.Info.Datum.DisplayName)
-                // canCatchIn.Any() ? -int.MaxValue : 0,
-                // disp.Info.Datum.Category,
-                // disp.Info.Datum.QualifiedItemId
+                    canCatchIn.Any() ? -int.MaxValue : 0,
+                    disp.Info.Datum.Category,
+                    disp.Info.Datum.QualifiedItemId
                 );
             })
             .ToList();

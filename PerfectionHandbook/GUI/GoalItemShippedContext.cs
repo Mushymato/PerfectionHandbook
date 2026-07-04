@@ -14,7 +14,7 @@ public record ItemShippedDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCo
     }
 }
 
-public sealed class GoalItemShippedContext(GoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)
+public sealed class GoalItemShippedContext(IGoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
 

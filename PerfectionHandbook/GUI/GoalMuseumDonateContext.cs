@@ -13,7 +13,7 @@ public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : Abstra
     public override void SetStatus(Farmer who) { }
 }
 
-public sealed class GoalMuseumDonateContext(GoalContext goalCtx)
+public sealed class GoalMuseumDonateContext(IGoalContext goalCtx)
     : AbstractItemCountContext<MuseumDonateDisplay>(goalCtx, false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsMuseumDonation;

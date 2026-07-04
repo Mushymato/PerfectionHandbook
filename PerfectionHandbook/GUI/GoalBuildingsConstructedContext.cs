@@ -29,7 +29,7 @@ public sealed record BuildingsBuiltDisplay(
     public void SetStatus(Farmer who) { }
 }
 
-public sealed class GoalBuildingsConstructedContext(GoalContext goalCtx)
+public sealed class GoalBuildingsConstructedContext(IGoalContext goalCtx)
     : AbstractPageListContext<BuildingsBuiltDisplay>(goalCtx)
 {
     private static readonly string[] ObelisksAndClock =

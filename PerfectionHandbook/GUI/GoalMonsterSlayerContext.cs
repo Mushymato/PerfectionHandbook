@@ -65,7 +65,7 @@ public sealed partial record MonsterSlayerDisplay(string QuestName, List<string>
     }
 }
 
-public sealed class GoalMonsterSlayerContext(GoalContext goalCtx)
+public sealed class GoalMonsterSlayerContext(IGoalContext goalCtx)
     : AbstractPageListContext<MonsterSlayerDisplay>(goalCtx)
 {
     protected override IReadOnlyList<MonsterSlayerDisplay> MakeAllDisplay()

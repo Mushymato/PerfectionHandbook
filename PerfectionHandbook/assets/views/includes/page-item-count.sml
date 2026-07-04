@@ -9,6 +9,7 @@
       scrollbar-margin="-18,0,0,0"
       z-index="2">
       <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content">
+        
         <panel *repeat={FilteredDisplayPaginated}
           layout="64px 64px"
           focusable="true"
@@ -24,6 +25,7 @@
             layout="64px 64px"
             shadow-offset="-4,4"
             +transition:scale="100ms EaseInSine"
+            horizontal-alignment="Middle"
           />
           <digits *if={HasCount} scale="3" number={Count} />
         </panel>

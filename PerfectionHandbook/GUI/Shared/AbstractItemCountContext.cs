@@ -80,13 +80,16 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
 {
     public AbstractItemCountContext(
         IGoalContext goalCtx,
+        bool canToggleNeeded = true,
         bool canToggleCountMode = true,
         CountMode defaultCountMode = CountMode.Owned
     )
-        : base(goalCtx, canToggleCountMode: canToggleCountMode)
+        : base(goalCtx, canToggleNeeded: canToggleNeeded, canToggleCountMode: canToggleCountMode)
     {
         if (defaultCountMode != CountMode.Owned && canToggleCountMode)
             ClickToggleCount();
+        else
+            SetAllCountMode();
     }
 
     protected override IReadOnlyList<TDisplay> MakeAllDisplay()
@@ -144,6 +147,11 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
                 CountToggleText = I18n.Ui_CountingOwned();
                 break;
         }
+        SetAllCountMode();
+    }
+
+    private void SetAllCountMode()
+    {
         foreach (TDisplay display in AllDisplay)
         {
             display.SetCountMode(countMode);
