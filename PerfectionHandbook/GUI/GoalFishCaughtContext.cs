@@ -64,7 +64,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
-    : AbstractItemCountContext<FishCaughtDisplay>(goalCtx, false)
+    : AbstractItemCountContext<FishCaughtDisplay>(goalCtx, canToggleNeeded: true, canToggleCountMode: false)
 {
     protected override bool ShouldInclude(ItemInfo itemInfo) => itemInfo.IsCatchableFish;
 

@@ -16,6 +16,7 @@
   "ui.counting-shipped": "Shipped",
   "ui.counting-cooked": "Cooked",
   "ui.counting-crafted": "Crafted",
+  "ui.counting-fished": "Fished",
   "ui.title.perfection": "Perfection",
   "ui.title.achievements": "Achievements",
   "ui.title.miscellaneous": "Miscellaneous",
@@ -25,5 +26,7 @@
   "ui.misc.ingredients": "Ingredients",
   "ui.misc.needed-for": "Needed for:",
   "ui.crop.month": "Month: {{month}}",
-  "ui.misc.mod-config": "Mod Config"
+  "ui.misc.mod-config": "Mod Config",
+  "ui.ingredients.and-more": "...",
+  "ui.ingredients.total": "({{count}} total)"
 }

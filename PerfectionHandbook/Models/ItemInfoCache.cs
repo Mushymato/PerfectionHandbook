@@ -211,12 +211,12 @@ public static class ItemInfoCache
                 }
                 itemInfo.FromRecipe.Add(recipe);
 
-                foreach ((string itemId, int count) in recipe.recipeList)
+                foreach ((string ingrediantId, int count) in recipe.recipeList)
                 {
                     string? key = null;
-                    ItemInfo? ingredientInfo;
-                    Func<NeededForInfoGroup, PlayerOwned, int> getOwned;
-                    if (int.TryParse(itemId, out int ingredientNum))
+                    ItemInfo? ingredientInfo = null;
+                    Func<NeededForInfoGroup, PlayerOwned, int>? getOwned = null;
+                    if (int.TryParse(ingrediantId, out int ingredientNum))
                     {
                         if (ingredientNum == -777)
                         {
@@ -235,9 +235,9 @@ public static class ItemInfoCache
                                     ownedCount += group.CountRepr.ReprStack;
                                 return ownedCount;
                             };
-                            key = $"{ModEntry.ModId}_wild_seeds";
+                            key = $"{ModEntry.ModId}/wild_seeds";
                         }
-                        else
+                        else if (ingredientNum < 0)
                         {
                             ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
                                 itemInfo.Datum.Category == ingredientNum
@@ -254,30 +254,52 @@ public static class ItemInfoCache
                                 }
                                 return ownedCount;
                             };
-                            key = $"{ModEntry.ModId}_category_{ingredientNum}";
+                            key = $"{ModEntry.ModId}/category_{ingredientNum}";
                         }
                     }
-                    else
+                    if (key == null || ingredientInfo == null || getOwned == null)
                     {
-                        string qId = ItemRegistry.QualifyItemId(itemId);
-                        if (qId == null || !newCache.TryGetValue(qId, out ingredientInfo))
-                            continue;
-                        key = qId;
-                        getOwned = static (info, owned) =>
+                        string qId = ItemRegistry.QualifyItemId(ingrediantId);
+                        if (qId == null)
                         {
-                            if (
-                                owned.OwnedGroups.TryGetValue(
-                                    info.ReprInfo.Datum.QualifiedItemId,
-                                    out OwnedItemGroup? group
+                            // spacecore recipe overrides?
+                            ModEntry.Log($"spacecore? {ingrediantId}");
+                            key = $"{ModEntry.ModId}/contexttag_{ingrediantId}";
+                            ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
+                                itemInfo.ReprItem.HasContextTag(ingrediantId)
+                            );
+                            getOwned = static (info, owned) =>
+                            {
+                                int ownedCount = 0;
+                                foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
+                                {
+                                    if (group.CountRepr.HasContextTag(info.RawId))
+                                        ownedCount += group.CountRepr.ReprStack;
+                                }
+                                return ownedCount;
+                            };
+                        }
+                        else
+                        {
+                            if (!newCache.TryGetValue(qId, out ingredientInfo))
+                                continue;
+                            key = qId;
+                            getOwned = static (info, owned) =>
+                            {
+                                if (
+                                    owned.OwnedGroups.TryGetValue(
+                                        info.ReprInfo.Datum.QualifiedItemId,
+                                        out OwnedItemGroup? group
+                                    )
                                 )
-                            )
-                                return group.CountRepr.ReprStack;
-                            return 0;
-                        };
+                                    return group.CountRepr.ReprStack;
+                                return 0;
+                            };
+                        }
                     }
                     if (!NeededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
                     {
-                        neededForGroup = new(ingredientInfo, itemId, getOwned);
+                        neededForGroup = new(ingredientInfo, ingrediantId, getOwned);
                         NeededForRecipe[key] = neededForGroup;
                     }
                     neededForGroup.Recipes.Add(new(count, recipe, itemInfo));

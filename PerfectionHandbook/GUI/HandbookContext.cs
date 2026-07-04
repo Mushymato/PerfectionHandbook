@@ -30,15 +30,6 @@ public sealed partial class HandbookContext(Farmer who)
                 new MiscContext(
                     who,
                     playerOwned,
-                    "Misc_Mod_Config",
-                    I18n.Ui_Misc_ModConfig(),
-                    ItemRegistry.GetDataOrErrorItem("(O)112"),
-                    string.Empty,
-                    (ctx) => new ModConfigContext(ModEntry.config)
-                ),
-                new MiscContext(
-                    who,
-                    playerOwned,
                     "Misc_Crop_Calendar",
                     I18n.Ui_Misc_CropCalendar(),
                     ItemRegistry.GetDataOrErrorItem("(O)889"),
@@ -53,6 +44,15 @@ public sealed partial class HandbookContext(Farmer who)
                     ItemRegistry.GetDataOrErrorItem("(O)419"),
                     string.Empty,
                     (ctx) => new GoalRecipesIngredientContext(ctx)
+                ),
+                new MiscContext(
+                    who,
+                    playerOwned,
+                    "Misc_Mod_Config",
+                    I18n.Ui_Misc_ModConfig(),
+                    ItemRegistry.GetDataOrErrorItem("(O)112"),
+                    string.Empty,
+                    (ctx) => new ModConfigContext(ModEntry.config)
                 ),
             ];
     } = null;

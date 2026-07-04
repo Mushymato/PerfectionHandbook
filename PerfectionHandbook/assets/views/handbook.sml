@@ -1,4 +1,4 @@
-<frame layout="80%[1280..] 85%[700..]"
+<frame layout="80%[1280..] 80%[700..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 32, 36"
@@ -6,12 +6,29 @@
   <!-- Main -->
   <scrollable scrollbar-margin="-18,0,0,0" *case="Main">
     <lane layout="stretch content" orientation="Vertical">
-      <banner margin="16,8" text={#ui.title.perfection}/>
+      <!-- Misc -->
+      <lane margin="6,4,16,4" orientation="Horizontal" layout="stretch content">
+        <panel layout="stretch content">
+          <banner margin="16,8" text={#ui.title.perfection} />
+        </panel>
+        <button *repeat={:MiscPages}
+          default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
+          hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
+          left-click=|^ChangePage(this)|
+          screen-read={:DisplayName}
+          tooltip={:DisplayName}
+          horizontal-content-alignment="Start"
+          vertical-content-alignment="Start"
+          margin="2"
+          padding="12,12,16,0"
+          layout="72px 72px">
+          <image sprite={:DisplayIcon} layout="48px 48px" />
+        </button>
+      </lane>
+      <!-- Goals -->
       <goal-grid goals={:PerfectionGoals}/>
       <banner margin="16,8" text={#ui.title.achievements}/>
       <goal-grid goals={:AchievementGoals}/>
-      <banner margin="16,8" text={#ui.title.miscellaneous}/>
-      <goal-grid goals={:MiscPages}/>
     </lane>
   </scrollable>
   <!-- Perfection_ItemShipped -->

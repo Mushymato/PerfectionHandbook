@@ -36,16 +36,29 @@ public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedC
             RequiredItemAmount: NeededCount
         );
 
-    public override string GetTooltipDesc() =>
-        string.Concat(
+    private const string SPACER = "  ";
+
+    public override string GetTooltipDesc()
+    {
+        List<string> recipeNames = [];
+        foreach (NeededForInfo notYet in notYetCrafted)
+        {
+            recipeNames.Add(notYet.Recipe.DisplayName);
+            if (recipeNames.Count >= 9)
+            {
+                recipeNames.Add(I18n.Ui_Ingredients_AndMore());
+                break;
+            }
+        }
+        return string.Concat(
             I18n.Ui_Misc_NeededFor(),
             Environment.NewLine,
-            "  ",
-            string.Join(
-                string.Concat(Environment.NewLine, "  "),
-                notYetCrafted.Select(recipe => recipe.Recipe.DisplayName)
-            )
+            SPACER,
+            string.Join(string.Concat(Environment.NewLine, SPACER), recipeNames),
+            Environment.NewLine,
+            I18n.Ui_Ingredients_Total(notYetCrafted.Count)
         );
+    }
 }
 
 public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
