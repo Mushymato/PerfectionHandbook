@@ -24,7 +24,7 @@
   "ui.goals.buildings-constructed": "Buildings Constructed",
   "ui.misc.crop-calendar": "Crop Calendar",
   "ui.misc.ingredients": "Ingredients",
-  "ui.misc.needed-for": "Needed for:",
+  "ui.misc.needed-for": "You have {{count}} and you need {{need}} for:",
   "ui.crop.month": "Month: {{month}}",
   "ui.misc.mod-config": "Mod Config",
   "ui.ingredients.and-more": "...",

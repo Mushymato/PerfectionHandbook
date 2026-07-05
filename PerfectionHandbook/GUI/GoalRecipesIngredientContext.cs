@@ -51,7 +51,7 @@ public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedC
             }
         }
         return string.Concat(
-            I18n.Ui_Misc_NeededFor(),
+            I18n.Ui_Misc_NeededFor(Count, NeededCount),
             Environment.NewLine,
             SPACER,
             string.Join(string.Concat(Environment.NewLine, SPACER), recipeNames),
