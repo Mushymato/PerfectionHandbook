@@ -399,18 +399,23 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
             _ => itemInfo.FromCrop.Any(),
         };
 
-    protected override IReadOnlyList<CropDisplay> SortAllDisplay(List<CropDisplay> displayList)
+    protected override List<CropDisplay> SortAllDisplay(List<CropDisplay> displayList)
     {
-        IReadOnlyList<CropDisplay> sorted = displayList
-            .OrderBy(static disp =>
-            {
-                Season firstSeason = disp.CropDetail.CropSeasons.First();
-                return (firstSeason, disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId);
-            })
-            .ToList();
-        if (sorted.Any())
-            Hovered = sorted.FirstOrDefault(info => info.CropDetail.CropSeasons.Contains(Game1.season)) ?? sorted[0];
-        return sorted;
+        if (SortMode == SORTMODE_DEFAULT)
+        {
+            List<CropDisplay> sorted = displayList
+                .OrderBy(static disp =>
+                {
+                    Season firstSeason = disp.CropDetail.CropSeasons.First();
+                    return (firstSeason, disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId);
+                })
+                .ToList();
+            if (sorted.Any())
+                Hovered =
+                    sorted.FirstOrDefault(info => info.CropDetail.CropSeasons.Contains(Game1.season)) ?? sorted[0];
+            return sorted;
+        }
+        return base.SortAllDisplay(displayList);
     }
 
     protected override void UpdateDisplayingFulfillment(GoalFulfillment fulfillment)

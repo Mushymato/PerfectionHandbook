@@ -4,6 +4,9 @@
     "agriculturist": {
       "SourceRect": "80,624,16,16",
       "Scale": 3
+    },
+    "organize": {
+      "SourceRect": "165,443,10,11"
     }
   }
 }

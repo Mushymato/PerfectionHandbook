@@ -34,10 +34,6 @@ public static class ItemOwnedLookup
             {
                 if (ctx.Item == null)
                     return true;
-                if (ctx.Item.QualifiedItemId == "(O)176")
-                {
-                    ModEntry.Log($"{string.Join('>', ctx.GetDisplayPath())}");
-                }
 
                 foreach (object path in ctx.GetPath().Reverse())
                 {

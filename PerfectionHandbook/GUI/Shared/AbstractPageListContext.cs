@@ -17,6 +17,12 @@ public abstract partial class AbstractPageListContext<TDisplay>
 
     public readonly bool CanToggleCountMode = false;
 
+    public virtual bool HasSortModes => false;
+    protected virtual string[] ValidSortModes => [];
+    public virtual string SortMode { get; set; } = string.Empty;
+    public virtual StringSpinBoxViewModel SortModeCtx =>
+        new(() => SortMode, (value) => SortMode = value, ValidSortModes, "ui.sort-mode.");
+
     public AbstractPageListContext(IGoalContext pageCtx, bool canToggleNeeded = true, bool canToggleCountMode = false)
     {
         GoalCtx = pageCtx;
@@ -131,7 +137,10 @@ public abstract partial class AbstractPageListContext<TDisplay>
     }
 
     protected abstract IReadOnlyList<TDisplay> MakeAllDisplay();
-    private List<TDisplay>? filteredDisplay = null;
+
+    protected virtual List<TDisplay> SortAllDisplay(List<TDisplay> displayList) => displayList;
+
+    protected List<TDisplay>? filteredDisplay = null;
     protected List<TDisplay> FilteredDisplay
     {
         get
@@ -149,7 +158,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
                     continue;
                 filteredDisplay.Add(display);
             }
-            this.filteredDisplay = filteredDisplay;
+            this.filteredDisplay = SortAllDisplay(filteredDisplay);
 
             return this.filteredDisplay;
         }
@@ -161,16 +170,16 @@ public abstract partial class AbstractPageListContext<TDisplay>
         {
             if (MenuHandler.IsPreloading)
                 return FilteredDisplay.GetRange(0, Math.Min(10, FilteredDisplay.Count));
-            List<TDisplay> filteredDisplay = FilteredDisplay;
-            if (filteredDisplay.Count == 0)
-                return filteredDisplay;
+            List<TDisplay> filtered = FilteredDisplay;
+            if (filtered.Count == 0)
+                return filtered;
             int actualPage = ScrollPage - 1;
             int itemPerPage = ModEntry.config.ItemPerPage;
             int startIdx = actualPage * itemPerPage;
-            int nextPageSize = Math.Min(itemPerPage, filteredDisplay.Count - startIdx);
+            int nextPageSize = Math.Min(itemPerPage, filtered.Count - startIdx);
             if (nextPageSize == 0)
                 return [];
-            return filteredDisplay.GetRange(startIdx, nextPageSize);
+            return filtered.GetRange(startIdx, nextPageSize);
         }
     }
 }

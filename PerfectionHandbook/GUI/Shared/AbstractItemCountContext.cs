@@ -78,6 +78,31 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>
     where TDisplay : AbstractItemCountDisplay
 {
+    public const string SORTMODE_DEFAULT = "default";
+    public const string SORTMODE_NAME = "name";
+    public const string SORTMODE_COUNT = "count";
+
+    public override bool HasSortModes => true;
+    protected override string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
+    public override string SortMode
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                ReSortFilteredDisplay();
+            }
+        }
+    } = SORTMODE_DEFAULT;
+
+    protected void ReSortFilteredDisplay()
+    {
+        filteredDisplay = null;
+        OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+    }
+
     public AbstractItemCountContext(
         IGoalContext goalCtx,
         bool canToggleNeeded = true,
@@ -104,7 +129,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
                 ownedCount = group.CountRepr.ReprStack;
             displayList.Add(MakeDisplay(itemInfo, ownedCount));
         }
-        return SortAllDisplay(displayList);
+        return FinalizeDisplay(displayList);
     }
 
     protected virtual bool ShouldInclude(ItemInfo itemInfo) => throw new NotImplementedException(nameof(ShouldInclude));
@@ -112,8 +137,20 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     protected virtual TDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
         throw new NotImplementedException(nameof(MakeDisplay));
 
-    protected virtual IReadOnlyList<TDisplay> SortAllDisplay(List<TDisplay> displayList) =>
-        displayList.OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId)).ToList();
+    protected virtual List<TDisplay> FinalizeDisplay(List<TDisplay> displayList) => displayList;
+
+    protected override List<TDisplay> SortAllDisplay(List<TDisplay> displayList)
+    {
+        return SortMode switch
+        {
+            SORTMODE_DEFAULT => displayList
+                .OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId))
+                .ToList(),
+            SORTMODE_NAME => displayList.OrderBy(static disp => disp.Info.ReprItem.DisplayName).ToList(),
+            SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.Count).ToList(),
+            _ => base.SortAllDisplay(displayList),
+        };
+    }
 
     [Notify]
     protected TDisplay? hovered = null;
@@ -134,7 +171,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
 
     private CountMode countMode = CountMode.Owned;
 
-    public void ClickToggleCount()
+    public virtual void ClickToggleCount()
     {
         switch (countMode)
         {
@@ -155,6 +192,10 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         foreach (TDisplay display in AllDisplay)
         {
             display.SetCountMode(countMode);
+        }
+        if (SortMode == SORTMODE_COUNT)
+        {
+            ReSortFilteredDisplay();
         }
     }
 }

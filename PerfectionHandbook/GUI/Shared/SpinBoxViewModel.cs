@@ -48,8 +48,13 @@ public class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<T> backin
     }
 }
 
-public class IntSpinBoxViewModel(Func<int> backingGetter, Action<int> backingSetter, int minimum, int maximum, int step)
-    : AbstractSpinBoxViewModel<int>(backingGetter, backingSetter)
+public sealed class IntSpinBoxViewModel(
+    Func<int> backingGetter,
+    Action<int> backingSetter,
+    int minimum,
+    int maximum,
+    int step
+) : AbstractSpinBoxViewModel<int>(backingGetter, backingSetter)
 {
     public override void ValueSetter(int newValue)
     {
@@ -61,4 +66,38 @@ public class IntSpinBoxViewModel(Func<int> backingGetter, Action<int> backingSet
     public override void Decrease() => Value -= step;
 
     public override void Increase() => Value += step;
+}
+
+public sealed class StringSpinBoxViewModel(
+    Func<string> backingGetter,
+    Action<string> backingSetter,
+    string[] validValues,
+    string i18nPrefix
+) : AbstractSpinBoxViewModel<string>(backingGetter, backingSetter)
+{
+    public readonly string[] ValidValues = validValues;
+
+    public override void ValueSetter(string newValue)
+    {
+        if (!ValidValues.Contains(newValue))
+            return;
+        base.ValueSetter(newValue);
+    }
+
+    private void ChangeIndex(int change)
+    {
+        int idx = ValidValues.IndexOf(Value);
+        idx += change;
+        if (idx < 0)
+            idx = ValidValues.Length - 1;
+        else if (idx >= ValidValues.Length)
+            idx = 0;
+        Value = ValidValues[idx];
+    }
+
+    public override void Decrease() => ChangeIndex(-1);
+
+    public override void Increase() => ChangeIndex(1);
+
+    public override string ValueLabelGetter() => I18n.GetByKey(string.Concat(i18nPrefix, Value));
 }

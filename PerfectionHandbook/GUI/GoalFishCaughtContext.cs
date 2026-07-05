@@ -11,7 +11,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 {
     public override bool Needed => Count == 0;
     private int biggestCatch = 0;
-    private IReadOnlyList<string>? canCatchIn = null;
+    internal IReadOnlyList<string>? canCatchIn = null;
     public override Color DisplayTint =>
         canCatchIn != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
 
@@ -78,53 +78,64 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
 
     protected override FishCaughtDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) => new(itemInfo, ownedCount);
 
-    protected override IReadOnlyList<FishCaughtDisplay> SortAllDisplay(List<FishCaughtDisplay> displayList)
+    protected override List<FishCaughtDisplay> FinalizeDisplay(List<FishCaughtDisplay> displayList)
     {
-        return displayList
-            .OrderBy(static disp =>
+        foreach (FishCaughtDisplay disp in displayList)
+        {
+            HashSet<string> canCatchIn = [];
+            foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
             {
-                HashSet<string> canCatchIn = [];
-                foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
+                Season? season = spawn.Season;
+                if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
+                    continue;
+                string? condition = spawn.Condition;
+                if (condition != null && !GameQueryHelper.ContextLocationCheckNoRandom(condition, locInfo.Location))
+                    continue;
+                if (disp.Info.FishReq is FishSpawnReq spawnReq)
                 {
-                    Season? season = spawn.Season;
-                    if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
+                    if (
+                        spawnReq.CrabPotGroups == null
+                        && spawnReq.Rain != null
+                        && spawnReq.Rain != locInfo.Location.IsRainingHere()
+                    )
                         continue;
-                    string? condition = spawn.Condition;
-                    if (condition != null && !GameQueryHelper.ContextLocationCheckNoRandom(condition, locInfo.Location))
-                        continue;
-                    if (disp.Info.FishReq is FishSpawnReq spawnReq)
-                    {
-                        if (
-                            spawnReq.CrabPotGroups == null
-                            && spawnReq.Rain != null
-                            && spawnReq.Rain != locInfo.Location.IsRainingHere()
-                        )
-                            continue;
-                    }
-                    canCatchIn.Add(locInfo.Location.DisplayName ?? locInfo.LocationId);
                 }
-                // mines fish hardcoding
-                switch (disp.Info.Datum.QualifiedItemId)
-                {
-                    case "(O)158":
-                        canCatchIn.Add(I18n.Location_Mines_20());
-                        break;
-                    case "(O)161":
-                        canCatchIn.Add(I18n.Location_Mines_60());
-                        break;
-                    case "(O)162":
-                        canCatchIn.Add(I18n.Location_Mines_100());
-                        break;
-                }
-                List<string> canCatchInLst = canCatchIn.ToList();
-                canCatchInLst.Sort();
-                disp.SetCanCatchIn(canCatchInLst);
-                return (
-                    canCatchIn.Any() ? -int.MaxValue : 0,
-                    disp.Info.Datum.Category,
-                    disp.Info.Datum.QualifiedItemId
-                );
-            })
-            .ToList();
+                canCatchIn.Add(locInfo.Location.DisplayName ?? locInfo.LocationId);
+            }
+            // mines fish hardcoding
+            switch (disp.Info.Datum.QualifiedItemId)
+            {
+                case "(O)158":
+                    canCatchIn.Add(I18n.Location_Mines_20());
+                    break;
+                case "(O)161":
+                    canCatchIn.Add(I18n.Location_Mines_60());
+                    break;
+                case "(O)162":
+                    canCatchIn.Add(I18n.Location_Mines_100());
+                    break;
+            }
+            List<string> canCatchInLst = canCatchIn.ToList();
+            canCatchInLst.Sort();
+            disp.SetCanCatchIn(canCatchInLst);
+        }
+        return displayList;
+    }
+
+    protected override List<FishCaughtDisplay> SortAllDisplay(List<FishCaughtDisplay> displayList)
+    {
+        if (SortMode == SORTMODE_DEFAULT)
+        {
+            return displayList
+                .OrderBy(static disp =>
+                    (
+                        (disp.canCatchIn?.Any() ?? false) ? -int.MaxValue : 0,
+                        disp.Info.Datum.Category,
+                        disp.Info.Datum.QualifiedItemId
+                    )
+                )
+                .ToList();
+        }
+        return base.SortAllDisplay(displayList);
     }
 }
