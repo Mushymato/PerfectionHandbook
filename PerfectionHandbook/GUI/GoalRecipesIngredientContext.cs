@@ -72,8 +72,18 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
             int ownedCount = neededForInfoGroup.GetOwned(GoalCtx.OwnedInfo);
             displayList.Add(new(neededForInfoGroup, ownedCount));
         }
-        return displayList
-            .OrderBy(display => TokenParser.ParseText(display.NeededFor.ReprInfo.Datum.DisplayName))
-            .ToList();
+        return displayList;
+    }
+
+    protected override List<IngredientDisplay> SortAllDisplay(List<IngredientDisplay> displayList)
+    {
+        return SortMode switch
+        {
+            SORTMODE_NAME => displayList.OrderBy(static disp => disp.NeededFor.CraftingDesc).ToList(),
+            SORTMODE_COUNT => displayList
+                .OrderByDescending(static disp => (disp.NeededCount <= disp.OwnedCount ? 1 : 0, disp.OwnedCount))
+                .ToList(),
+            _ => base.SortAllDisplay(displayList),
+        };
     }
 }

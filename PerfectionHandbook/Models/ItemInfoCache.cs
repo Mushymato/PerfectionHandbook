@@ -23,15 +23,14 @@ public sealed record NeededForInfo(int Count, CraftingRecipe Recipe, ItemInfo Re
 public sealed record NeededForInfoGroup(
     ItemInfo ReprInfo,
     string RawId,
+    string? CraftingDesc,
     Func<NeededForInfoGroup, PlayerOwned, int> GetOwnedFunc
 )
 {
-    public List<NeededForInfo> Recipes = [];
-
-    public string? CraftingDesc => Recipes.FirstOrDefault()?.Recipe.getNameFromIndex(RawId);
+    public List<NeededForInfo> NeededFor = [];
 
     public List<NeededForInfo> GetNotYetCrafted(Farmer who) =>
-        Recipes.Where(recipe => recipe.Recipe.GetRecipeCraftedCount(recipe.ResultItem, who) <= 0).ToList();
+        NeededFor.Where(recipe => recipe.Recipe.GetRecipeCraftedCount(recipe.ResultItem, who) <= 0).ToList();
 
     public int GetOwned(PlayerOwned owned) => GetOwnedFunc(this, owned);
 }
@@ -224,6 +223,7 @@ public static class ItemInfoCache
                     string? key = null;
                     ItemInfo? ingredientInfo = null;
                     Func<NeededForInfoGroup, PlayerOwned, int>? getOwned = null;
+                    string? craftingDesc = null;
                     if (int.TryParse(ingrediantId, out int ingredientNum))
                     {
                         if (ingredientNum == -777)
@@ -244,6 +244,7 @@ public static class ItemInfoCache
                                 return ownedCount;
                             };
                             key = $"{ModEntry.ModId}/wild_seeds";
+                            craftingDesc = recipe.getNameFromIndex(ingrediantId);
                         }
                         else if (ingredientNum < 0)
                         {
@@ -263,6 +264,11 @@ public static class ItemInfoCache
                                 return ownedCount;
                             };
                             key = $"{ModEntry.ModId}/category_{ingredientNum}";
+                            craftingDesc = recipe.getNameFromIndex(ingrediantId);
+                            if (craftingDesc == "???")
+                            {
+                                craftingDesc = SObject.GetCategoryDisplayName(ingredientNum);
+                            }
                         }
                     }
                     if (key == null || ingredientInfo == null || getOwned == null)
@@ -294,6 +300,7 @@ public static class ItemInfoCache
                                 }
                                 return ownedCount;
                             };
+                            craftingDesc = ingrediantId;
                         }
                         else
                         {
@@ -311,14 +318,15 @@ public static class ItemInfoCache
                                     return group.CountRepr.ReprStack;
                                 return 0;
                             };
+                            craftingDesc = ingredientInfo.ReprItem.DisplayName;
                         }
                     }
                     if (!neededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
                     {
-                        neededForGroup = new(ingredientInfo, ingrediantId, getOwned);
+                        neededForGroup = new(ingredientInfo, ingrediantId, craftingDesc, getOwned);
                         neededForRecipe[key] = neededForGroup;
                     }
-                    neededForGroup.Recipes.Add(new(count, recipe, itemInfo));
+                    neededForGroup.NeededFor.Add(new(count, recipe, itemInfo));
                 }
             }
         }
