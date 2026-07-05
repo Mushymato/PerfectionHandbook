@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Internal;
 using StardewValley.Objects;
 
 namespace PerfectionHandbook.Models;
@@ -33,24 +34,42 @@ public static class ItemOwnedLookup
             {
                 if (ctx.Item == null)
                     return true;
-                foreach (object path in ctx.GetPath())
+                if (ctx.Item.QualifiedItemId == "(O)176")
                 {
-                    OwnedItem? newOwned = null;
+                    ModEntry.Log($"{string.Join('>', ctx.GetDisplayPath())}");
+                }
+
+                foreach (object path in ctx.GetPath().Reverse())
+                {
                     if (path is Chest chest && chest.playerChest.Value == true)
                     {
-                        newOwned = new(ctx.Item, chest);
+                        AddToOwnedItems(ctx, ownedItems, new(ctx.Item, chest));
                     }
                     else if (path is Farmer)
                     {
-                        newOwned = new(ctx.Item, null);
+                        AddToOwnedItems(ctx, ownedItems, new(ctx.Item, null));
                     }
-                    if (newOwned != null)
+                    else if (path is GameLocation loc)
                     {
-                        ownedItems.TryAdd(ctx.Item.QualifiedItemId, []);
-                        ownedItems[ctx.Item.QualifiedItemId].Add(newOwned);
+                        // special case: the fridge (Chest) does not get put in ForEachItemContext, weird
+                        if (loc.GetFridge() is Chest fridge && fridge.Items.Contains(ctx.Item))
+                        {
+                            AddToOwnedItems(ctx, ownedItems, new(ctx.Item, fridge));
+                        }
+                        break;
                     }
                 }
                 return true;
+
+                static void AddToOwnedItems(
+                    ForEachItemContext ctx,
+                    Dictionary<string, List<OwnedItem>> ownedItems,
+                    OwnedItem newOwned
+                )
+                {
+                    ownedItems.TryAdd(ctx.Item.QualifiedItemId, []);
+                    ownedItems[ctx.Item.QualifiedItemId].Add(newOwned);
+                }
             }
         );
         var ownedItemGroups = ownedItems.ToDictionary(kv => kv.Key, kv => new OwnedItemGroup(kv.Value));

@@ -76,7 +76,7 @@ public static class MenuHandler
             foreach (MiscContext ctx in context.MiscPages)
                 PreloadUpdatePage(context, menuCtrl, gameTime, oneTick, ctx);
             menuCtrl.Dispose();
-            ModEntry.LogDebug($"PreloadHandbook {stopwatch.Elapsed}");
+            ModEntry.Log($"PreloadHandbook {stopwatch.Elapsed}");
         }
         finally
         {

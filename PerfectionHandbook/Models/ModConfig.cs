@@ -6,7 +6,7 @@ namespace PerfectionHandbook.Models;
 
 public class ModConfig
 {
-    public virtual int ItemPerPage { get; set; } = 800;
+    public virtual int ItemPerPage { get; set; } = 400;
     public virtual KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("LeftShift+H");
 }
 

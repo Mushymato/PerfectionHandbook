@@ -17,8 +17,6 @@ public abstract partial class AbstractPageListContext<TDisplay>
 
     public readonly bool CanToggleCountMode = false;
 
-    private readonly int rowPerPage = ModEntry.config.ItemPerPage;
-
     public AbstractPageListContext(IGoalContext pageCtx, bool canToggleNeeded = true, bool canToggleCountMode = false)
     {
         GoalCtx = pageCtx;
@@ -83,7 +81,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
                 field = 0.9999f;
                 changed = true;
             }
-            else if (value >= 1 && (scrollPage * rowPerPage < FilteredDisplay.Count))
+            else if (value >= 1 && (scrollPage * ModEntry.config.ItemPerPage < FilteredDisplay.Count))
             {
                 scrollPage++;
                 field = 0.0001f;
@@ -167,8 +165,9 @@ public abstract partial class AbstractPageListContext<TDisplay>
             if (filteredDisplay.Count == 0)
                 return filteredDisplay;
             int actualPage = ScrollPage - 1;
-            int startIdx = actualPage * rowPerPage;
-            int nextPageSize = Math.Min(rowPerPage, filteredDisplay.Count - startIdx);
+            int itemPerPage = ModEntry.config.ItemPerPage;
+            int startIdx = actualPage * itemPerPage;
+            int nextPageSize = Math.Min(itemPerPage, filteredDisplay.Count - startIdx);
             if (nextPageSize == 0)
                 return [];
             return filteredDisplay.GetRange(startIdx, nextPageSize);
