@@ -78,7 +78,7 @@ public static class ItemOwnedLookup
             ownedItemGroups.Values.Select(value => (Item)value.CountRepr).ToList()
         );
 
-        ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}", LogLevel.Info);
+        ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}", LogLevel.Debug);
         return result;
     }
 }

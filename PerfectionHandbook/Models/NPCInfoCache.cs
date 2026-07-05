@@ -63,7 +63,7 @@ public static class NPCInfoCache
         }
 
         if (stopwatch != null)
-            ModEntry.Log($"NPCInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.Log($"NPCInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Debug);
         return cacheRet;
     }
 

@@ -37,7 +37,7 @@ public sealed class ModEntry : Mod
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
         help.Events.GameLoop.DayStarted += OnDayStarted;
 
-        help.Events.GameLoop.UpdateTicked += OnUpdateTicked_PreloadHandbook;
+        help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
 
         // AssetManager.Register();
 
@@ -72,13 +72,10 @@ public sealed class ModEntry : Mod
         GoalSkillLeveledContext.Setup();
     }
 
-    private void OnUpdateTicked_PreloadHandbook(object? sender, UpdateTickedEventArgs e)
+    private void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
     {
-        if (Game1.ticks > 2)
-        {
-            MenuHandler.PreloadHandbook();
-            help.Events.GameLoop.UpdateTicked -= OnUpdateTicked_PreloadHandbook;
-        }
+        MenuHandler.PreloadHandbook();
+        help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

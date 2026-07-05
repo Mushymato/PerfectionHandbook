@@ -146,7 +146,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Info);
+            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Debug);
         return cacheRet;
     }
 
@@ -277,10 +277,11 @@ public static class ItemInfoCache
                             );
                             if (ingredientInfo == null)
                             {
-                                ModEntry.LogOnce(
-                                    $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
-                                    LogLevel.Warn
-                                );
+                                if (!MenuHandler.IsPreloading)
+                                    ModEntry.Log(
+                                        $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
+                                        LogLevel.Warn
+                                    );
                                 continue;
                             }
                             getOwned = static (info, owned) =>
