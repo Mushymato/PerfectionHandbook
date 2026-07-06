@@ -78,30 +78,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>
     where TDisplay : AbstractItemCountDisplay
 {
-    public const string SORTMODE_DEFAULT = "default";
-    public const string SORTMODE_NAME = "name";
-    public const string SORTMODE_COUNT = "count";
-
     public override bool HasSortModes => true;
-    protected override string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
-    public override string SortMode
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                ReSortFilteredDisplay();
-            }
-        }
-    } = SORTMODE_DEFAULT;
-
-    protected void ReSortFilteredDisplay()
-    {
-        filteredDisplay = null;
-        OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
-    }
 
     public AbstractItemCountContext(
         IGoalContext goalCtx,

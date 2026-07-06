@@ -1,36 +1,35 @@
-<frame layout="80%[1280..] 80%[700..]"
+<frame layout="80%[1250..] 80%[680..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
   border-thickness="32, 36, 32, 36"
+  padding="6,0,0,0"
   *switch={PageName}>
   <!-- Main -->
-  <scrollable scrollbar-margin="-18,0,0,0" *case="Main">
-    <lane layout="stretch content" orientation="Vertical">
-      <!-- Misc -->
-      <lane margin="6,4,16,4" orientation="Horizontal" layout="stretch content">
-        <panel layout="stretch content">
-          <banner margin="16,8" text={#ui.title.perfection} />
-        </panel>
-        <button *repeat={:MiscPages}
-          default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
-          hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
-          left-click=|^ChangePage(this)|
-          screen-read={:DisplayName}
-          tooltip={:DisplayName}
-          horizontal-content-alignment="Start"
-          vertical-content-alignment="Start"
-          margin="2"
-          padding="12,12,16,0"
-          layout="72px 72px">
-          <image sprite={:DisplayIcon} layout="48px 48px" />
-        </button>
-      </lane>
-      <!-- Goals -->
-      <goal-grid goals={:PerfectionGoals}/>
-      <banner margin="16,8" text={#ui.title.achievements}/>
-      <goal-grid goals={:AchievementGoals}/>
+  <lane layout="stretch content" orientation="Vertical" *case="Main">
+    <!-- Misc -->
+    <lane margin="6,4,16,4" orientation="Horizontal" layout="stretch content">
+      <panel layout="stretch content">
+        <banner margin="4,12,0,0" text={#ui.title.perfection} />
+      </panel>
+      <button *repeat={:MiscPages}
+        default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
+        hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
+        left-click=|^ChangePage(this)|
+        screen-read={:DisplayName}
+        tooltip={:DisplayName}
+        horizontal-content-alignment="Start"
+        vertical-content-alignment="Start"
+        margin="2"
+        padding="12,12,16,0"
+        layout="72px 72px">
+        <image sprite={:DisplayIcon} layout="48px 48px" />
+      </button>
     </lane>
-  </scrollable>
+    <!-- Goals -->
+    <goal-grid goals={:PerfectionGoals}/>
+    <banner margin="10,16" text={#ui.title.achievements}/>
+    <goal-grid goals={:AchievementGoals}/>
+  </lane>
   <!-- Perfection_ItemShipped -->
   <include *case="Perfection_ItemShipped" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_RecipesCooked -->
@@ -79,7 +78,7 @@
         <image sprite={:DisplayIcon} layout="48px 48px" />
         <label margin="56,0,0,0" font="small" text={:DisplayName} max-lines="3" shadow-alpha="0.8" />
         <panel layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="End" vertical-content-alignment="End">
-          <label font="dialogue" text={:SummaryText} shadow-alpha="0.8"  />
+          <label font="dialogue" text={:SummaryText} shadow-alpha="0.8" />
         </panel>
       </panel>
     </button>

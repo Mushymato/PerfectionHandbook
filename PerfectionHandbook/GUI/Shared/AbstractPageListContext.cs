@@ -17,11 +17,32 @@ public abstract partial class AbstractPageListContext<TDisplay>
 
     public readonly bool CanToggleCountMode = false;
 
+    public const string SORTMODE_DEFAULT = "default";
+    public const string SORTMODE_NAME = "name";
+    public const string SORTMODE_COUNT = "count";
+
     public virtual bool HasSortModes => false;
-    protected virtual string[] ValidSortModes => [];
-    public virtual string SortMode { get; set; } = string.Empty;
+    protected virtual string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
+    public virtual string SortMode
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                ReSortFilteredDisplay();
+            }
+        }
+    } = SORTMODE_DEFAULT;
     public virtual StringSpinBoxViewModel SortModeCtx =>
         new(() => SortMode, (value) => SortMode = value, ValidSortModes, "ui.sort-mode.");
+
+    protected void ReSortFilteredDisplay()
+    {
+        filteredDisplay = null;
+        OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+    }
 
     public AbstractPageListContext(IGoalContext pageCtx, bool canToggleNeeded = true, bool canToggleCountMode = false)
     {

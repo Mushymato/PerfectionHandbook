@@ -1,5 +1,11 @@
 <lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" margin="0,0,16,0">
   <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="400px content" />
+  <panel *if={:^HasSortModes} *context={:^SortModeCtx} >
+    <panel focusable="true" margin="4,0,0,0" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
+      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
+      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
+    </panel>
+  </panel>
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     *if={:^CanToggleNeeded}
     font="dialogue"
@@ -10,12 +16,6 @@
     +state:needed={^ShowNeeded}
     +state:needed:text={#ui.showing-need}
   />
-  <panel *if={:^HasSortModes} *context={:^SortModeCtx} >
-    <panel focusable="true" margin="12,0,0,0" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
-      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
-      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
-    </panel>
-  </panel>
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     *if={:^CanToggleCountMode}
     font="dialogue"

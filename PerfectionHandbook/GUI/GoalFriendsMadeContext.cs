@@ -23,10 +23,13 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
         }
     }
     public bool Needed => CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints;
-    public string FriendshipFillLayout =>
-        CurrentFriendship == null
-            ? "0% stretch"
-            : $"{100f * MathF.Min(CurrentFriendship.Points, NpcInfo.MaxPoints) / NpcInfo.MaxPoints}% stretch";
+    public float FriendshipFill =>
+        100f * MathF.Min(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints) / NpcInfo.MaxPoints;
+    public string FriendshipFillLayout => $"{FriendshipFill}% stretch";
+
+    public int HeartLevel => (CurrentFriendship?.Points ?? 0) / NPC.friendshipPointsPerHeartLevel;
+    public string FriendshipPointDisplay =>
+        I18n.Ui_Fulfillment_Dipslay(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints);
 
     public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
 
@@ -50,6 +53,21 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 
 public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendDisplay>(goalCtx)
 {
+    public override bool HasSortModes => true;
+    protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];
+    public override string SortMode
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                ReSortFilteredDisplay();
+            }
+        }
+    } = SORTMODE_NAME;
+
     protected override IReadOnlyList<FriendDisplay> MakeAllDisplay()
     {
         List<FriendDisplay> friendDisplay = [];
@@ -61,7 +79,16 @@ public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageL
             if (display.MugShotSprite != null)
                 friendDisplay.Add(display);
         }
-        friendDisplay = friendDisplay.OrderBy(npcInfo => TokenParser.ParseText(npcInfo.DisplayName)).ToList();
         return friendDisplay;
+    }
+
+    protected override List<FriendDisplay> SortAllDisplay(List<FriendDisplay> displayList)
+    {
+        return SortMode switch
+        {
+            SORTMODE_NAME => displayList.OrderBy(static disp => disp.DisplayName).ToList(),
+            SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.FriendshipFill).ToList(),
+            _ => base.SortAllDisplay(displayList),
+        };
     }
 }
