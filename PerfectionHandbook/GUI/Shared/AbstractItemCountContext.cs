@@ -72,7 +72,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
         );
     }
 
-    public bool SearchMatch(string txt) => Info.SearchMatch(txt);
+    public virtual bool SearchMatch(string txt) => Info.SearchMatch(txt);
 }
 
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>

@@ -4,7 +4,7 @@ using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
-using StardewValley.TokenizableStrings;
+using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
@@ -16,6 +16,8 @@ public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedC
     public override bool Needed => NeededCount > 0;
     public Color DigitTint => Count >= NeededCount ? Color.LimeGreen : Color.White;
     private List<NeededForInfo> notYetCrafted = [];
+    public SDUISprite Repr =
+        NeededFor.ReprIcon ?? new(NeededFor.ReprInfo.Datum.GetTexture(), NeededFor.ReprInfo.Datum.GetSourceRect());
 
     public override Color DisplayTint =>
         OwnedCount >= NeededCount ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
@@ -58,6 +60,15 @@ public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedC
             Environment.NewLine,
             I18n.Ui_Ingredients_Total(notYetCrafted.Count)
         );
+    }
+
+    public override bool SearchMatch(string txt)
+    {
+        if (string.IsNullOrEmpty(txt))
+            return true;
+        if (NeededFor.CraftingDesc.ContainsIgnoreCase(txt))
+            return true;
+        return base.SearchMatch(txt);
     }
 }
 

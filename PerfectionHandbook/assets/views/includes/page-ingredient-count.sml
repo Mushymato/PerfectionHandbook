@@ -17,7 +17,7 @@
             horizontal-content-alignment="End"
             vertical-content-alignment="End"
             pointer-enter=|^HoveredEnter(this)|>
-            <image sprite={:Info.Datum}
+            <image sprite={:Repr}
               tooltip={Tooltip}
               hovered-subject={:ReprItem}
               tint={DisplayTint}

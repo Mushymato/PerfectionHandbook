@@ -12,8 +12,8 @@
   />
   <panel *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" margin="12,0,0,0" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
-      <image sprite={@mushymato.LivestockBazaar/sprites/cursors2:dotdotdot} layout="64px 64px"/>
-      <image sprite={@mushymato.LivestockBazaar/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
+      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
+      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
     </panel>
   </panel>
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
