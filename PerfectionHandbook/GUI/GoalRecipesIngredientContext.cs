@@ -8,7 +8,7 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public partial record IngredientDisplay(NeededForInfoGroup NeededFor, int OwnedCount)
+public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor, int OwnedCount)
     : AbstractItemCountDisplay(NeededFor.ReprInfo, OwnedCount)
 {
     [Notify]
@@ -78,10 +78,10 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
     protected override IReadOnlyList<IngredientDisplay> MakeAllDisplay()
     {
         List<IngredientDisplay> displayList = [];
-        foreach (NeededForInfoGroup neededForInfoGroup in ItemInfoCache.NeededForRecipe.Values)
+        foreach ((string key, NeededForInfoGroup neededForInfoGroup) in ItemInfoCache.NeededForRecipe)
         {
             int ownedCount = neededForInfoGroup.GetOwned(GoalCtx.OwnedInfo);
-            displayList.Add(new(neededForInfoGroup, ownedCount));
+            displayList.Add(new(key, neededForInfoGroup, ownedCount));
         }
         return displayList;
     }
@@ -90,6 +90,11 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
     {
         return SortMode switch
         {
+            SORTMODE_DEFAULT => displayList
+                .OrderBy(static disp =>
+                    (disp.Key.StartsWith($"{ModEntry.ModId}/") ? -1024 : disp.Info.Datum.Category, disp.Key)
+                )
+                .ToList(),
             SORTMODE_NAME => displayList.OrderBy(static disp => disp.NeededFor.CraftingDesc).ToList(),
             SORTMODE_COUNT => displayList
                 .OrderByDescending(static disp => (disp.NeededCount <= disp.OwnedCount ? 1 : 0, disp.OwnedCount))

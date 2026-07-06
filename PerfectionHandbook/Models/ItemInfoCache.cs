@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
@@ -217,14 +218,12 @@ public static class ItemInfoCache
             dynamic? spacecoreVAE = null;
             if (isSpacecore)
             {
-                IAssetName assetName = ModEntry.help.GameContent.ParseAssetName(
-                    isCooking
-                        ? "spacechase0.SpaceCore/CookingRecipeOverrides"
-                        : "spacechase0.SpaceCore/CraftingRecipeOverrides"
-                );
-                if (ModEntry.help.GameContent.DoesAssetExist<dynamic>(assetName))
+                string assetName = isCooking
+                    ? "spacechase0.SpaceCore/CookingRecipeOverrides"
+                    : "spacechase0.SpaceCore/CraftingRecipeOverrides";
+                if (Game1.content.DoesAssetExist<dynamic>(assetName))
                 {
-                    spacecoreVAE = ModEntry.help.GameContent.Load<dynamic>(assetName);
+                    spacecoreVAE = Game1.content.Load<dynamic>(assetName);
                 }
             }
             var recipeIds = (isCooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes).Keys;
@@ -249,62 +248,29 @@ public static class ItemInfoCache
                     {
                         if (ingredientNum == -777)
                         {
-                            if (!newCache.TryGetValue("(O)495", out ItemInfo? ingredientInfo))
-                                continue;
-                            key = $"{ModEntry.ModId}/wild_seeds";
-                            makeNeedForInfoGroup = () =>
-                            {
-                                return new NeededForInfoGroup(
-                                    ingredientInfo,
+                            if (
+                                !TryMakeNeededFor_WildSeeds(
+                                    newCache,
+                                    recipe,
                                     ingrediantId,
-                                    recipe.getNameFromIndex(ingrediantId),
-                                    static (info, owned) =>
-                                    {
-                                        int ownedCount = 0;
-                                        if (owned.OwnedGroups.TryGetValue("(O)495", out OwnedItemGroup? group))
-                                            ownedCount += group.CountRepr.ReprStack;
-                                        if (owned.OwnedGroups.TryGetValue("(O)496", out group))
-                                            ownedCount += group.CountRepr.ReprStack;
-                                        if (owned.OwnedGroups.TryGetValue("(O)497", out group))
-                                            ownedCount += group.CountRepr.ReprStack;
-                                        if (owned.OwnedGroups.TryGetValue("(O)495", out group))
-                                            ownedCount += group.CountRepr.ReprStack;
-                                        return ownedCount;
-                                    }
-                                );
-                            };
+                                    ref key,
+                                    ref makeNeedForInfoGroup
+                                )
+                            )
+                            {
+                                continue;
+                            }
                         }
                         else if (ingredientNum < 0)
                         {
-                            key = $"{ModEntry.ModId}/category_{ingredientNum}";
-                            makeNeedForInfoGroup = () =>
-                            {
-                                ItemInfo? ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
-                                    itemInfo.Datum.Category == ingredientNum
-                                );
-                                if (ingredientInfo == null)
-                                    return null;
-                                string craftingDesc = recipe.getNameFromIndex(ingrediantId);
-                                if (craftingDesc == "???")
-                                {
-                                    craftingDesc = SObject.GetCategoryDisplayName(ingredientNum);
-                                }
-                                return new NeededForInfoGroup(
-                                    ingredientInfo,
-                                    ingrediantId,
-                                    craftingDesc,
-                                    static (info, owned) =>
-                                    {
-                                        int ownedCount = 0;
-                                        foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
-                                        {
-                                            if (group.CountRepr.Category.ToString() == info.RawId)
-                                                ownedCount += group.CountRepr.ReprStack;
-                                        }
-                                        return ownedCount;
-                                    }
-                                );
-                            };
+                            TryMakeNeededFor_Category(
+                                newCache,
+                                recipe,
+                                ingrediantId,
+                                ingredientNum,
+                                ref key,
+                                ref makeNeedForInfoGroup
+                            );
                         }
                     }
                     if (key == null)
@@ -312,126 +278,41 @@ public static class ItemInfoCache
                         string qId = ItemRegistry.QualifyItemId(ingrediantId);
                         if (qId == null)
                         {
-                            if (spacecoreVAE == null)
+                            if (
+                                !TryMakeNeededFor_SpacecoreContextTag(
+                                    newCache,
+                                    spacecoreVAE,
+                                    recipeId,
+                                    recipe,
+                                    ingrediantId,
+                                    ref key,
+                                    ref makeNeedForInfoGroup
+                                )
+                            )
                             {
-                                if (!MenuHandler.IsPreloading)
-                                    ModEntry.Log(
-                                        $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
-                                        LogLevel.Warn
-                                    );
                                 continue;
                             }
-                            // spacecore recipe overrides?
-                            key = $"{ModEntry.ModId}/contexttag_{ingrediantId}";
-                            makeNeedForInfoGroup = () =>
-                            {
-                                SDUISprite? reprIcon = null;
-                                ItemInfo? ingredientInfo = null;
-                                string craftingDesc = ingrediantId;
-                                if (spacecoreVAE.ContainsKey(recipeId))
-                                {
-                                    dynamic spacecoreVAERecipe = spacecoreVAE[recipeId];
-                                    dynamic? spacecoreVAEIngredient = null;
-                                    foreach (dynamic ing in spacecoreVAERecipe.Ingredients)
-                                    {
-                                        if (ing.Value == ingrediantId)
-                                        {
-                                            spacecoreVAEIngredient = ing;
-                                            break;
-                                        }
-                                    }
-                                    if (spacecoreVAEIngredient != null)
-                                    {
-                                        craftingDesc = TokenParser.ParseText(spacecoreVAEIngredient.OverrideText);
-                                        ModEntry.Log($"{ingrediantId} => {craftingDesc}", LogLevel.Info);
-                                        if (spacecoreVAEIngredient.OverrideTexturePath != null)
-                                        {
-                                            ModEntry.Log(
-                                                $"{ingrediantId} ICON {spacecoreVAEIngredient.OverrideTexturePath}:{spacecoreVAEIngredient.OverrideTextureRect}",
-                                                LogLevel.Info
-                                            );
-                                            reprIcon = new(
-                                                Game1.content.Load<Texture2D>(
-                                                    spacecoreVAEIngredient.OverrideTexturePath
-                                                ),
-                                                spacecoreVAEIngredient.OverrideTextureRect
-                                            );
-                                            ingredientInfo = newCache.Values.First(); // weeds
-                                        }
-                                    }
-                                }
-                                if (ingredientInfo == null)
-                                {
-                                    ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
-                                        itemInfo.ReprItem.HasContextTag(ingrediantId)
-                                    );
-                                    if (ingredientInfo == null)
-                                    {
-                                        if (!MenuHandler.IsPreloading)
-                                            ModEntry.Log(
-                                                $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
-                                                LogLevel.Warn
-                                            );
-                                        return null;
-                                    }
-                                }
-                                return new NeededForInfoGroup(
-                                    ingredientInfo,
-                                    ingrediantId,
-                                    craftingDesc,
-                                    static (info, owned) =>
-                                    {
-                                        int ownedCount = 0;
-                                        foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
-                                        {
-                                            if (group.CountRepr.HasContextTag(info.RawId))
-                                                ownedCount += group.CountRepr.ReprStack;
-                                        }
-                                        return ownedCount;
-                                    }
-                                )
-                                {
-                                    ReprIcon = reprIcon,
-                                };
-                            };
                         }
                         else
                         {
-                            if (!newCache.TryGetValue(qId, out ItemInfo? ingredientInfo))
-                                continue;
-                            key = qId;
-                            makeNeedForInfoGroup = () =>
-                            {
-                                string craftingDesc = recipe.getNameFromIndex(ingrediantId);
-                                if (craftingDesc == "???")
-                                {
-                                    craftingDesc = SObject.GetCategoryDisplayName(ingredientNum);
-                                }
-                                return new NeededForInfoGroup(
-                                    ingredientInfo,
+                            if (
+                                !TryMakeNeededFor_SpecificItem(
+                                    newCache,
+                                    qId,
                                     ingrediantId,
-                                    ingredientInfo.ReprItem.DisplayName,
-                                    static (info, owned) =>
-                                    {
-                                        if (
-                                            owned.OwnedGroups.TryGetValue(
-                                                info.ReprInfo.Datum.QualifiedItemId,
-                                                out OwnedItemGroup? group
-                                            )
-                                        )
-                                            return group.CountRepr.ReprStack;
-                                        return 0;
-                                    }
-                                );
-                            };
+                                    ref key,
+                                    ref makeNeedForInfoGroup
+                                )
+                            )
+                            {
+                                continue;
+                            }
                         }
                     }
                     if (makeNeedForInfoGroup == null)
                         continue;
                     if (!neededForRecipe.TryGetValue(key, out NeededForInfoGroup? neededForGroup))
                     {
-                        // neededForGroup = new(ingredientInfo, ingrediantId, craftingDesc, getOwned);
-                        // if (spacecoreVAEIngredient != null) { }
                         neededForGroup = makeNeedForInfoGroup();
                         if (neededForGroup == null)
                             continue;
@@ -439,6 +320,201 @@ public static class ItemInfoCache
                     }
                     neededForGroup.NeededFor.Add(new(count, recipe, itemInfo));
                 }
+            }
+
+            static bool TryMakeNeededFor_WildSeeds(
+                Dictionary<string, ItemInfo> newCache,
+                CraftingRecipe recipe,
+                string ingrediantId,
+                [NotNullWhen(true)] ref string? key,
+                [NotNullWhen(true)] ref Func<NeededForInfoGroup?>? makeNeedForInfoGroup
+            )
+            {
+                if (!newCache.TryGetValue("(O)495", out ItemInfo? ingredientInfo))
+                    return false;
+                key = $"{ModEntry.ModId}/wild_seeds";
+                makeNeedForInfoGroup = () =>
+                {
+                    return new NeededForInfoGroup(
+                        ingredientInfo,
+                        ingrediantId,
+                        recipe.getNameFromIndex(ingrediantId),
+                        static (info, owned) =>
+                        {
+                            int ownedCount = 0;
+                            if (owned.OwnedGroups.TryGetValue("(O)495", out OwnedItemGroup? group))
+                                ownedCount += group.CountRepr.ReprStack;
+                            if (owned.OwnedGroups.TryGetValue("(O)496", out group))
+                                ownedCount += group.CountRepr.ReprStack;
+                            if (owned.OwnedGroups.TryGetValue("(O)497", out group))
+                                ownedCount += group.CountRepr.ReprStack;
+                            if (owned.OwnedGroups.TryGetValue("(O)495", out group))
+                                ownedCount += group.CountRepr.ReprStack;
+                            return ownedCount;
+                        }
+                    );
+                };
+                return true;
+            }
+
+            static bool TryMakeNeededFor_Category(
+                Dictionary<string, ItemInfo> newCache,
+                CraftingRecipe recipe,
+                string ingrediantId,
+                int ingredientNum,
+                [NotNullWhen(true)] ref string? key,
+                [NotNullWhen(true)] ref Func<NeededForInfoGroup?>? makeNeedForInfoGroup
+            )
+            {
+                key = $"{ModEntry.ModId}/category_{ingredientNum}";
+                makeNeedForInfoGroup = () =>
+                {
+                    ItemInfo? ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
+                        itemInfo.Datum.Category == ingredientNum
+                    );
+                    if (ingredientInfo == null)
+                        return null;
+                    string craftingDesc = recipe.getNameFromIndex(ingrediantId);
+                    if (craftingDesc == "???")
+                    {
+                        craftingDesc = SObject.GetCategoryDisplayName(ingredientNum);
+                    }
+                    return new NeededForInfoGroup(
+                        ingredientInfo,
+                        ingrediantId,
+                        craftingDesc,
+                        static (info, owned) =>
+                        {
+                            int ownedCount = 0;
+                            foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
+                            {
+                                if (group.CountRepr.Category.ToString() == info.RawId)
+                                    ownedCount += group.CountRepr.ReprStack;
+                            }
+                            return ownedCount;
+                        }
+                    );
+                };
+                return true;
+            }
+
+            static bool TryMakeNeededFor_SpecificItem(
+                Dictionary<string, ItemInfo> newCache,
+                string qId,
+                string ingrediantId,
+                [NotNullWhen(true)] ref string? key,
+                [NotNullWhen(true)] ref Func<NeededForInfoGroup?>? makeNeedForInfoGroup
+            )
+            {
+                if (!newCache.TryGetValue(qId, out ItemInfo? ingredientInfo))
+                    return false;
+                key = qId;
+                makeNeedForInfoGroup = () =>
+                {
+                    return new NeededForInfoGroup(
+                        ingredientInfo,
+                        ingrediantId,
+                        ingredientInfo.ReprItem.DisplayName,
+                        static (info, owned) =>
+                        {
+                            if (
+                                owned.OwnedGroups.TryGetValue(
+                                    info.ReprInfo.Datum.QualifiedItemId,
+                                    out OwnedItemGroup? group
+                                )
+                            )
+                                return group.CountRepr.ReprStack;
+                            return 0;
+                        }
+                    );
+                };
+                return true;
+            }
+
+            static bool TryMakeNeededFor_SpacecoreContextTag(
+                Dictionary<string, ItemInfo> newCache,
+                dynamic? spacecoreVAE,
+                string recipeId,
+                CraftingRecipe recipe,
+                string ingrediantId,
+                [NotNullWhen(true)] ref string? key,
+                [NotNullWhen(true)] ref Func<NeededForInfoGroup?>? makeNeedForInfoGroup
+            )
+            {
+                // can't move any of this into a static func rip
+                if (spacecoreVAE == null)
+                {
+                    if (!MenuHandler.IsPreloading)
+                        ModEntry.Log($"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.", LogLevel.Warn);
+                    return false;
+                }
+                // spacecore recipe overrides?
+                key = $"{ModEntry.ModId}/contexttag_{ingrediantId}";
+                makeNeedForInfoGroup = () =>
+                {
+                    SDUISprite? reprIcon = null;
+                    ItemInfo? ingredientInfo = null;
+                    string craftingDesc = ingrediantId;
+                    if (spacecoreVAE.ContainsKey(recipeId))
+                    {
+                        dynamic spacecoreVAERecipe = spacecoreVAE[recipeId];
+                        dynamic? spacecoreVAEIngredient = null;
+                        foreach (dynamic ing in spacecoreVAERecipe.Ingredients)
+                        {
+                            if (ing.Value == ingrediantId)
+                            {
+                                spacecoreVAEIngredient = ing;
+                                break;
+                            }
+                        }
+                        if (spacecoreVAEIngredient != null)
+                        {
+                            craftingDesc = TokenParser.ParseText(spacecoreVAEIngredient.OverrideText);
+                            if (spacecoreVAEIngredient.OverrideTexturePath != null)
+                            {
+                                reprIcon = new(
+                                    Game1.content.Load<Texture2D>(spacecoreVAEIngredient.OverrideTexturePath),
+                                    spacecoreVAEIngredient.OverrideTextureRect
+                                );
+                                ingredientInfo = newCache.Values.First(); // weeds
+                            }
+                        }
+                    }
+                    if (ingredientInfo == null)
+                    {
+                        ingredientInfo = newCache.Values.FirstOrDefault(itemInfo =>
+                            itemInfo.ReprItem.HasContextTag(ingrediantId)
+                        );
+                        if (ingredientInfo == null)
+                        {
+                            if (!MenuHandler.IsPreloading)
+                                ModEntry.Log(
+                                    $"Invalid ingredient '{ingrediantId}' for recipe '{recipe.name}'.",
+                                    LogLevel.Warn
+                                );
+                            return null;
+                        }
+                    }
+                    return new NeededForInfoGroup(
+                        ingredientInfo,
+                        ingrediantId,
+                        craftingDesc,
+                        static (info, owned) =>
+                        {
+                            int ownedCount = 0;
+                            foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
+                            {
+                                if (group.CountRepr.HasContextTag(info.RawId))
+                                    ownedCount += group.CountRepr.ReprStack;
+                            }
+                            return ownedCount;
+                        }
+                    )
+                    {
+                        ReprIcon = reprIcon,
+                    };
+                };
+                return true;
             }
         }
     }
