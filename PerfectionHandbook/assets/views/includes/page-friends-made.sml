@@ -8,7 +8,9 @@
           layout="content content"
           padding="12"
           focusable="true"
-          background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
+          background={@Mods/StardewUI/Sprites/ShopEntryBorder}
+          screen-read={ScreenRead}
+          hovered-subject={:NpcInfo.Chara}>
           <panel vertical-content-alignment="End">
             <lane orientation="Horizontal" vertical-content-alignment="Middle">
               <image layout="64px 80px"
@@ -18,7 +20,7 @@
                 sprite={:MugShotSprite}
                 tint={:DisplayTint}/>
               <lane orientation="Vertical" margin="0,0,12,0" >
-                <label layout="stretch content" margin="4,0,0,8" focusable="true" font="small" text={:DisplayName} max-lines="1" shadow-alpha="0.8"/>
+                <label layout="stretch content" margin="4,0,0,8" font="small" text={:DisplayName} max-lines="1" shadow-alpha="0.8"/>
                 <frame layout="100% 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} focusable="true">
                   <panel layout="100% stretch" vertical-content-alignment="End">
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>

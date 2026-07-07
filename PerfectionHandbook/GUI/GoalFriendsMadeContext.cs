@@ -32,6 +32,7 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
         I18n.Ui_Fulfillment_Dipslay(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints);
 
     public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
+    public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
 
