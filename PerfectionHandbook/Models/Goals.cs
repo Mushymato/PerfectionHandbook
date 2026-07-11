@@ -296,7 +296,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalGoldenWalnutsFoundContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldenWalnut");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)73");

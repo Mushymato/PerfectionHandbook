@@ -48,6 +48,8 @@
   <include *case="Perfection_BuildingsConstructed" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-buildings" />
   <!-- Perfection_StardropsFound -->
   <include *case="Perfection_StardropsFound" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-stardrops" />
+  <!-- Perfection_GoldenWalnutsFound -->
+  <include *case="Perfection_GoldenWalnutsFound" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-golden-walnuts" />
   <!-- Achievement_Museum -->
   <include *case="Achievement_Museum" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Achievement_Polyculture -->
