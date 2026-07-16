@@ -9,6 +9,7 @@ public sealed record StardropsFoundDisplay(string FoundFlag) : IPageDisplayEntry
     public string Description = I18n.GetByKey(string.Concat("Stardrop.Desc.", FoundFlag));
     private bool needed = false;
     public bool Needed => needed;
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     public bool SearchMatch(string txt)
     {

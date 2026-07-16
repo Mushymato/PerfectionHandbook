@@ -1,6 +1,13 @@
 {
-  "config.label.item-per-page": "Item Per Page",
-  "config.tooltip.item-per-page": "Number of rows to display per page on subpages with many items.",
-  "config.label.show-handbook-key": "Show Handbook Key",
-  "config.tooltip.show-handbook-key": "Press this key to display the perfection handbook.",
+  "config.label.add-key": "Add Key",
+  "config.name.ItemPerPage": "Item Per Page",
+  "config.desc.ItemPerPage": "Number of rows to display per page on subpages with many items.",
+  "config.name.ShowHandbookKey": "Show Handbook Key",
+  "config.desc.ShowHandbookKey": "Press this key to display the perfection handbook.",
+  "config.name.RemindersToggleKey": "Reminders: Toggle Key",
+  "config.desc.RemindersToggleKey": "Press this key to toggle the reminders HUD",
+  "config.name.RemindersEditModifierKey": "Reminders: Add/Remove Key",
+  "config.desc.RemindersEditModifierKey": "While in the perfection handbook, hold this key and click on an entry to add it to your reminders",
+  "config.name.RemindersMaxCount": "Reminders: Max Count",
+  "config.desc.RemindersMaxCount": "The maximum number of reminders you can have at a time, new reminders will push out old reminders",
 }

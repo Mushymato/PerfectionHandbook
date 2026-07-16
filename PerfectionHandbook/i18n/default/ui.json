@@ -31,5 +31,6 @@
   "ui.ingredients.total": "({{count}} total)",
   "ui.sort-mode.default": "Default",
   "ui.sort-mode.name": "Name",
-  "ui.sort-mode.count": "Count"
+  "ui.sort-mode.count": "Count",
+  "ui.no-reminders": "No reminders."
 }

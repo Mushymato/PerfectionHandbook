@@ -1,13 +1,18 @@
 using System.ComponentModel;
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using StardewModdingAPI.Utilities;
 
 namespace PerfectionHandbook.Models;
 
-public class ModConfig
+public sealed class ModConfig
 {
-    public virtual int ItemPerPage { get; set; } = 400;
-    public virtual KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("LeftShift+H");
+    public int ItemPerPage { get; set; } = 400;
+    public KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("RightShift+H");
+    public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
+    public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");
+    public int RemindersMaxCount { get; set; } = 12;
+    public Vector2 RemindersHUDPosition { get; set; } = new(64, 64);
 }
 
 internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChanged
@@ -25,6 +30,19 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         WriteConfig();
     }
 
+    public IntSpinBoxViewModel ItemPerPageSpinBox =>
+        new(
+            () => config.ItemPerPage,
+            (value) =>
+            {
+                config.ItemPerPage = value;
+                WriteConfig();
+            },
+            200,
+            int.MaxValue,
+            100
+        );
+
     public KeybindList ShowHandbookKey
     {
         get => config.ShowHandbookKey;
@@ -38,16 +56,41 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         }
     }
 
-    public IntSpinBoxViewModel ItemPerPageSpinBox =>
+    public KeybindList RemindersToggleKey
+    {
+        get => config.RemindersToggleKey;
+        set
+        {
+            if (value != config.RemindersToggleKey)
+            {
+                config.RemindersToggleKey = value;
+                RaisePropertyChanged(nameof(RemindersToggleKey));
+            }
+        }
+    }
+
+    public KeybindList RemindersEditModifierKey
+    {
+        get => config.RemindersEditModifierKey;
+        set
+        {
+            if (value != config.RemindersEditModifierKey)
+            {
+                config.RemindersEditModifierKey = value;
+                RaisePropertyChanged(nameof(RemindersEditModifierKey));
+            }
+        }
+    }
+    public IntSpinBoxViewModel RemindersMaxCountSpinBox =>
         new(
-            () => config.ItemPerPage,
+            () => config.RemindersMaxCount,
             (value) =>
             {
-                config.ItemPerPage = value;
+                config.RemindersMaxCount = value;
                 WriteConfig();
             },
-            200,
+            1,
             int.MaxValue,
-            100
+            1
         );
 }

@@ -18,7 +18,7 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
         get
         {
             if (CurrentFriendship == null)
-                return HandbookContext.HiddenColor;
+                return HandbookContext.InactiveColor;
             return HandbookContext.ActiveColor;
         }
     }
@@ -33,6 +33,7 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 
     public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
 

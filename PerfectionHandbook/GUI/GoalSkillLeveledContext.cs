@@ -20,6 +20,7 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
     protected int expToNextMax = 1;
 
     public bool Needed => Level < MaxLevel;
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     // public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(Level, MaxLevel);
     public string SkillCountDisplay =>

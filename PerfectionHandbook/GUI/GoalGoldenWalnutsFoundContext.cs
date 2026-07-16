@@ -10,6 +10,7 @@ public sealed record GoldenWalnutsFoundDisplay(string Key, int Count = 1, int Ma
     public string Hint = I18n.GetByKey(string.Concat("GoldenWalnut.Hint.", Key));
     public string CountText = I18n.Ui_Fulfillment_Dipslay(Count, MaxCount);
     public bool Needed { get; } = Count < MaxCount;
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     public bool SearchMatch(string txt)
     {

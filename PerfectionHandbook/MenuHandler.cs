@@ -5,6 +5,7 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 
 namespace PerfectionHandbook;
@@ -14,6 +15,11 @@ public static class MenuHandler
     private static IViewEngine viewEngine = null!;
     internal const string VIEW_ASSET_PREFIX = $"{ModEntry.ModId}/views";
     internal const string VIEW_ASSET_HANDBOOK = $"{VIEW_ASSET_PREFIX}/handbook";
+    internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
+
+    internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
+        new(static () => viewEngine.CreateDrawableFromAsset(VIEW_ASSET_REMINDERS), Context.ScreenId)
+    );
 
     public static void Register()
     {

@@ -13,6 +13,9 @@
     },
     "heartFillPx": {
       "SourceRect": "213,429,1,1"
+    },
+    "blueExclaim": {
+      "SourceRect": "398,497,3,8"
     }
   }
 }

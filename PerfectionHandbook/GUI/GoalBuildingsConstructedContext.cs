@@ -18,6 +18,7 @@ public sealed record BuildingsBuiltDisplay(
 {
     public Color DisplayTint = BuiltCount == 0 ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
     public bool Needed => BuiltCount == 0;
+    public ReminderEntry? Reminder => null;
 
     public bool SearchMatch(string txt)
     {

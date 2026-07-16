@@ -39,12 +39,15 @@ public sealed class ModEntry : Mod
 
         help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
 
-        // AssetManager.Register();
-
         help.ConsoleCommands.Add(
             "ph-show",
             "Debug show the handbook",
             static (cmd, args) => MenuHandler.ShowHandbook()
+        );
+        help.ConsoleCommands.Add(
+            "ph-hud",
+            "Debug toggle the reminder hud",
+            static (cmd, args) => MenuHandler.reminders.Value.ToggleVisibility()
         );
         help.ConsoleCommands.Add(
             "ph-qicat",
@@ -100,6 +103,10 @@ public sealed class ModEntry : Mod
         if (config.ShowHandbookKey.JustPressed())
         {
             MenuHandler.ShowHandbook();
+        }
+        else if (config.RemindersToggleKey.JustPressed())
+        {
+            MenuHandler.reminders.Value.ToggleVisibility();
         }
     }
 

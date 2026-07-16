@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;
@@ -35,6 +36,16 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     public float DisplayScale => IsHovered ? 1.1f : 1f;
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
+
+    public virtual ReminderEntry? Reminder =>
+        field ??= new(
+            Info.Datum.QualifiedItemId,
+            new SDUISprite(Info.Datum.GetTexture(), Info.Datum.GetSourceRect()),
+            Info.Datum.DisplayName
+        );
+
+    [Notify]
+    private bool? inReminders = MenuHandler.reminders.Value.HasEntryKey(Info.Datum.QualifiedItemId);
 
     public virtual bool Needed => completedCount == 0;
 
@@ -139,6 +150,14 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         Hovered?.IsHovered = false;
         Hovered = display;
         display.IsHovered = true;
+    }
+
+    public virtual void HandleLeftClick(TDisplay display)
+    {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            display.InReminders = MenuHandler.reminders.Value.ToggleEntry(display.Reminder);
+        }
     }
 
     public virtual string CompleteCountToggleText => string.Empty;

@@ -17,6 +17,7 @@ public sealed partial record MonsterSlayerDisplay(string QuestName, List<string>
     public bool isExpanded = false;
 
     public bool Needed => KilledCount < RequiredCount;
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(KilledCount, RequiredCount);
 

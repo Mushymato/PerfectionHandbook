@@ -9,12 +9,12 @@
       scrollbar-margin="-18,0,0,0"
       z-index="2">
       <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content">
-        
         <panel *repeat={FilteredDisplayPaginated}
           layout="64px 64px"
           focusable="true"
           horizontal-content-alignment="End"
           vertical-content-alignment="End"
+          left-click=|^HandleLeftClick(this)|
           pointer-enter=|^HoveredEnter(this)|>
           <image sprite={:Info.Datum}
             tooltip={Tooltip}
@@ -27,6 +27,7 @@
             +transition:scale="100ms EaseInSine"
             horizontal-alignment="Middle"
           />
+          <image *if={InReminders} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />
           <digits *if={HasCount} scale="3" number={Count} />
         </panel>
       </grid>
