@@ -4,10 +4,13 @@
   "config.desc.ItemPerPage": "Number of rows to display per page on subpages with many items.",
   "config.name.ShowHandbookKey": "Show Handbook Key",
   "config.desc.ShowHandbookKey": "Press this key to display the perfection handbook.",
-  "config.name.RemindersToggleKey": "Reminders: Toggle Key",
+  "config.section.Reminders": "Reminders",
+  "config.name.RemindersToggleKey": "Toggle Key",
   "config.desc.RemindersToggleKey": "Press this key to toggle the reminders HUD",
-  "config.name.RemindersEditModifierKey": "Reminders: Add/Remove Key",
+  "config.name.RemindersEditModifierKey": "Add/Remove Key",
   "config.desc.RemindersEditModifierKey": "While in the perfection handbook, hold this key and click on an entry to add it to your reminders",
-  "config.name.RemindersMaxCount": "Reminders: Max Count",
+  "config.name.RemindersMaxCount": "Max Count",
   "config.desc.RemindersMaxCount": "The maximum number of reminders you can have at a time, new reminders will push out old reminders",
+  "config.name.RemindersHUDPosition": "HUD Position",
+  "config.desc.RemindersHUDPosition": "Change where the remidners HUD goes on screen."
 }

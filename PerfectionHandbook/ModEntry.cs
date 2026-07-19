@@ -27,7 +27,16 @@ public sealed class ModEntry : Mod
         I18n.Init(helper.Translation);
         mon = Monitor;
         help = helper;
-        config = help.ReadConfig<ModConfig>();
+        try
+        {
+            config = help.ReadConfig<ModConfig>();
+        }
+        catch (Exception ex)
+        {
+            Log($"Read config error:\n{ex}");
+            config = new ModConfig();
+            help.WriteConfig(config);
+        }
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -49,12 +58,12 @@ public sealed class ModEntry : Mod
             "Debug toggle the reminder hud",
             static (cmd, args) => MenuHandler.reminders.Value.ToggleVisibility()
         );
+#if DEBUG
         help.ConsoleCommands.Add(
             "ph-qicat",
             "Debug show the vanilla perfection tracker",
             static (cmd, args) => Game1.currentLocation?.ShowQiCat()
         );
-#if DEBUG
         help.ConsoleCommands.Add(
             "ph-invalidate",
             "Invalidate some asset",

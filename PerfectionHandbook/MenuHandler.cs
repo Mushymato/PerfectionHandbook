@@ -41,7 +41,8 @@ public static class MenuHandler
                 new(27, 54, 9, 9),
                 I18n.Ui_Mod_Name,
                 I18n.Ui_Mod_Desc,
-                ShowHandbook
+                ShowHandbook,
+                reminders.Value.ToggleVisibility
             );
         }
     }

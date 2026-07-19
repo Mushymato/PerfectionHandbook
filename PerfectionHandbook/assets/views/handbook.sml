@@ -9,7 +9,7 @@
     <!-- Misc -->
     <lane margin="6,4,16,4" orientation="Horizontal" layout="stretch content">
       <panel layout="stretch content">
-        <banner margin="4,12,0,0" text={#ui.title.perfection} />
+        <banner margin="4,12,0,0" text={:PerfectionTitle} />
       </panel>
       <button *repeat={:MiscPages}
         default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}

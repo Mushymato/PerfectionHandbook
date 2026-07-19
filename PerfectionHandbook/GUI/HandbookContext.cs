@@ -6,56 +6,66 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed partial class HandbookContext(Farmer who)
+public sealed partial class HandbookContext
 {
     public static readonly Color ActiveColor = Color.White;
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
 
+    private readonly Farmer who;
     private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
         ? new(new Dictionary<string, OwnedItemGroup>(), [])
         : ItemOwnedLookup.GetPlayerOwned();
-    public IReadOnlyList<GoalContext> PerfectionGoals
+    public readonly IReadOnlyList<GoalContext> PerfectionGoals;
+    public readonly string PerfectionTitle;
+    public readonly IReadOnlyList<GoalContext> AchievementGoals;
+    public readonly IReadOnlyList<MiscContext> MiscPages;
+
+    public HandbookContext(Farmer who)
     {
-        get => field ??= Goals.PerfectionGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
-    } = null;
-    public IReadOnlyList<GoalContext> AchievementGoals
-    {
-        get => field ??= Goals.AchievementGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
-    } = null;
-    public IReadOnlyList<MiscContext> MiscPages
-    {
-        get =>
-            field ??= [
-                new MiscContext(
-                    who,
-                    playerOwned,
-                    "Misc_Crop_Calendar",
-                    I18n.Ui_Misc_CropCalendar(),
-                    ItemRegistry.GetDataOrErrorItem("(O)889"),
-                    string.Empty,
-                    (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
-                ),
-                new MiscContext(
-                    who,
-                    playerOwned,
-                    "Misc_Required_Ingredients",
-                    I18n.Ui_Misc_Ingredients(),
-                    ItemRegistry.GetDataOrErrorItem("(O)419"),
-                    string.Empty,
-                    (ctx) => new GoalRecipesIngredientContext(ctx)
-                ),
-                new MiscContext(
-                    who,
-                    playerOwned,
-                    "Misc_Mod_Config",
-                    I18n.Ui_Misc_ModConfig(),
-                    ItemRegistry.GetDataOrErrorItem("(O)112"),
-                    string.Empty,
-                    (ctx) => new ModConfigContext(ModEntry.config)
-                ),
-            ];
-    } = null;
+        this.who = who;
+
+        this.PerfectionGoals = Goals.PerfectionGoals.Select(goal => GoalContext.Make(who, goal, playerOwned)).ToList();
+        float perfectionPercent = PerfectionGoals.Sum(ctx =>
+            ctx.Fulfillments[0].Percent * ((ctx.Goal as IPerfectionGoal)?.PercentWeight ?? 0f) / 100f
+        );
+        this.PerfectionTitle = I18n.Ui_Title_Perfection($"{perfectionPercent:P2}".Replace(" ", ""));
+
+        this.AchievementGoals = Goals
+            .AchievementGoals.Select(goal => GoalContext.Make(who, goal, playerOwned))
+            .ToList();
+
+        this.MiscPages =
+        [
+            new MiscContext(
+                who,
+                playerOwned,
+                "Misc_Crop_Calendar",
+                I18n.Ui_Misc_CropCalendar(),
+                ItemRegistry.GetDataOrErrorItem("(O)889"),
+                string.Empty,
+                (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
+            ),
+            new MiscContext(
+                who,
+                playerOwned,
+                "Misc_Required_Ingredients",
+                I18n.Ui_Misc_Ingredients(),
+                ItemRegistry.GetDataOrErrorItem("(O)419"),
+                string.Empty,
+                (ctx) => new GoalRecipesIngredientContext(ctx)
+            ),
+            new MiscContext(
+                who,
+                playerOwned,
+                "Misc_Mod_Config",
+                I18n.Ui_Misc_ModConfig(),
+                ItemRegistry.GetDataOrErrorItem("(O)112"),
+                string.Empty,
+                (ctx) => new ModConfigContext(ModEntry.config)
+            ),
+        ];
+    }
 
     [Notify]
     private IGoalContext? selectedCtx = null;

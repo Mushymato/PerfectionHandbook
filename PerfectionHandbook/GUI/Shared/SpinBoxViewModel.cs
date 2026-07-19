@@ -3,13 +3,14 @@ using PerfectionHandbook.Integration;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<T> backingSetter) : INotifyPropertyChanged
+public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<T> backingSetter)
+    : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public void InvokePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void RaisePropertyChanged(string propName)
     {
-        PropertyChanged?.Invoke(sender, e);
+        PropertyChanged?.Invoke(this, new(propName));
     }
 
     public T Value
@@ -24,15 +25,15 @@ public class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<T> backin
     public virtual void ValueSetter(T newValue)
     {
         backingSetter(newValue);
-        PropertyChanged?.Invoke(this, new(nameof(Value)));
-        PropertyChanged?.Invoke(this, new(nameof(ValueLabel)));
+        RaisePropertyChanged(nameof(Value));
+        RaisePropertyChanged(nameof(ValueLabel));
     }
 
     public virtual string ValueLabelGetter() => Value?.ToString() ?? string.Empty;
 
-    public virtual void Decrease() { }
+    public abstract void Decrease();
 
-    public virtual void Increase() { }
+    public abstract void Increase();
 
     public void Wheel(SDUIDirection direction)
     {

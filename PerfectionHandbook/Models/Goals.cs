@@ -56,11 +56,6 @@ public interface IPerfectionGoal : IGoal
     float PercentWeight { get; }
 }
 
-public interface IAchievementGoal : IGoal
-{
-    int AchievementId { get; }
-}
-
 public static class Goals
 {
     #region perfection
@@ -321,9 +316,32 @@ public static class Goals
     #endregion
 
     #region achievements
-    public sealed class Achievement_Museum : IAchievementGoal
+    public sealed class Achievement_LocalLegend : IGoal
     {
-        public int AchievementId => 5;
+        public bool IsShared => true;
+
+        public string DisplayName => Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11117");
+
+        public object? GetPageContext(GoalContext goalCtx) => null;
+
+        public ParsedItemData DisplayIcon => ItemRegistry.GetData("(F)1760");
+
+        public GoalFulfillment GetFulfillment(Farmer who)
+        {
+            int count = 0;
+            int total = 0;
+            foreach ((int bundleId, bool[] status) in Game1.netWorldState.Value.Bundles.Pairs)
+            {
+                total += status.Length;
+                count += status.Count(static b => b);
+            }
+            return new GoalFulfillment(null, count, total);
+        }
+    }
+
+    public sealed class Achievement_Museum : IGoal
+    {
+        public readonly int AchievementId = 5;
         public bool IsShared => true;
 
         public object? GetPageContext(GoalContext goalCtx) => new GoalMuseumDonateContext(goalCtx);
@@ -335,9 +353,9 @@ public static class Goals
             new(null, Game1.netWorldState.Value.MuseumPieces.Length, LibraryMuseum.totalArtifacts);
     }
 
-    public sealed class Achievement_Polyculture : IAchievementGoal
+    public sealed class Achievement_Polyculture : IGoal
     {
-        public int AchievementId => 31;
+        public readonly int AchievementId = 31;
         public bool IsShared => false;
 
         public object? GetPageContext(GoalContext goalCtx) =>
@@ -365,9 +383,9 @@ public static class Goals
         }
     }
 
-    public sealed class Achievement_Monoculture : IAchievementGoal
+    public sealed class Achievement_Monoculture : IGoal
     {
-        public int AchievementId => 32;
+        public readonly int AchievementId = 32;
         public bool IsShared => false;
 
         public object? GetPageContext(GoalContext goalCtx) =>
@@ -399,8 +417,9 @@ public static class Goals
         }
     }
 
-    public static readonly List<IAchievementGoal> AchievementGoals =
+    public static readonly List<IGoal> AchievementGoals =
     [
+        new Achievement_LocalLegend(),
         new Achievement_Museum(),
         new Achievement_Polyculture(),
         new Achievement_Monoculture(),

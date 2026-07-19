@@ -1,7 +1,7 @@
-<lane layout="stretch stretch" orientation="Vertical">
-  <lane orientation="vertical" layout="stretch 100%" margin="24,12">
-    <banner margin="8" text={#ui.misc.mod-config} layout="content content"/>
-    <form-row title={#config.name.ShowHandbookKey} tooltip={#config.tooltip.ShowHandbookKey}>
+<scrollable peeking="128" scrollbar-margin="-18,0,0,0">
+  <lane orientation="vertical" layout="stretch content" margin="24,12">
+    <banner margin="4" text={#ui.misc.mod-config} layout="content content"/>
+    <form-row title={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey}>
       <keybind-editor button-height="64"
           sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
           editable-type="MultipleKeybinds"
@@ -9,7 +9,12 @@
           focusable="true"
           keybind-list={<>ShowHandbookKey} />
     </form-row>
-    <form-row title={#config.name.RemindersToggleKey} tooltip={#config.tooltip.RemindersToggleKey}>
+    <form-row title={#config.name.ItemPerPage} tooltip={#config.desc.ItemPerPage}>
+      <spin-box *context={:ItemPerPageSpinBox} />
+    </form-row>
+  
+    <banner margin="4" text={#config.section.Reminders} layout="content content"/>
+    <form-row title={#config.name.RemindersToggleKey} tooltip={#config.desc.RemindersToggleKey}>
       <keybind-editor button-height="64"
           sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
           editable-type="MultipleKeybinds"
@@ -17,7 +22,8 @@
           focusable="true"
           keybind-list={<>RemindersToggleKey} />
     </form-row>
-    <form-row title={#config.name.RemindersEditModifierKey} tooltip={#config.tooltip.RemindersEditModifierKey}>
+  
+    <form-row title={#config.name.RemindersEditModifierKey} tooltip={#config.desc.RemindersEditModifierKey}>
       <keybind-editor button-height="64"
           sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
           editable-type="MultipleKeybinds"
@@ -28,11 +34,20 @@
     <form-row title={#config.name.RemindersMaxCount} tooltip={#config.desc.RemindersMaxCount}>
       <spin-box *context={:RemindersMaxCountSpinBox} />
     </form-row>
-    <form-row title={#config.name.ItemPerPage} tooltip={#config.desc.ItemPerPage}>
-      <spin-box *context={:ItemPerPageSpinBox} />
+
+    <form-row title={#config.name.RemindersHUDPosition} tooltip={#config.desc.RemindersHUDPosition}>
+      <nine-grid-editor layout="80px"
+        hover-tint-color="orange"
+        button-sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:dark-light}
+        direction-sprite-map={@Mods/StardewUI/SpriteMaps/Directions}
+        placement={<>RemindersHUDPosition}
+        focusable="true">
+        <include *context={:RemindersHUDCtx} name="mushymato.PerfectionHandbook/views/reminder-hud" />
+      </nine-grid-editor>
     </form-row>
+
   </lane>
-</lane>
+</scrollable>
 
 <template name="form-row">
   <lane layout="content content"

@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -16,9 +18,9 @@ public sealed class RemindersContext() : INotifyPropertyChanged
     public bool HasReminders => Reminders.Count > 0;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public void OnRemindersChanged()
+    private void RaisePropertyChanged(string propName)
     {
-        PropertyChanged?.Invoke(this, new(nameof(Reminders)));
+        PropertyChanged?.Invoke(this, new(propName));
     }
 
     public bool? ToggleEntry(ReminderEntry? entry)
@@ -35,9 +37,9 @@ public sealed class RemindersContext() : INotifyPropertyChanged
                 reminders.RemoveAt(reminders.Count - 1);
         }
 
-        PropertyChanged?.Invoke(this, new(nameof(Reminders)));
+        RaisePropertyChanged(nameof(Reminders));
         if (reminders.Count == (added ? 1 : 0))
-            PropertyChanged?.Invoke(this, new(nameof(HasReminders)));
+            RaisePropertyChanged(nameof(HasReminders));
         return added;
     }
 
@@ -50,7 +52,7 @@ public sealed class RemindersContext() : INotifyPropertyChanged
 public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
 {
     private IViewDrawable? drawable = null;
-    private readonly RemindersContext ctx = new();
+    internal readonly RemindersContext ctx = new();
 
     public bool? ToggleEntry(ReminderEntry? entry) => ctx.ToggleEntry(entry);
 
@@ -92,6 +94,6 @@ public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
         }
         if (Context.ScreenId != screenId)
             return;
-        drawable.Draw(e.SpriteBatch, ModEntry.config.RemindersHUDPosition);
+        drawable.Draw(e.SpriteBatch, ModEntry.config.RemindersHUDPosition.GetViewportPosition(drawable.ActualSize));
     }
 }
