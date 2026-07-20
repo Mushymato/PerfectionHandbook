@@ -25,8 +25,8 @@
                   <panel layout="100% stretch" vertical-content-alignment="End">
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
-                    <label text={HeartLevel} margin="16,0,0,0" horizontal-alignment="Start" shadow-alpha="1" />
-                    <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="1" />
+                    <label text={HeartLevel} margin="16,0,0,0" horizontal-alignment="Start" shadow-alpha="0.8" />
+                    <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
                   </panel>
                 </frame>
               </lane>

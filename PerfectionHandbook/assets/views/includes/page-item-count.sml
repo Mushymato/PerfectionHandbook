@@ -15,10 +15,10 @@
           horizontal-content-alignment="End"
           vertical-content-alignment="End"
           left-click=|^HandleLeftClick(this)|
-          pointer-enter=|^HoveredEnter(this)|>
+          pointer-enter=|^HoveredEnter(this)|
+          tooltip={Tooltip}
+          hovered-subject={:ReprItem}>
           <image sprite={:Info.Datum}
-            tooltip={Tooltip}
-            hovered-subject={:ReprItem}
             tint={DisplayTint}
             shadow-alpha={DisplayShadow}
             scale={DisplayScale}

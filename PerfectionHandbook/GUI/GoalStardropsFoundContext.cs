@@ -13,8 +13,6 @@ public sealed record StardropsFoundDisplay(string FoundFlag) : IPageDisplayEntry
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return Description.ContainsIgnoreCase(txt);
     }
 

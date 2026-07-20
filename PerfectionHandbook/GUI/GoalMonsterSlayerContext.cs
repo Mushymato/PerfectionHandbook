@@ -56,8 +56,6 @@ public sealed partial record MonsterSlayerDisplay(string QuestName, List<string>
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         if (QuestName.ContainsIgnoreCase(txt))
             return true;
         if (QuestTargets.Any(target => target.ContainsIgnoreCase(txt)))

@@ -39,8 +39,6 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return DisplayName.ContainsIgnoreCase(txt);
     }
 

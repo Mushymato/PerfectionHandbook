@@ -12,8 +12,8 @@
           background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
           <panel vertical-content-alignment="Middle">
             <image margin="14,-24,0,0" sprite={:^GoalCtx.DisplayIcon} layout="32px 32px"/>
-            <label margin="10,36,0,0" font="small" text={:CountText} shadow-alpha="1" max-lines="1"/>
-            <label margin="64,0,0,0" font="small" text={:Name} shadow-alpha="1"/>
+            <label margin="10,36,0,0" font="small" text={:CountText} shadow-alpha="0.8" max-lines="1"/>
+            <label margin="64,0,0,0" font="small" text={:Name} shadow-alpha="0.8"/>
           </panel>
         </frame>
       </grid>

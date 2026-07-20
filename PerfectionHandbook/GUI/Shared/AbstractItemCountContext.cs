@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
-using StardewModdingAPI;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;

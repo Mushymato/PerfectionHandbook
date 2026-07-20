@@ -1,6 +1,4 @@
 using System.ComponentModel;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;

@@ -14,8 +14,6 @@ public sealed record GoldenWalnutsFoundDisplay(string Key, int Count = 1, int Ma
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return Name.ContainsIgnoreCase(txt) || Hint.ContainsIgnoreCase(txt);
     }
 
@@ -28,6 +26,7 @@ public sealed class GoalGoldenWalnutsFoundContext(IGoalContext goalCtx)
     /*
       Based on:
       https: //github.com/MouseyPounds/stardew-checkup/blob/8e48aa1806ad2c856d35e1a68f08128b4673f2c5/stardew-checkup.js#L4458
+
 
       MIT License
 

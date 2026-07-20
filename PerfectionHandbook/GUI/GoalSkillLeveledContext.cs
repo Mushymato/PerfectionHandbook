@@ -52,8 +52,6 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return SkillName.ContainsIgnoreCase(txt);
     }
 

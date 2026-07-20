@@ -1,0 +1,13 @@
+{
+  "Texture": "LooseSprites/JunimoNote",
+  "Sprites": {
+    "pictureFrame": {
+      "SourceRect": "534,18,40,40"
+    },
+    "textFrame": {
+      "SourceRect": "518,266,10,15",
+      "FixedEdges": "2,2,2,2",
+      "Scale": 4
+    }
+  }
+}

@@ -175,7 +175,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
             {
                 if (display.Needed != showNeed)
                     continue;
-                if (!display.SearchMatch(txt))
+                if (!string.IsNullOrEmpty(txt) && !display.SearchMatch(txt))
                     continue;
                 filteredDisplay.Add(display);
             }

@@ -35,7 +35,7 @@
                   layout={ExpToNextLayout}
                   fit="Stretch"
                 />
-                <label text={ExpToNextDisplay} horizontal-alignment="End" layout="stretch content" margin="2" shadow-alpha="1" />
+                <label text={ExpToNextDisplay} horizontal-alignment="End" layout="stretch content" margin="2" shadow-alpha="0.8" />
               </panel>
             </frame>
           </lane>

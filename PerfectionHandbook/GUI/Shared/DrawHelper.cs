@@ -121,4 +121,15 @@ public static class DrawHelper
         );
         return sprites;
     }
+
+    public static SDUISprite? GetQualityStar(int quality)
+    {
+        return quality switch
+        {
+            1 => new(Game1.mouseCursors, new Rectangle(338, 400, 8, 8)),
+            2 => new(Game1.mouseCursors, new Rectangle(346, 400, 8, 8)),
+            4 => new(Game1.mouseCursors, new Rectangle(346, 392, 8, 8)),
+            _ => null,
+        };
+    }
 }

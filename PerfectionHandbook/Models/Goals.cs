@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.GameData;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Locations;
+using StardewValley.Menus;
 
 namespace PerfectionHandbook.Models;
 
@@ -316,24 +317,44 @@ public static class Goals
     #endregion
 
     #region achievements
-    public sealed class Achievement_LocalLegend : IGoal
+    public sealed class Achievement_CommunityCenter : IGoal
     {
         public bool IsShared => true;
 
+        // Consider a save Joja only if they completely finish CC with Joja Development Form and seen the event
+        private static bool IsJoja =>
+            Game1.MasterPlayer != null
+            && !Game1.MasterPlayer.eventsSeen.Contains("191393")
+            && Game1.MasterPlayer.eventsSeen.Contains("502261");
+
         public string DisplayName => Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11117");
 
-        public object? GetPageContext(GoalContext goalCtx) => null;
+        public object? GetPageContext(GoalContext goalCtx) => new GoalCommunityCenterContext(goalCtx);
 
-        public ParsedItemData DisplayIcon => ItemRegistry.GetData("(F)1760");
+        public ParsedItemData DisplayIcon => IsJoja ? ItemRegistry.GetData("(O)167") : ItemRegistry.GetData("(F)1760");
 
         public GoalFulfillment GetFulfillment(Farmer who)
         {
+            if (IsJoja)
+            {
+                return new GoalFulfillment(null, 5, 5);
+            }
             int count = 0;
             int total = 0;
-            foreach ((int bundleId, bool[] status) in Game1.netWorldState.Value.Bundles.Pairs)
+            foreach ((string bundleKey, string bundleData) in Game1.netWorldState.Value.BundleData)
             {
-                total += status.Length;
-                count += status.Count(static b => b);
+                int bundleId = Convert.ToInt32(bundleKey.Split('/')[1]);
+                if (!Game1.netWorldState.Value.Bundles.TryGetValue(bundleId, out bool[] completion))
+                {
+                    continue;
+                }
+                // creating this to steal some parsing code
+                Bundle bundle = new(bundleId, bundleData, completion, Point.Zero, "LooseSprites\\JunimoNote", null);
+                total++;
+                if (bundle.complete)
+                {
+                    count++;
+                }
             }
             return new GoalFulfillment(null, count, total);
         }
@@ -419,7 +440,7 @@ public static class Goals
 
     public static readonly List<IGoal> AchievementGoals =
     [
-        new Achievement_LocalLegend(),
+        new Achievement_CommunityCenter(),
         new Achievement_Museum(),
         new Achievement_Polyculture(),
         new Achievement_Monoculture(),

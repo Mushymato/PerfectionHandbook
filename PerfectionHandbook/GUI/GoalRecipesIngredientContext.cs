@@ -64,8 +64,6 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
 
     public override bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         if (NeededFor.CraftingDesc.ContainsIgnoreCase(txt))
             return true;
         return base.SearchMatch(txt);

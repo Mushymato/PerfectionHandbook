@@ -11,7 +11,7 @@
           background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
           <lane vertical-content-alignment="Middle">
             <image sprite={:^GoalCtx.DisplayIcon} layout="48px 48px" margin="6" />
-            <label font="dialogue" text={:Description} shadow-alpha="1"/>
+            <label font="dialogue" text={:Description} shadow-alpha="0.8"/>
           </lane>
         </frame>
       </lane>

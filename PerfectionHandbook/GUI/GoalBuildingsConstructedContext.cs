@@ -22,8 +22,6 @@ public sealed record BuildingsBuiltDisplay(
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return BuildingName.ContainsIgnoreCase(txt);
     }
 

@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
-using Sickhead.Engine.Util;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Extensions;
@@ -58,8 +57,6 @@ public sealed record ItemInfo(ParsedItemData Datum)
 
     public bool SearchMatch(string txt)
     {
-        if (string.IsNullOrEmpty(txt))
-            return true;
         return Datum.DisplayName.ContainsIgnoreCase(txt);
     }
 }
