@@ -6,8 +6,13 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe Recipe, PlayerOwned OwnedInfo)
-    : AbstractItemCountDisplay(Info, OwnedCount)
+public sealed record RecipeDisplay(
+    ItemInfo Info,
+    int OwnedCount,
+    CraftingRecipe Recipe,
+    IReadOnlyList<(NeededForInfoGroup, NeededForInfo)> Needs,
+    PlayerOwned OwnedInfo
+) : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override Color DisplayTint
     {
@@ -47,6 +52,27 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
         completedCount = completedCount < 0 ? 0 : completedCount;
         UpdateCount();
     }
+
+    public override ReminderEntry? Reminder
+    {
+        get
+        {
+            if (base.Reminder is not ReminderEntry entry)
+                return null;
+            List<ReminderEntry> subReminders = [];
+            foreach ((NeededForInfoGroup group, NeededForInfo need) in Needs)
+            {
+                subReminders.Add(
+                    new(string.Concat(entry, '.', group.RawId), group.Repr, group.CraftingDesc, need.Count)
+                    {
+                        IsSub = true,
+                    }
+                );
+            }
+            entry.SubReminders = subReminders;
+            return entry;
+        }
+    }
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
@@ -61,9 +87,9 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
         List<RecipeDisplay> recipeDisplayList = [];
         foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
         {
-            foreach (CraftingRecipe recipe in itemInfo.FromRecipe)
+            foreach (CraftingRecipeWithNeeds recipe in itemInfo.FromRecipe)
             {
-                if (recipe.isCookingRecipe == IsCooking)
+                if (recipe.Recipe.isCookingRecipe == IsCooking)
                 {
                     int ownedCount = 0;
                     if (
@@ -73,7 +99,7 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
                         )
                     )
                         ownedCount = group.CountRepr.ReprStack;
-                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe, GoalCtx.OwnedInfo));
+                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe.Recipe, recipe.Needs, GoalCtx.OwnedInfo));
                 }
             }
         }

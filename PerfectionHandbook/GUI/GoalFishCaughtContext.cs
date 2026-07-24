@@ -80,11 +80,14 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
 
     protected override List<FishCaughtDisplay> FinalizeDisplay(List<FishCaughtDisplay> displayList)
     {
+        displayList = base.FinalizeDisplay(displayList);
         foreach (FishCaughtDisplay disp in displayList)
         {
             HashSet<string> canCatchIn = [];
             foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
             {
+                if (spawn.RequireMagicBait)
+                    continue;
                 Season? season = spawn.Season;
                 if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
                     continue;

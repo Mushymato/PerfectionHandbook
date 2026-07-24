@@ -68,6 +68,11 @@ public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageL
         }
     } = SORTMODE_NAME;
 
+    protected override int GetItemPerPage()
+    {
+        return ModEntry.config.ItemPerPage / 2;
+    }
+
     protected override IReadOnlyList<FriendDisplay> MakeAllDisplay()
     {
         List<FriendDisplay> friendDisplay = [];

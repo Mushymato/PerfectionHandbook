@@ -29,9 +29,9 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
                 config.ItemPerPage = value;
                 WriteConfig();
             },
-            200,
+            50,
             int.MaxValue,
-            100
+            50
         );
 
     public KeybindList ShowHandbookKey

@@ -26,7 +26,7 @@ public sealed record CommunityCenterBundleDisplay(
     IReadOnlyList<CommunityCenterBundleIngredient> BundleIngredients
 ) : IPageDisplayEntry
 {
-    public ReminderEntry? Reminder => null;
+    public ReminderEntry? Reminder => throw new NotImplementedException();
 
     public bool SearchMatch(string txt)
     {

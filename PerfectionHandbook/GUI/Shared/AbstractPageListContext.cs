@@ -64,6 +64,11 @@ public abstract partial class AbstractPageListContext<TDisplay>
         }
     }
 
+    protected virtual int GetItemPerPage()
+    {
+        return ModEntry.config.ItemPerPage;
+    }
+
     public string SearchText
     {
         get => field;
@@ -108,7 +113,7 @@ public abstract partial class AbstractPageListContext<TDisplay>
                 field = 0.9999f;
                 changed = true;
             }
-            else if (value >= 1 && (scrollPage * ModEntry.config.ItemPerPage < FilteredDisplay.Count))
+            else if (value >= 1 && (scrollPage * GetItemPerPage() < FilteredDisplay.Count))
             {
                 scrollPage++;
                 field = 0.0001f;
@@ -195,8 +200,13 @@ public abstract partial class AbstractPageListContext<TDisplay>
             if (filtered.Count == 0)
                 return filtered;
             int actualPage = ScrollPage - 1;
-            int itemPerPage = ModEntry.config.ItemPerPage;
+            int itemPerPage = GetItemPerPage();
             int startIdx = actualPage * itemPerPage;
+            if (startIdx >= filtered.Count)
+            {
+                ScrollPage = 1;
+                startIdx = 0;
+            }
             int nextPageSize = Math.Min(itemPerPage, filtered.Count - startIdx);
             if (nextPageSize == 0)
                 return [];

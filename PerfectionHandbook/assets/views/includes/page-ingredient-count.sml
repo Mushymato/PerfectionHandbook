@@ -17,7 +17,7 @@
             horizontal-content-alignment="End"
             vertical-content-alignment="End"
             pointer-enter=|^HoveredEnter(this)|>
-            <image sprite={:Repr}
+            <image sprite={:NeededFor.Repr}
               tooltip={Tooltip}
               hovered-subject={:ReprItem}
               tint={DisplayTint}

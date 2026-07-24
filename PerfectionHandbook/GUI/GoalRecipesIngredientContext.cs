@@ -16,8 +16,6 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
     public override bool Needed => NeededCount > 0;
     public Color DigitTint => Count >= NeededCount ? Color.LimeGreen : Color.White;
     private List<NeededForInfo> notYetCrafted = [];
-    public SDUISprite Repr =
-        NeededFor.ReprIcon ?? new(NeededFor.ReprInfo.Datum.GetTexture(), NeededFor.ReprInfo.Datum.GetSourceRect());
 
     public override Color DisplayTint =>
         OwnedCount >= NeededCount ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
@@ -82,6 +80,11 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
             displayList.Add(new(key, neededForInfoGroup, ownedCount));
         }
         return displayList;
+    }
+
+    protected override int GetItemPerPage()
+    {
+        return ModEntry.config.ItemPerPage / 2;
     }
 
     protected override List<IngredientDisplay> SortAllDisplay(List<IngredientDisplay> displayList)

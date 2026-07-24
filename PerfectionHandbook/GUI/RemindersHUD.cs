@@ -7,13 +7,36 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record ReminderEntry(string Key, SDUISprite Icon, string Text);
+public sealed record ReminderEntry(string Key, SDUISprite Icon, string Text, int Count)
+{
+    public bool IsSub { get; set; } = false;
+    public readonly bool HasCount = Count > 1;
+    public bool HasSubReminders => SubReminders != null;
+    public IReadOnlyList<ReminderEntry>? SubReminders = null;
+}
 
 public sealed class RemindersContext() : INotifyPropertyChanged
 {
     public readonly List<ReminderEntry> reminders = [];
-    public IReadOnlyList<ReminderEntry> Reminders => reminders;
-    public bool HasReminders => Reminders.Count > 0;
+    public IEnumerable<ReminderEntry> Reminders
+    {
+        get
+        {
+            foreach (ReminderEntry entry in reminders)
+            {
+                yield return entry;
+                if (entry.SubReminders != null)
+                {
+                    foreach (ReminderEntry subEntry in entry.SubReminders)
+                    {
+                        yield return subEntry;
+                    }
+                }
+            }
+        }
+    }
+
+    public bool HasReminders => reminders.Any();
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void RaisePropertyChanged(string propName)
@@ -21,10 +44,8 @@ public sealed class RemindersContext() : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new(propName));
     }
 
-    public bool? ToggleEntry(ReminderEntry? entry)
+    public bool ToggleEntry(ReminderEntry entry)
     {
-        if (entry == null)
-            return null;
         // if not in list, add; if in list, remove
         bool added = false;
         if (reminders.RemoveWhere(en => en.Key == entry.Key) == 0)
@@ -52,7 +73,7 @@ public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
     private IViewDrawable? drawable = null;
     internal readonly RemindersContext ctx = new();
 
-    public bool? ToggleEntry(ReminderEntry? entry) => ctx.ToggleEntry(entry);
+    public bool ToggleEntry(ReminderEntry entry) => ctx.ToggleEntry(entry);
 
     internal bool HasEntryKey(string key) => ctx.HasEntryKey(key);
 

@@ -3,6 +3,7 @@ using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
 
@@ -36,15 +37,16 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
-    public virtual ReminderEntry? Reminder =>
-        field ??= new(
-            Info.Datum.QualifiedItemId,
-            new SDUISprite(Info.Datum.GetTexture(), Info.Datum.GetSourceRect()),
-            Info.Datum.DisplayName
-        );
+    public virtual string ReminderKey => Info.Datum.QualifiedItemId;
+    public virtual ReminderEntry? Reminder => field ??= new(ReminderKey, Info.Sprite, Info.Datum.DisplayName, Count);
 
     [Notify]
-    private bool? inReminders = MenuHandler.reminders.Value.HasEntryKey(Info.Datum.QualifiedItemId);
+    private bool inReminders = false;
+
+    public virtual void RecheckInReminders()
+    {
+        InReminders = MenuHandler.reminders.Value.HasEntryKey(ReminderKey);
+    }
 
     public virtual bool Needed => completedCount == 0;
 
@@ -124,7 +126,18 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     protected virtual TDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
         throw new NotImplementedException(nameof(MakeDisplay));
 
-    protected virtual List<TDisplay> FinalizeDisplay(List<TDisplay> displayList) => displayList;
+    protected virtual List<TDisplay> FinalizeDisplay(List<TDisplay> displayList)
+    {
+        foreach (TDisplay display in displayList)
+        {
+            display.RecheckInReminders();
+            if (display.InReminders)
+            {
+                isInReminders.Add(display);
+            }
+        }
+        return displayList;
+    }
 
     protected override List<TDisplay> SortAllDisplay(List<TDisplay> displayList)
     {
@@ -141,6 +154,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
 
     [Notify]
     protected TDisplay? hovered = null;
+    private readonly List<TDisplay> isInReminders = [];
 
     public bool HasHovered => Hovered != null;
 
@@ -155,7 +169,18 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     {
         if (ModEntry.config.RemindersEditModifierKey.IsDown())
         {
-            display.InReminders = MenuHandler.reminders.Value.ToggleEntry(display.Reminder);
+            if (display.Reminder is not ReminderEntry entry)
+                return;
+            display.InReminders = MenuHandler.reminders.Value.ToggleEntry(entry);
+            foreach (TDisplay prevDisplays in isInReminders)
+            {
+                prevDisplays.RecheckInReminders();
+            }
+            isInReminders.RemoveWhere(prevDisplays => !prevDisplays.InReminders);
+            if (display.InReminders)
+            {
+                isInReminders.Add(display);
+            }
         }
     }
 

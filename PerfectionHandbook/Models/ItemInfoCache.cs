@@ -33,12 +33,18 @@ public sealed record NeededForInfoGroup(
 {
     public readonly List<NeededForInfo> NeededFor = [];
     public SDUISprite? ReprIcon = null;
+    public SDUISprite Repr => ReprIcon ?? ReprInfo.Sprite;
 
     public List<NeededForInfo> GetNotYetCrafted(Farmer who) =>
         NeededFor.Where(recipe => recipe.Recipe.GetRecipeCraftedCount(recipe.ResultItem, who) <= 0).ToList();
 
     public int GetOwned(PlayerOwned owned) => GetOwnedFunc(this, owned);
 }
+
+public sealed record CraftingRecipeWithNeeds(
+    CraftingRecipe Recipe,
+    IReadOnlyList<(NeededForInfoGroup, NeededForInfo)> Needs
+);
 
 public sealed record ItemInfo(ParsedItemData Datum)
 {
@@ -50,10 +56,11 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public bool CountForPolyculture = false;
     public bool CountForMonoculture = false;
 
-    public List<CraftingRecipe> FromRecipe = [];
+    public List<CraftingRecipeWithNeeds> FromRecipe = [];
     public Dictionary<string, CropData> FromCrop = [];
     public List<(LocationInfo, SpawnFishData)> FromFishing = [];
     public FishSpawnReq? FishReq = null;
+    public SDUISprite Sprite => new(Datum.GetTexture(), Datum.GetSourceRect());
 
     public bool SearchMatch(string txt)
     {
@@ -235,7 +242,8 @@ public static class ItemInfoCache
                     itemInfo = new(datum);
                     newCache[datum.QualifiedItemId] = itemInfo;
                 }
-                itemInfo.FromRecipe.Add(recipe);
+
+                List<(NeededForInfoGroup, NeededForInfo)> needs = [];
 
                 foreach ((string ingrediantId, int count) in recipe.recipeList)
                 {
@@ -315,8 +323,12 @@ public static class ItemInfoCache
                             continue;
                         neededForRecipe[key] = neededForGroup;
                     }
-                    neededForGroup.NeededFor.Add(new(count, recipe, itemInfo));
+                    NeededForInfo neededFor = new(count, recipe, itemInfo);
+                    neededForGroup.NeededFor.Add(neededFor);
+                    needs.Add((neededForGroup, neededFor));
                 }
+
+                itemInfo.FromRecipe.Add(new(recipe, needs));
             }
 
             static bool TryMakeNeededFor_WildSeeds(
