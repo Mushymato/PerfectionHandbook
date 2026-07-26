@@ -80,7 +80,8 @@ public static class ItemOwnedLookup
             }
             catch (Exception ex)
             {
-                ModEntry.Log($"Failed to make OwnedItemGroup for '{key}'\n{ex}", LogLevel.Error);
+                ModEntry.Log($"Failed to make OwnedItemGroup for '{key}'", LogLevel.Error);
+                ModEntry.Log(ex.ToString(), LogLevel.Error);
                 continue;
             }
         }
