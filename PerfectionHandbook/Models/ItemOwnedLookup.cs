@@ -10,12 +10,15 @@ public sealed record OwnedItem(Item ThisItem, Chest? Container = null);
 
 public sealed record OwnedItemGroup(IReadOnlyList<OwnedItem> Things)
 {
-    public ReprObject CountRepr = GetCountRepr(Things);
+    public readonly ReprObject CountRepr = GetCountRepr(Things, true);
+    public readonly ReprObject CountWithoutInventoryRepr = GetCountRepr(Things, false);
 
-    private static ReprObject GetCountRepr(IReadOnlyList<OwnedItem> OwnedList)
+    private static ReprObject GetCountRepr(IReadOnlyList<OwnedItem> OwnedList, bool includePlayerInventory)
     {
         ReprObject reprItem = new(OwnedList[0].ThisItem.getOne());
-        reprItem.SetReprStack(OwnedList.Sum(owned => owned.ThisItem.Stack));
+        reprItem.SetReprStack(
+            OwnedList.Sum(owned => includePlayerInventory || owned.Container != null ? owned.ThisItem.Stack : 0)
+        );
         return reprItem;
     }
 }
@@ -68,10 +71,22 @@ public static class ItemOwnedLookup
                 }
             }
         );
-        var ownedItemGroups = ownedItems.ToDictionary(kv => kv.Key, kv => new OwnedItemGroup(kv.Value));
+        Dictionary<string, OwnedItemGroup> ownedItemGroups = [];
+        foreach ((string key, List<OwnedItem> things) in ownedItems)
+        {
+            try
+            {
+                ownedItemGroups[key] = new(things);
+            }
+            catch (Exception ex)
+            {
+                ModEntry.Log($"Failed to make OwnedItemGroup for '{key}'\n{ex}", LogLevel.Error);
+                continue;
+            }
+        }
         PlayerOwned result = new(
             ownedItemGroups,
-            ownedItemGroups.Values.Select(value => (Item)value.CountRepr).ToList()
+            ownedItemGroups.Values.Select(value => (Item)value.CountWithoutInventoryRepr).ToList()
         );
 
         ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}", LogLevel.Debug);
