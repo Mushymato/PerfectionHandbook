@@ -357,11 +357,11 @@ public sealed partial class CropDetailDisplay
 public sealed partial record CropDisplay(
     ItemInfo Info,
     int OwnedCount,
-    int RequiredCount,
+    int NeededCount,
     CropDetailDisplaySettings CropCalendarSettings
-) : ItemShippedDisplay(Info, OwnedCount)
+) : ItemShippedDisplay(Info, OwnedCount, NeededCount)
 {
-    public override bool Needed => completedCount <= RequiredCount;
+    public override bool Needed => completedCount <= NeededCount;
 
     public Color BorderTint
     {
@@ -429,6 +429,11 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     public void ToggleHoverable(CropDisplay display)
     {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            ToggleDisplayToReminders(display);
+            return;
+        }
         if (Hoverable)
         {
             Hoverable = false;

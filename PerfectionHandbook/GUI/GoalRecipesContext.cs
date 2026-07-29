@@ -53,32 +53,39 @@ public sealed record RecipeDisplay(
         UpdateCount();
     }
 
+    public override string ReminderKind =>
+        Recipe.isCookingRecipe ? RemindersHUD.CookingKind : RemindersHUD.CraftingKind;
     public override ReminderEntry? Reminder
     {
         get
         {
-            if (base.Reminder is not ReminderEntry entry)
-                return null;
+            if (field != null)
+            {
+                return field;
+            }
+            field = new(
+                ReminderKind,
+                Recipe.isCookingRecipe ? Info.Datum.ItemId : Recipe.name,
+                Info.Sprite,
+                Recipe.isCookingRecipe
+                    ? I18n.Reminder_Verb_Cook(Info.Datum.DisplayName)
+                    : I18n.Reminder_Verb_Craft(Info.Datum.DisplayName),
+                1
+            );
             List<ReminderEntry> subReminders = [];
             foreach ((NeededForInfoGroup group, NeededForInfo need) in Needs)
             {
                 subReminders.Add(
-                    new(string.Concat(entry, '.', group.RawId), group.Repr, group.CraftingDesc, need.Count)
+                    new(ReminderKind, $"{Recipe.name}/{group.RawId}", group.Repr, group.CraftingDesc, need.Count)
                     {
                         IsSub = true,
                     }
                 );
             }
-            entry.SubReminders = subReminders;
-            return entry;
+            field.SubReminders = subReminders;
+            return field;
         }
     }
-
-    public override string ReminderKey => Recipe.isCookingRecipe ? "CookingRecipe" : "CraftingRecipe";
-    public override string ReminderText =>
-        Recipe.isCookingRecipe
-            ? I18n.Reminder_Verb_Cook(Info.Datum.DisplayName)
-            : I18n.Reminder_Verb_Craft(Info.Datum.DisplayName);
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)

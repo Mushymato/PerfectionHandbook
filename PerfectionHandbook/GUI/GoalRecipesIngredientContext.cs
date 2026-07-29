@@ -67,8 +67,15 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
         return base.SearchMatch(txt);
     }
 
-    public override string ReminderKey => "RecipesIngredient";
-    public override string ReminderText => I18n.Reminder_Verb_Prepare(Info.Datum.DisplayName);
+    public override string ReminderKind => RemindersHUD.RecipesIngredientKind;
+    public override ReminderEntry? Reminder =>
+        field ??= new(
+            ReminderKind,
+            Info.ReprItem.QualifiedItemId,
+            Info.Sprite,
+            I18n.Reminder_Verb_Prepare(Info.Datum.DisplayName),
+            NeededCount
+        );
 }
 
 public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)

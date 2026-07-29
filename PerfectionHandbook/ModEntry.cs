@@ -1,5 +1,6 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
+using Netcode;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
@@ -94,6 +95,7 @@ public sealed class ModEntry : Mod
     {
         // preload the cache
         DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
+        MenuHandler.reminders.Value.SaveLoadedSetup(Game1.player);
     }
 
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)

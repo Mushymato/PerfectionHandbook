@@ -63,8 +63,15 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         return result;
     }
 
-    public override string ReminderKey => "FishCaught";
-    public override string ReminderText => I18n.Reminder_Verb_Fish(Info.Datum.DisplayName);
+    public override string ReminderKind => RemindersHUD.FishingKind;
+    public override ReminderEntry? Reminder =>
+        field ??= new(
+            ReminderKind,
+            Info.ReprItem.QualifiedItemId,
+            Info.Sprite,
+            I18n.Reminder_Verb_Fish(Info.Datum.DisplayName),
+            1
+        );
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)

@@ -37,17 +37,15 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
-    public abstract string ReminderKey { get; }
-    public virtual string ReminderText => Info.Datum.DisplayName;
-    public virtual ReminderEntry? Reminder =>
-        field ??= new($"{ModEntry.ModId}/{ReminderKey}/{Info.Datum.QualifiedItemId}", Info.Sprite, ReminderText, Count);
+    public abstract string ReminderKind { get; }
+    public abstract ReminderEntry? Reminder { get; }
 
     [Notify]
     private bool inReminders = false;
 
     public virtual void RecheckInReminders()
     {
-        InReminders = MenuHandler.reminders.Value.HasEntryKey(ReminderKey);
+        InReminders = MenuHandler.reminders.Value.HasEntryKey(ReminderKind, Info.Datum.QualifiedItemId);
     }
 
     public virtual bool Needed => completedCount == 0;
@@ -156,7 +154,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
 
     [Notify]
     protected TDisplay? hovered = null;
-    private readonly List<TDisplay> isInReminders = [];
+    protected readonly List<TDisplay> isInReminders = [];
 
     public bool HasHovered => Hovered != null;
 
@@ -171,19 +169,25 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     {
         if (ModEntry.config.RemindersEditModifierKey.IsDown())
         {
-            if (display.Reminder is not ReminderEntry entry)
-                return;
-            display.InReminders = MenuHandler.reminders.Value.ToggleEntry(entry);
-            foreach (TDisplay prevDisplays in isInReminders)
-            {
-                prevDisplays.RecheckInReminders();
-            }
-            isInReminders.RemoveWhere(prevDisplays => !prevDisplays.InReminders);
-            if (display.InReminders)
-            {
-                isInReminders.Add(display);
-            }
+            ToggleDisplayToReminders(display);
         }
+    }
+
+    protected void ToggleDisplayToReminders(TDisplay display)
+    {
+        if (display.Reminder is not ReminderEntry entry)
+            return;
+        display.InReminders = MenuHandler.reminders.Value.ToggleEntry(entry);
+        foreach (TDisplay prevDisplays in isInReminders)
+        {
+            prevDisplays.RecheckInReminders();
+        }
+        isInReminders.RemoveWhere(prevDisplays => !prevDisplays.InReminders);
+        if (display.InReminders)
+        {
+            isInReminders.Add(display);
+        }
+        return;
     }
 
     public virtual string CompleteCountToggleText => string.Empty;

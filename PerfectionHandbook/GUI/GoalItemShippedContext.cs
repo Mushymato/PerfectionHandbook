@@ -4,7 +4,8 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public record ItemShippedDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
+public record ItemShippedDisplay(ItemInfo Info, int OwnedCount, int NeededCount = 1)
+    : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override void SetStatus(Farmer who)
     {
@@ -13,8 +14,15 @@ public record ItemShippedDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCo
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
-    public override string ReminderKey => "ItemShipped";
-    public override string ReminderText => I18n.Reminder_Verb_Ship(Info.Datum.DisplayName);
+    public override string ReminderKind => RemindersHUD.ShippedKind;
+    public override ReminderEntry? Reminder =>
+        field ??= new(
+            ReminderKind,
+            Info.ReprItem.ItemId,
+            Info.Sprite,
+            I18n.Reminder_Verb_Ship(Info.Datum.DisplayName),
+            NeededCount
+        );
 }
 
 public sealed class GoalItemShippedContext(IGoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)
