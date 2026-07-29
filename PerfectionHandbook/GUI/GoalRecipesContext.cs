@@ -73,6 +73,12 @@ public sealed record RecipeDisplay(
             return entry;
         }
     }
+
+    public override string ReminderKey => Recipe.isCookingRecipe ? "CookingRecipe" : "CraftingRecipe";
+    public override string ReminderText =>
+        Recipe.isCookingRecipe
+            ? I18n.Reminder_Verb_Cook(Info.Datum.DisplayName)
+            : I18n.Reminder_Verb_Craft(Info.Datum.DisplayName);
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)

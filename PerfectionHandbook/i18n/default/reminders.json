@@ -1,0 +1,8 @@
+{
+  "reminder.verb.ship": "Ship: {{thing}}",
+  "reminder.verb.fish": "Fish: {{thing}}",
+  "reminder.verb.cook": "Cook: {{thing}}",
+  "reminder.verb.craft": "Craft: {{thing}}",
+  "reminder.verb.donate": "Donate: {{thing}}",
+  "reminder.verb.prepare": "Prepare: {{thing}}",
+}

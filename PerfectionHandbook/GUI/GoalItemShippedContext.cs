@@ -12,6 +12,9 @@ public record ItemShippedDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCo
         UpdateCount();
         OnPropertyChanged(new(nameof(Tooltip)));
     }
+
+    public override string ReminderKey => "ItemShipped";
+    public override string ReminderText => I18n.Reminder_Verb_Ship(Info.Datum.DisplayName);
 }
 
 public sealed class GoalItemShippedContext(IGoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)

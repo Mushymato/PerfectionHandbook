@@ -37,8 +37,10 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
-    public virtual string ReminderKey => Info.Datum.QualifiedItemId;
-    public virtual ReminderEntry? Reminder => field ??= new(ReminderKey, Info.Sprite, Info.Datum.DisplayName, Count);
+    public abstract string ReminderKey { get; }
+    public virtual string ReminderText => Info.Datum.DisplayName;
+    public virtual ReminderEntry? Reminder =>
+        field ??= new($"{ModEntry.ModId}/{ReminderKey}/{Info.Datum.QualifiedItemId}", Info.Sprite, ReminderText, Count);
 
     [Notify]
     private bool inReminders = false;
@@ -50,7 +52,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual bool Needed => completedCount == 0;
 
-    public abstract void SetStatus(Farmer who);
+    public virtual void SetStatus(Farmer who) { }
 
     public virtual void SetCountMode(CountMode countMode)
     {

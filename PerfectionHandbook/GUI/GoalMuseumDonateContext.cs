@@ -1,6 +1,5 @@
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
-using StardewValley;
 using StardewValley.Locations;
 
 namespace PerfectionHandbook.GUI;
@@ -10,7 +9,8 @@ public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : Abstra
     private readonly bool needed = !LibraryMuseum.HasDonatedArtifact(Info.Datum.ItemId);
     public override bool Needed => needed;
 
-    public override void SetStatus(Farmer who) { }
+    public override string ReminderKey => "MuseumDonate";
+    public override string ReminderText => I18n.Reminder_Verb_Donate(Info.Datum.DisplayName);
 }
 
 public sealed class GoalMuseumDonateContext(IGoalContext goalCtx)

@@ -28,7 +28,7 @@ internal static class GameQueryHelper
         }
         GenericSpawnItemData tmpSpawn = spawn.ShallowClone();
         tmpSpawn.RandomItemId = null;
-        ItemQueryContext iqContext = new(location, null, Random.Shared, "SimplifiedResolveAll");
+        ItemQueryContext iqContext = new(location, null, Random.Shared, nameof(SimplifiedResolveAll));
         foreach (string needIQR in needsIQR)
         {
             tmpSpawn.ItemId = needIQR;
