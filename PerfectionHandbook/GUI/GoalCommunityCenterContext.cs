@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Menus;

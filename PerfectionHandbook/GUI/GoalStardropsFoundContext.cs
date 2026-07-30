@@ -1,4 +1,5 @@
 using PerfectionHandbook.GUI.Shared;
+using PerfectionHandbook.Reminders;
 using StardewValley;
 using StardewValley.Extensions;
 

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
+using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;

@@ -1,3 +1,4 @@
+using PerfectionHandbook.Reminders;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;

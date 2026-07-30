@@ -1,5 +1,6 @@
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
@@ -14,15 +15,7 @@ public record ItemShippedDisplay(ItemInfo Info, int OwnedCount, int NeededCount 
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
-    public override string ReminderKind => RemindersHUD.ShippedKind;
-    public override ReminderEntry? Reminder =>
-        field ??= new(
-            ReminderKind,
-            Info.ReprItem.ItemId,
-            Info.Sprite,
-            I18n.Reminder_Verb_Ship(Info.Datum.DisplayName),
-            NeededCount
-        );
+    public override ReminderEntry? Reminder { get; } = new(ReminderEntryFactory.Kind_ItemShipped, Info.ReprItem.ItemId);
 }
 
 public sealed class GoalItemShippedContext(IGoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)

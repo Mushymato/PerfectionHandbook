@@ -1,5 +1,6 @@
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewValley.Locations;
 
 namespace PerfectionHandbook.GUI;
@@ -9,15 +10,8 @@ public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : Abstra
     private readonly bool needed = !LibraryMuseum.HasDonatedArtifact(Info.Datum.ItemId);
     public override bool Needed => needed;
 
-    public override string ReminderKind => RemindersHUD.DonateKind;
-    public override ReminderEntry? Reminder =>
-        field ??= new(
-            ReminderKind,
-            Info.ReprItem.ItemId,
-            Info.Sprite,
-            I18n.Reminder_Verb_Donate(Info.Datum.DisplayName),
-            1
-        );
+    public override ReminderEntry? Reminder { get; } =
+        new(ReminderEntryFactory.Kind_MuseumDonate, Info.ReprItem.ItemId);
 }
 
 public sealed class GoalMuseumDonateContext(IGoalContext goalCtx)

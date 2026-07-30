@@ -1,43 +1,28 @@
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
+using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Extensions;
 
-namespace PerfectionHandbook.GUI;
-
-public sealed record ReminderEntry(string Kind, string EntryId, SDUISprite Icon, string Text, int Count)
-{
-    public bool IsSub { get; set; } = false;
-    public readonly bool HasCount = Count > 1;
-    public bool HasSubReminders => SubReminders != null;
-    public IReadOnlyList<ReminderEntry>? SubReminders = null;
-    public bool IsValid
-    {
-        get { return ItemRegistry.GetData(EntryId) != null; }
-    }
-}
+namespace PerfectionHandbook;
 
 public sealed class RemindersContext() : INotifyPropertyChanged
 {
     public readonly List<ReminderEntry> reminders = [];
-    public IEnumerable<ReminderEntry> Reminders
+    public IEnumerable<ReminderEntryDisplay> Reminders
     {
         get
         {
             foreach (ReminderEntry entry in reminders)
             {
-                yield return entry;
-                if (entry.SubReminders != null)
-                {
-                    foreach (ReminderEntry subEntry in entry.SubReminders)
-                    {
-                        yield return subEntry;
-                    }
-                }
+                if (entry.Display == null)
+                    continue;
+                yield return entry.Display;
+                foreach (ReminderEntryDisplay display in entry.Display.CastedSubReminders)
+                    yield return display;
             }
         }
     }
@@ -50,36 +35,47 @@ public sealed class RemindersContext() : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new(propName));
     }
 
-    public bool ToggleEntry(ReminderEntry entry)
+    public void ToggleEntry(ReminderEntry entry)
     {
+        // validate this is a displayable entry
+        if (entry.Display == null)
+            return;
+
         // if not in list, add; if in list, remove
         bool added = false;
-        if (reminders.RemoveWhere(en => en.Kind == entry.Kind && en.EntryId == entry.EntryId) == 0)
+        if (reminders.RemoveWhere(entry.SameAs) == 0)
         {
             added = true;
             reminders.Insert(0, entry);
+            entry.Active = true;
             if (reminders.Count > ModEntry.config.RemindersMaxCount)
+            {
+                reminders[^1].Active = false;
                 reminders.RemoveAt(reminders.Count - 1);
+            }
+        }
+        else
+        {
+            entry.Active = false;
         }
 
         RaisePropertyChanged(nameof(Reminders));
         if (reminders.Count == (added ? 1 : 0))
             RaisePropertyChanged(nameof(HasReminders));
-        if (added)
-            ModEntry.Log($"Toggle: {entry.Kind} {entry.EntryId}");
-        return added;
+        return;
     }
 
-    public bool HasEntryKey(string kind, string entryId)
+    public bool HasEntry(ReminderEntry entry)
     {
-        return reminders.Any(en => en.Kind == kind && en.EntryId == entryId);
+        return reminders.Any(entry.SameAs);
     }
 
-    public void RemoveEntryKey(string kind, string entryId, Func<ReminderEntry, bool>? match)
+    public void RemoveEntry(ReminderEntry entry)
     {
-        if (reminders.RemoveWhere(en => en.Kind == kind && en.EntryId == entryId && (match == null || match(en))) > 0)
+        if (reminders.RemoveWhere(entry.SameAs) > 0)
         {
-            ModEntry.Log($"Remove: {kind} {entryId}");
+            entry.Active = false;
+            ModEntry.Log($"Remove: {entry}");
             RaisePropertyChanged(nameof(Reminders));
             if (reminders.Count == 0)
                 RaisePropertyChanged(nameof(HasReminders));
@@ -87,25 +83,26 @@ public sealed class RemindersContext() : INotifyPropertyChanged
     }
 }
 
-public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
+public sealed class RemindersHUD
 {
-    public const string CookingKind = "CookingRecipe";
-    public const string CraftingKind = "CraftingRecipe";
-    public const string FishingKind = "FishCaught";
-    public const string ShippedKind = "ItemShipped";
-    public const string DonateKind = "MuseumDonate";
-    public const string RecipesIngredientKind = "RecipesIngredient";
-
-    // private const string ReminderSaveKey = $"{ModEntry.ModId}/Reminders";
+    private readonly Func<IViewDrawable> makeDrawable;
+    private readonly int screenId;
+    internal readonly RemindersContext ctx;
     private IViewDrawable? drawable = null;
-    internal readonly RemindersContext ctx = new();
 
-    public bool ToggleEntry(ReminderEntry entry) => ctx.ToggleEntry(entry);
+    public RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
+    {
+        this.makeDrawable = makeDrawable;
+        this.screenId = screenId;
+        this.ctx = new();
+        this.ctx.PropertyChanged += OnCtxPropertyChanged;
+    }
 
-    public bool HasEntryKey(string kind, string entryId) => ctx.HasEntryKey(kind, entryId);
+    public void ToggleEntry(ReminderEntry entry) => ctx.ToggleEntry(entry);
 
-    public void RemoveEntryKey(string kind, string entryId, Func<ReminderEntry, bool>? match = null) =>
-        ctx.RemoveEntryKey(kind, entryId, match);
+    public bool HasEntry(ReminderEntry entry) => ctx.HasEntry(entry);
+
+    public void RemoveEntry(ReminderEntry entry) => ctx.RemoveEntry(entry);
 
     public void Activate()
     {
@@ -134,6 +131,21 @@ public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
             Activate();
     }
 
+    private void OnCtxPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(RemindersContext.Reminders))
+        {
+            if (drawable != null && ctx.reminders.Count == 0)
+            {
+                Deactivate();
+            }
+            else if (drawable == null && ctx.reminders.Count > 0)
+            {
+                Activate();
+            }
+        }
+    }
+
     private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
     {
         if (drawable == null)
@@ -160,37 +172,46 @@ public sealed class RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
     // shipped
     private void BasicShippedOnValueAdded(string key, int value)
     {
-        RemoveEntryKey(ShippedKind, key, (entry) => value >= entry.Count);
+        RemoveShippedReminders(key, value);
     }
 
     private void BasicShippedOnValueTargetUpdated(string key, int old_target_value, int new_target_value)
     {
-        RemoveEntryKey(ShippedKind, key, (entry) => new_target_value >= entry.Count);
+        RemoveShippedReminders(key, new_target_value);
+    }
+
+    private void RemoveShippedReminders(string key, int value)
+    {
+        RemoveEntry(new(ReminderEntryFactory.Kind_ItemShipped, key));
+        if (value >= ReminderEntryFactory.PolycultureCount)
+            RemoveEntry(new(ReminderEntryFactory.Kind_ItemShippedPolyculture, key));
+        if (value >= ReminderEntryFactory.MonocultureCount)
+            RemoveEntry(new(ReminderEntryFactory.Kind_ItemShippedMonoculture, key));
     }
 
     // cooking
     private void RecipesCookedOnValueAdded(string key, int value)
     {
-        RemoveEntryKey(CookingKind, key);
+        RemoveEntry(new(ReminderEntryFactory.Kind_CookingRecipe, key));
     }
 
     // crafting
     private void CraftingRecipesOnValueTargetUpdated(string key, int old_target_value, int new_target_value)
     {
         if (old_target_value == 0 && new_target_value == 1)
-            RemoveEntryKey(CraftingKind, key);
+            RemoveEntry(new(ReminderEntryFactory.Kind_CraftingRecipe, key));
     }
 
     // fished
     private void FishCaughtOnValueAdded(string key, int[] value)
     {
-        RemoveEntryKey(FishingKind, key);
+        RemoveEntry(new(ReminderEntryFactory.Kind_FishCaught, key));
     }
 
     // donated
     private void MuseumPiecesOnValueAdded(Vector2 key, string value)
     {
-        RemoveEntryKey(DonateKind, value);
+        RemoveEntry(new(ReminderEntryFactory.Kind_MuseumDonate, value));
     }
     #endregion
 }

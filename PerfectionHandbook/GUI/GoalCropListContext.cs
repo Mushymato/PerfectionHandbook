@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewModdingAPI;
 using StardewValley;
@@ -377,6 +378,20 @@ public sealed partial record CropDisplay(
     }
 
     public CropDetailDisplay CropDetail => field ??= new(Info, CropCalendarSettings);
+
+    public override ReminderEntry? Reminder =>
+        field ??= NeededCount switch
+        {
+            ReminderEntryFactory.PolycultureCount => new(
+                ReminderEntryFactory.Kind_ItemShippedPolyculture,
+                Info.ReprItem.ItemId
+            ),
+            ReminderEntryFactory.MonocultureCount => new(
+                ReminderEntryFactory.Kind_ItemShippedMonoculture,
+                Info.ReprItem.ItemId
+            ),
+            _ => base.Reminder,
+        };
 }
 
 public enum CropListKind

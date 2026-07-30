@@ -4,6 +4,7 @@ using Netcode;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -39,6 +40,8 @@ public sealed class ModEntry : Mod
             help.WriteConfig(config);
         }
 
+        ReminderEntryFactory.Register();
+
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
@@ -71,6 +74,11 @@ public sealed class ModEntry : Mod
             static (cmd, args) => help.GameContent.InvalidateCache(args[0])
         );
 #endif
+    }
+
+    public override object? GetApi(IModInfo mod)
+    {
+        return base.GetApi(mod);
     }
 
     private static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)

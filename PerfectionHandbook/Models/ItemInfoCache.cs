@@ -94,7 +94,7 @@ public static class ItemInfoCache
         new(recipeId, isCooking);
 
     private static bool isSpacecore = false;
-    private static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
+    internal static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
     #endregion
 
     public static void Setup()

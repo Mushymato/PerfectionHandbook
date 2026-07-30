@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
@@ -67,15 +68,7 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
         return base.SearchMatch(txt);
     }
 
-    public override string ReminderKind => RemindersHUD.RecipesIngredientKind;
-    public override ReminderEntry? Reminder =>
-        field ??= new(
-            ReminderKind,
-            Info.ReprItem.QualifiedItemId,
-            Info.Sprite,
-            I18n.Reminder_Verb_Prepare(Info.Datum.DisplayName),
-            NeededCount
-        );
+    public override ReminderEntry? Reminder { get; } = new(ReminderEntryFactory.Kind_RecipesIngredient, Key);
 }
 
 public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)

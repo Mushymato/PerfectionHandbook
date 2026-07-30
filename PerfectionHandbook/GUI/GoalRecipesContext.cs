@@ -2,17 +2,13 @@ using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record RecipeDisplay(
-    ItemInfo Info,
-    int OwnedCount,
-    CraftingRecipe Recipe,
-    IReadOnlyList<(NeededForInfoGroup, NeededForInfo)> Needs,
-    PlayerOwned OwnedInfo
-) : AbstractItemCountDisplay(Info, OwnedCount)
+public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe Recipe, PlayerOwned OwnedInfo)
+    : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override Color DisplayTint
     {
@@ -53,39 +49,11 @@ public sealed record RecipeDisplay(
         UpdateCount();
     }
 
-    public override string ReminderKind =>
-        Recipe.isCookingRecipe ? RemindersHUD.CookingKind : RemindersHUD.CraftingKind;
-    public override ReminderEntry? Reminder
-    {
-        get
-        {
-            if (field != null)
-            {
-                return field;
-            }
-            field = new(
-                ReminderKind,
-                Recipe.isCookingRecipe ? Info.Datum.ItemId : Recipe.name,
-                Info.Sprite,
-                Recipe.isCookingRecipe
-                    ? I18n.Reminder_Verb_Cook(Info.Datum.DisplayName)
-                    : I18n.Reminder_Verb_Craft(Info.Datum.DisplayName),
-                1
-            );
-            List<ReminderEntry> subReminders = [];
-            foreach ((NeededForInfoGroup group, NeededForInfo need) in Needs)
-            {
-                subReminders.Add(
-                    new(ReminderKind, $"{Recipe.name}/{group.RawId}", group.Repr, group.CraftingDesc, need.Count)
-                    {
-                        IsSub = true,
-                    }
-                );
-            }
-            field.SubReminders = subReminders;
-            return field;
-        }
-    }
+    public override ReminderEntry? Reminder =>
+        field ??= new(
+            Recipe.isCookingRecipe ? ReminderEntryFactory.Kind_CookingRecipe : ReminderEntryFactory.Kind_CraftingRecipe,
+            Recipe.name
+        );
 }
 
 public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
@@ -112,7 +80,7 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
                         )
                     )
                         ownedCount = group.CountRepr.ReprStack;
-                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe.Recipe, recipe.Needs, GoalCtx.OwnedInfo));
+                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe.Recipe, GoalCtx.OwnedInfo));
                 }
             }
         }

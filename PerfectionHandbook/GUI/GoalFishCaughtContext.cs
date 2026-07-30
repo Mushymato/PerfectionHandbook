@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewValley;
 using StardewValley.GameData.Locations;
 
@@ -63,15 +64,8 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         return result;
     }
 
-    public override string ReminderKind => RemindersHUD.FishingKind;
-    public override ReminderEntry? Reminder =>
-        field ??= new(
-            ReminderKind,
-            Info.ReprItem.QualifiedItemId,
-            Info.Sprite,
-            I18n.Reminder_Verb_Fish(Info.Datum.DisplayName),
-            1
-        );
+    public override ReminderEntry? Reminder { get; } =
+        new(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
