@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI.Utilities;
 
 namespace PerfectionHandbook;
 
 /// <summary>
 /// Information about a given reminder entry
-///
 /// </summary>
 public interface IReminderEntry
 {
@@ -105,4 +105,13 @@ public interface IPerfectionHandbookAPI
     /// <summary>Remove a reminder entry. Does nothing if entry not in list.</summary>
     /// <param name="entry">Entry to remove</param>
     public void RemoveReminder(IReminderEntry entry);
+
+    /// <summary>
+    /// The keybind set in Perfection Handbook configs that needs
+    /// to be held down to perform reminder add/remove.
+    /// Perfection handbook itself will only add reminders when this key
+    /// is held down and a relevant UI element is clicked.
+    /// It is recommended that mods follow the same pattern.
+    /// </summary>
+    public KeybindList RemindersEditModifierKey { get; }
 }

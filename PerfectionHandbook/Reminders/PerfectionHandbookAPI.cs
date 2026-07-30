@@ -1,4 +1,5 @@
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 
 namespace PerfectionHandbook.Reminders;
 
@@ -37,4 +38,7 @@ public sealed class PerfectionHandbookAPI(IModInfo mod) : IPerfectionHandbookAPI
             );
         MenuHandler.Reminders.RemoveEntry(reminderEntry);
     }
+
+    /// <inheritdoc/>
+    public KeybindList RemindersEditModifierKey => ModEntry.config.RemindersEditModifierKey;
 }

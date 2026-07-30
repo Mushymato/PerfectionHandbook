@@ -76,10 +76,8 @@ public sealed class ModEntry : Mod
 #endif
     }
 
-    public override object? GetApi(IModInfo mod)
-    {
-        return base.GetApi(mod);
-    }
+    /// <inheritdoc/>
+    public override object? GetApi(IModInfo mod) => new PerfectionHandbookAPI(mod);
 
     private static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
     {

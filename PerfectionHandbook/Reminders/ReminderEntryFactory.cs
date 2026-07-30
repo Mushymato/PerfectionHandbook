@@ -22,6 +22,7 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
         {
             if (field != value)
             {
+                field = value;
                 PropertyChanged?.Invoke(this, new(nameof(Active)));
                 ActiveStatusChanged?.Invoke(this, field);
             }
