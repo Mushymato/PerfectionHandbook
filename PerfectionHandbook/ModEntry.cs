@@ -60,7 +60,7 @@ public sealed class ModEntry : Mod
         help.ConsoleCommands.Add(
             "ph-hud",
             "Debug toggle the reminder hud",
-            static (cmd, args) => MenuHandler.reminders.Value.ToggleVisibility()
+            static (cmd, args) => MenuHandler.Reminders.ToggleVisibility()
         );
 #if DEBUG
         help.ConsoleCommands.Add(
@@ -103,7 +103,7 @@ public sealed class ModEntry : Mod
     {
         // preload the cache
         DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
-        MenuHandler.reminders.Value.SaveLoadedSetup(Game1.player);
+        MenuHandler.Reminders.SaveLoadedSetup(Game1.player);
     }
 
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
@@ -125,7 +125,7 @@ public sealed class ModEntry : Mod
         }
         else if (config.RemindersToggleKey.JustPressed())
         {
-            MenuHandler.reminders.Value.ToggleVisibility();
+            MenuHandler.Reminders.ToggleVisibility();
         }
     }
 

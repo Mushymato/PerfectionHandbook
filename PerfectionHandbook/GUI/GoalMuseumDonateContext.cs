@@ -11,7 +11,7 @@ public sealed record MuseumDonateDisplay(ItemInfo Info, int OwnedCount) : Abstra
     public override bool Needed => needed;
 
     public override ReminderEntry? Reminder { get; } =
-        new(ReminderEntryFactory.Kind_MuseumDonate, Info.ReprItem.ItemId);
+        MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_MuseumDonate, Info.ReprItem.ItemId);
 }
 
 public sealed class GoalMuseumDonateContext(IGoalContext goalCtx)

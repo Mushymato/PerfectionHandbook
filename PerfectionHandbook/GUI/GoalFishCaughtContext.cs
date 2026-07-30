@@ -65,7 +65,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
     }
 
     public override ReminderEntry? Reminder { get; } =
-        new(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
+        MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)

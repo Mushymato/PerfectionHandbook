@@ -20,6 +20,7 @@ public static class MenuHandler
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
         new(static () => viewEngine.CreateDrawableFromAsset(VIEW_ASSET_REMINDERS), Context.ScreenId)
     );
+    internal static RemindersHUD Reminders => reminders.Value;
 
     public static void Register()
     {
@@ -42,7 +43,7 @@ public static class MenuHandler
                 I18n.Ui_Mod_Name,
                 I18n.Ui_Mod_Desc,
                 ShowHandbook,
-                reminders.Value.ToggleVisibility
+                Reminders.ToggleVisibility
             );
         }
     }

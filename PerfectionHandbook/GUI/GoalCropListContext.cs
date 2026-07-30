@@ -382,11 +382,11 @@ public sealed partial record CropDisplay(
     public override ReminderEntry? Reminder =>
         field ??= NeededCount switch
         {
-            ReminderEntryFactory.PolycultureCount => new(
+            ReminderEntryFactory.PolycultureCount => MenuHandler.Reminders.GetOrCreateEntry(
                 ReminderEntryFactory.Kind_ItemShippedPolyculture,
                 Info.ReprItem.ItemId
             ),
-            ReminderEntryFactory.MonocultureCount => new(
+            ReminderEntryFactory.MonocultureCount => MenuHandler.Reminders.GetOrCreateEntry(
                 ReminderEntryFactory.Kind_ItemShippedMonoculture,
                 Info.ReprItem.ItemId
             ),

@@ -49,8 +49,8 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
         UpdateCount();
     }
 
-    public override ReminderEntry? Reminder =>
-        field ??= new(
+    public override ReminderEntry? Reminder { get; } =
+        MenuHandler.Reminders.GetOrCreateEntry(
             Recipe.isCookingRecipe ? ReminderEntryFactory.Kind_CookingRecipe : ReminderEntryFactory.Kind_CraftingRecipe,
             Recipe.name
         );

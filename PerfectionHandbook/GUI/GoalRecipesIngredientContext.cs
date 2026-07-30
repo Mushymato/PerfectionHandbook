@@ -68,7 +68,8 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
         return base.SearchMatch(txt);
     }
 
-    public override ReminderEntry? Reminder { get; } = new(ReminderEntryFactory.Kind_RecipesIngredient, Key);
+    public override ReminderEntry? Reminder { get; } =
+        MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_RecipesIngredient, Key);
 }
 
 public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)

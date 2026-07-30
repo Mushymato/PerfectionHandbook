@@ -119,7 +119,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
 
     protected virtual List<TDisplay> FinalizeDisplay(List<TDisplay> displayList)
     {
-        RemindersHUD remindersHUD = MenuHandler.reminders.Value;
+        RemindersHUD remindersHUD = MenuHandler.Reminders;
         foreach (TDisplay display in displayList)
         {
             if (display.Reminder is ReminderEntry entry)
@@ -167,7 +167,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     {
         if (display.Reminder is not ReminderEntry entry)
             return;
-        MenuHandler.reminders.Value.ToggleEntry(entry);
+        MenuHandler.Reminders.ToggleEntry(entry);
     }
 
     public virtual string CompleteCountToggleText => string.Empty;

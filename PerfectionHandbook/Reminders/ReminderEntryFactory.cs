@@ -1,18 +1,32 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
-using PropertyChanged.SourceGenerator;
 using StardewValley;
 
 namespace PerfectionHandbook.Reminders;
 
-public sealed partial record ReminderEntry(string Kind, string EntryId, string FromMod = ModEntry.ModId)
-    : IReminderEntry
+public sealed record ReminderEntry(string Kind, string EntryId, string FromMod = ModEntry.ModId)
+    : IReminderEntry,
+        INotifyPropertyChanged
 {
-    [Notify]
-    private bool active = false;
+    public event EventHandler<bool>? ActiveStatusChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public bool Active
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                PropertyChanged?.Invoke(this, new(nameof(Active)));
+                ActiveStatusChanged?.Invoke(this, field);
+            }
+        }
+    }
 
     internal ReminderEntryDisplay? Display =>
         field ??= ReminderEntryFactory.TryCreate(this, out IReminderEntryDisplay? entryDisplay)
@@ -21,7 +35,7 @@ public sealed partial record ReminderEntry(string Kind, string EntryId, string F
 
     public bool SameAs(ReminderEntry otherEntry)
     {
-        return Kind == otherEntry.Kind && EntryId == otherEntry.EntryId && FromMod == otherEntry.FromMod;
+        return FromMod == otherEntry.FromMod && Kind == otherEntry.Kind && EntryId == otherEntry.EntryId;
     }
 }
 
@@ -73,34 +87,54 @@ public static class ReminderEntryFactory
 
     public static void Register()
     {
-        reminderEntryMakers[(ModEntry.ModId, Kind_CookingRecipe)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => Recipe_GetReminderEntryDisplay(entry, true, out entryDisplay);
-        reminderEntryMakers[(ModEntry.ModId, Kind_CraftingRecipe)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => Recipe_GetReminderEntryDisplay(entry, false, out entryDisplay);
-        reminderEntryMakers[(ModEntry.ModId, Kind_FishCaught)] = static (entry, [NotNullWhen(true)] out entryDisplay) =>
-            QualifiedItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Fish);
-        reminderEntryMakers[(ModEntry.ModId, Kind_MuseumDonate)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Donate);
-        reminderEntryMakers[(ModEntry.ModId, Kind_ItemShipped)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship);
-        reminderEntryMakers[(ModEntry.ModId, Kind_ItemShippedPolyculture)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, PolycultureCount);
-        reminderEntryMakers[(ModEntry.ModId, Kind_ItemShippedMonoculture)] = static (
-            entry,
-            [NotNullWhen(true)] out entryDisplay
-        ) => ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, MonocultureCount);
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_CookingRecipe,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                Recipe_GetReminderEntryDisplay(entry, true, out entryDisplay)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_CraftingRecipe,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                Recipe_GetReminderEntryDisplay(entry, false, out entryDisplay)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_FishCaught,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                QualifiedItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Fish)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_MuseumDonate,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Donate)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_ItemShipped,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_ItemShippedPolyculture,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, PolycultureCount)
+        );
+        AddEntryMaker(
+            ModEntry.ModId,
+            Kind_ItemShippedMonoculture,
+            static (entry, [NotNullWhen(true)] out entryDisplay) =>
+                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, MonocultureCount)
+        );
+        AddEntryMaker(ModEntry.ModId, Kind_RecipesIngredient, RecipesIngredient_GetReminderEntryDisplay);
+    }
 
-        reminderEntryMakers[(ModEntry.ModId, Kind_RecipesIngredient)] = RecipesIngredient_GetReminderEntryDisplay;
+    public static void AddEntryMaker(string modId, string kind, TryMakeReminderEntryDisplay makeDisplay)
+    {
+        reminderEntryMakers[(modId, kind)] = makeDisplay;
     }
 
     public static bool TryCreate(

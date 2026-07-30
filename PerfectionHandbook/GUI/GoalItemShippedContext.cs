@@ -15,7 +15,8 @@ public record ItemShippedDisplay(ItemInfo Info, int OwnedCount, int NeededCount 
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
-    public override ReminderEntry? Reminder { get; } = new(ReminderEntryFactory.Kind_ItemShipped, Info.ReprItem.ItemId);
+    public override ReminderEntry? Reminder { get; } =
+        MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_ItemShipped, Info.ReprItem.ItemId);
 }
 
 public sealed class GoalItemShippedContext(IGoalContext goalCtx) : AbstractItemCountContext<ItemShippedDisplay>(goalCtx)

@@ -81,6 +81,11 @@ public sealed class RemindersContext() : INotifyPropertyChanged
                 RaisePropertyChanged(nameof(HasReminders));
         }
     }
+
+    internal ReminderEntry? GetEntry(string kind, string entryId, string fromMod)
+    {
+        return reminders.FirstOrDefault(en => en.FromMod == fromMod && en.Kind == kind && en.EntryId == entryId);
+    }
 }
 
 public sealed class RemindersHUD
@@ -103,6 +108,9 @@ public sealed class RemindersHUD
     public bool HasEntry(ReminderEntry entry) => ctx.HasEntry(entry);
 
     public void RemoveEntry(ReminderEntry entry) => ctx.RemoveEntry(entry);
+
+    public ReminderEntry GetOrCreateEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>
+        ctx.GetEntry(kind, entryId, fromMod) ?? new ReminderEntry(kind, entryId, fromMod);
 
     public void Activate()
     {

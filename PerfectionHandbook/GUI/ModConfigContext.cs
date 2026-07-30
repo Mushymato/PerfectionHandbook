@@ -98,5 +98,5 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         }
     }
 
-    public RemindersContext RemindersHUDCtx => MenuHandler.reminders.Value.ctx;
+    public RemindersContext RemindersHUDCtx => MenuHandler.Reminders.ctx;
 }

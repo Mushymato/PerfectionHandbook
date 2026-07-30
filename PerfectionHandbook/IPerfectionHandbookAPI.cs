@@ -27,6 +27,12 @@ public interface IReminderEntry
     /// This does not track whether the reminder UI is visible, only that this reminder is in the list.
     /// </summary>
     bool Active { get; }
+
+    /// <summary>
+    /// Event raised when <see cref="Active"/> changes.
+    /// The event argument is the new value of <see cref="Active"/>.
+    /// </summary>
+    event EventHandler<bool>? ActiveStatusChanged;
 }
 
 /// <summary>Information neccesary to display the reminder</summary>
@@ -51,7 +57,7 @@ public interface IReminderEntryDisplay
 /// <summary>
 /// The factory method that Perfection Handbook will call to obtain display info before rendering the reminder.
 /// This is expected to be associated with a specific reminder kind.
-/// <seealso cref="IPerfectionHandbook.RegisterReminderEntryKind(string, TryMakeReminderEntryDisplay)"/>
+/// <seealso cref="IPerfectionHandbookAPI.RegisterReminderKind(string, TryMakeReminderEntryDisplay)"/>
 /// </summary>
 /// <param name="entryId">The entry id, specific to a particular kind</param>
 /// <param name="entryDisplay">Entry display info</param>
@@ -64,7 +70,8 @@ public delegate bool TryMakeReminderEntryDisplay(
     [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
 );
 
-public interface IPerfectionHandbook
+/// <summary>API for Perfection Handbook</summary>
+public interface IPerfectionHandbookAPI
 {
     /// <summary>
     /// Registers a new kind of reminders. This reminder kind is always scoped to your mod,
@@ -73,7 +80,18 @@ public interface IPerfectionHandbook
     /// <param name="kind">kind name</param>
     /// <param name="factoryMethod">delegate used to create <see cref="IReminderEntryDisplay"/></param>
     /// <returns></returns>
-    public void RegisterReminderEntryKind(string kind, TryMakeReminderEntryDisplay factoryMethod);
+    public void RegisterReminderKind(string kind, TryMakeReminderEntryDisplay factoryMethod);
+
+    /// <summary>
+    /// Get a reminder entry matching the kind/entry, creating a new one if it does not exist.
+    /// You are expected to keep this reminder entry instance, it will help you track
+    /// whether the reminder is currently active.
+    /// This does not automatically add the reminder.
+    /// </summary>
+    /// <param name="kind">kind name</param>
+    /// <param name="entryId">entry id</param>
+    /// <returns>a new reminder entry</returns>
+    public IReminderEntry GetOrCreateReminder(string kind, string entry);
 
     /// <summary>
     /// Toggle a reminder entry.
@@ -81,8 +99,10 @@ public interface IPerfectionHandbook
     /// When entry is in current reminders, this removes the entry.
     /// Side Effect: another entry may be pushed out as a result of adding the new entry.
     /// </summary>
-    /// <param name="kind">kind name</param>
-    /// <param name="entryId">entry id</param>
-    /// <returns>True if entry is added, false if entry is removed</returns>
-    public bool ToggleReminder(IReminderEntry entry);
+    /// <param name="entry">Entry to toggle</param>
+    public void ToggleReminder(IReminderEntry entry);
+
+    /// <summary>Remove a reminder entry. Does nothing if entry not in list.</summary>
+    /// <param name="entry">Entry to remove</param>
+    public void RemoveReminder(IReminderEntry entry);
 }
