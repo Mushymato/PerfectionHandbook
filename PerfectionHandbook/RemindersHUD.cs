@@ -172,7 +172,7 @@ public sealed class RemindersHUD
         who.basicShipped.OnValueAdded += BasicShippedOnValueAdded;
         who.basicShipped.OnValueTargetUpdated += BasicShippedOnValueTargetUpdated;
         who.recipesCooked.OnValueAdded += RecipesCookedOnValueAdded;
-        who.craftingRecipes.OnValueTargetUpdated += CraftingRecipesOnValueTargetUpdated;
+        who.craftingRecipes.OnValueAdded += CraftingRecipesOnValueAdded;
         who.fishCaught.OnValueAdded += FishCaughtOnValueAdded;
         Game1.netWorldState.Value.MuseumPieces.OnValueAdded += MuseumPiecesOnValueAdded;
     }
@@ -190,7 +190,8 @@ public sealed class RemindersHUD
 
     private void RemoveShippedReminders(string key, int value)
     {
-        RemoveEntry(new(ReminderEntryFactory.Kind_ItemShipped, key));
+        if (value >= 1)
+            RemoveEntry(new(ReminderEntryFactory.Kind_ItemShipped, key));
         if (value >= ReminderEntryFactory.PolycultureCount)
             RemoveEntry(new(ReminderEntryFactory.Kind_ItemShippedPolyculture, key));
         if (value >= ReminderEntryFactory.MonocultureCount)
@@ -204,10 +205,9 @@ public sealed class RemindersHUD
     }
 
     // crafting
-    private void CraftingRecipesOnValueTargetUpdated(string key, int old_target_value, int new_target_value)
+    private void CraftingRecipesOnValueAdded(string key, int value)
     {
-        if (old_target_value == 0 && new_target_value == 1)
-            RemoveEntry(new(ReminderEntryFactory.Kind_CraftingRecipe, key));
+        RemoveEntry(new(ReminderEntryFactory.Kind_CraftingRecipe, key));
     }
 
     // fished
