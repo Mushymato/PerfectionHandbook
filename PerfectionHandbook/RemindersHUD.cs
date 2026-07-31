@@ -1,99 +1,16 @@
 using System.ComponentModel;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Reminders;
 using StardewValley;
-using StardewValley.Extensions;
 
 namespace PerfectionHandbook;
 
-public sealed class RemindersContext() : INotifyPropertyChanged
-{
-    public readonly List<ReminderEntry> reminders = [];
-    public IEnumerable<ReminderEntryDisplay> Reminders
-    {
-        get
-        {
-            foreach (ReminderEntry entry in reminders)
-            {
-                if (entry.Display == null)
-                    continue;
-                yield return entry.Display;
-                foreach (ReminderEntryDisplay display in entry.Display.CastedSubReminders)
-                    yield return display;
-            }
-        }
-    }
-
-    public bool HasReminders => reminders.Any();
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private void RaisePropertyChanged(string propName)
-    {
-        PropertyChanged?.Invoke(this, new(propName));
-    }
-
-    public void ToggleEntry(ReminderEntry entry)
-    {
-        // validate this is a displayable entry
-        if (entry.Display == null)
-            return;
-
-        // if not in list, add; if in list, remove
-        bool added = false;
-        if (reminders.RemoveWhere(entry.SameAs) == 0)
-        {
-            added = true;
-            reminders.Insert(0, entry);
-            entry.Active = true;
-            if (reminders.Count > ModEntry.config.RemindersMaxCount)
-            {
-                reminders[^1].Active = false;
-                reminders.RemoveAt(reminders.Count - 1);
-            }
-        }
-        else
-        {
-            entry.Active = false;
-        }
-
-        RaisePropertyChanged(nameof(Reminders));
-        if (reminders.Count == (added ? 1 : 0))
-            RaisePropertyChanged(nameof(HasReminders));
-        return;
-    }
-
-    public bool HasEntry(ReminderEntry entry)
-    {
-        return reminders.Any(entry.SameAs);
-    }
-
-    public void RemoveEntry(ReminderEntry entry)
-    {
-        if (reminders.RemoveWhere(entry.SameAs) > 0)
-        {
-            entry.Active = false;
-            ModEntry.Log($"Remove: {entry.EntryId}");
-            RaisePropertyChanged(nameof(Reminders));
-            if (reminders.Count == 0)
-                RaisePropertyChanged(nameof(HasReminders));
-        }
-    }
-
-    public void RemoveEntryDisplay(ReminderEntryDisplay? display)
-    {
-        if (display?.Entry != null)
-            RemoveEntry(display.Entry);
-    }
-
-    internal ReminderEntry? GetEntry(string kind, string entryId, string fromMod)
-    {
-        return reminders.FirstOrDefault(en => en.FromMod == fromMod && en.Kind == kind && en.EntryId == entryId);
-    }
-}
-
 public sealed class RemindersHUD
 {
+    private const string ModDataReminders = $"{ModEntry.ModId}/Reminders";
+
     private readonly Func<RemindersContext, IMenuController> makeMenuCtrl;
     internal readonly RemindersContext ctx;
     private IMenuController? menuCtrl = null;
@@ -176,7 +93,7 @@ public sealed class RemindersHUD
     }
 
     #region tracking
-    internal void SaveLoadedSetup(Farmer who)
+    internal void SaveLoaded(Farmer who)
     {
         who.basicShipped.OnValueAdded += BasicShippedOnValueAdded;
         who.basicShipped.OnValueTargetUpdated += BasicShippedOnValueTargetUpdated;
@@ -184,6 +101,31 @@ public sealed class RemindersHUD
         who.craftingRecipes.OnValueAdded += CraftingRecipesOnValueAdded;
         who.fishCaught.OnValueAdded += FishCaughtOnValueAdded;
         Game1.netWorldState.Value.MuseumPieces.OnValueAdded += MuseumPiecesOnValueAdded;
+
+        ctx.reminders.Clear();
+        if (
+            who.modData.TryGetValue(ModDataReminders, out string reminderStr)
+            && JsonConvert.DeserializeObject<List<ReminderEntry>>(reminderStr) is List<ReminderEntry> savedReminders
+        )
+        {
+            foreach (ReminderEntry entry in savedReminders)
+            {
+                if (entry.Display != null)
+                {
+                    ctx.reminders.Add(entry);
+                }
+            }
+            if (ctx.reminders.Count > 0)
+            {
+                Activate();
+            }
+        }
+    }
+
+    internal void Saving(Farmer who)
+    {
+        ModEntry.Log($"Saving {ctx.reminders.Count} reminders");
+        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.reminders);
     }
 
     // shipped

@@ -3,7 +3,7 @@
     <label *!if={HasReminders} margin="4" font="small" text={#ui.no-reminders} shadow-alpha="0.8" max-lines="1"/>
     <lane *repeat={Reminders} layout="content content" orientation="horizontal" vertical-content-alignment="Middle">
       <image *!if={:IsSub}
-        margin="4,4,4,8"
+        margin="6,0"
         layout="18px 18px"
         sprite={@mushymato.PerfectionHandbook/sprites/cursors:crossBox}
         left-click=|~RemindersContext.RemoveEntryDisplay(this)|

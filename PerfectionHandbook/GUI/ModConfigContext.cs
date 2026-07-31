@@ -3,35 +3,30 @@ using PerfectionHandbook;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewModdingAPI.Utilities;
 
 internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private void WriteConfig()
-    {
-        ModEntry.help.WriteConfig(config);
-    }
-
     private void RaisePropertyChanged(string propName)
     {
         PropertyChanged?.Invoke(this, new(propName));
-        WriteConfig();
+        ModEntry.help.WriteConfig(config);
     }
 
-    public IntSpinBoxViewModel ItemPerPageSpinBox =>
-        new(
-            () => config.ItemPerPage,
-            (value) =>
-            {
-                config.ItemPerPage = value;
-                WriteConfig();
-            },
-            50,
-            int.MaxValue,
-            50
-        );
+    public IntSpinBoxViewModel ItemPerPageSpinBox = new(
+        () => config.ItemPerPage,
+        (value) =>
+        {
+            config.ItemPerPage = value;
+            ModEntry.help.WriteConfig(config);
+        },
+        50,
+        int.MaxValue,
+        50
+    );
 
     public KeybindList ShowHandbookKey
     {
@@ -71,18 +66,17 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
             }
         }
     }
-    public IntSpinBoxViewModel RemindersMaxCountSpinBox =>
-        new(
-            () => config.RemindersMaxCount,
-            (value) =>
-            {
-                config.RemindersMaxCount = value;
-                WriteConfig();
-            },
-            1,
-            int.MaxValue,
-            1
-        );
+    public IntSpinBoxViewModel RemindersMaxCountSpinBox = new(
+        () => config.RemindersMaxCount,
+        (value) =>
+        {
+            config.RemindersMaxCount = value;
+            ModEntry.help.WriteConfig(config);
+        },
+        1,
+        int.MaxValue,
+        1
+    );
 
     public SDUINineGridPlacement RemindersHUDPosition
     {
@@ -98,4 +92,17 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
     }
 
     public RemindersContext RemindersHUDCtx => MenuHandler.Reminders.ctx;
+
+    public void Reset()
+    {
+        ModConfig defaultConfig = new();
+
+        ItemPerPageSpinBox.Value = defaultConfig.ItemPerPage;
+        RemindersMaxCountSpinBox.Value = defaultConfig.RemindersMaxCount;
+
+        ShowHandbookKey = defaultConfig.ShowHandbookKey;
+        RemindersToggleKey = defaultConfig.RemindersToggleKey;
+        RemindersEditModifierKey = defaultConfig.RemindersEditModifierKey;
+        RemindersHUDPosition = defaultConfig.RemindersHUDPosition;
+    }
 }

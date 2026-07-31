@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using StardewValley;
@@ -15,6 +16,7 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
     public event EventHandler<bool>? ActiveStatusChanged;
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    [JsonIgnore]
     public bool Active
     {
         get => field;

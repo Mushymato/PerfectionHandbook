@@ -45,10 +45,11 @@ public sealed class ModEntry : Mod
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
+        help.Events.GameLoop.DayStarted += OnDayStarted;
+        help.Events.GameLoop.Saving += OnSaving;
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
         help.Events.Content.LocaleChanged += OnLocaleChanged;
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
-        help.Events.GameLoop.DayStarted += OnDayStarted;
 
         help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
 
@@ -91,7 +92,7 @@ public sealed class ModEntry : Mod
         GoalSkillLeveledContext.Setup();
     }
 
-    private void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
+    private static void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
     {
         MenuHandler.PreloadHandbook();
         help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
@@ -101,7 +102,12 @@ public sealed class ModEntry : Mod
     {
         // preload the cache
         DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
-        MenuHandler.Reminders.SaveLoadedSetup(Game1.player);
+        MenuHandler.Reminders.SaveLoaded(Game1.player);
+    }
+
+    private static void OnSaving(object? sender, SavingEventArgs e)
+    {
+        MenuHandler.Reminders.Saving(Game1.player);
     }
 
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)

@@ -35,7 +35,7 @@ public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<
 
     public abstract void Increase();
 
-    public void Wheel(SDUIDirection direction)
+    public bool Wheel(SDUIDirection direction)
     {
         switch (direction)
         {
@@ -46,6 +46,7 @@ public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<
                 Increase();
                 break;
         }
+        return true;
     }
 }
 
