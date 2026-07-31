@@ -31,7 +31,7 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
 
     internal ReminderEntryDisplay? Display =>
         field ??= ReminderEntryFactory.TryCreate(this, out IReminderEntryDisplay? entryDisplay)
-            ? ReminderEntryDisplay.FromInterface(entryDisplay)
+            ? ReminderEntryDisplay.FromInterface(entryDisplay, this, false)
             : null;
 
     public bool SameAs(ReminderEntry otherEntry)
@@ -45,27 +45,38 @@ public sealed record ReminderEntryDisplay(
     Texture2D Texture,
     Rectangle SourceRect,
     int Count = 1,
-    IEnumerable<IReminderEntryDisplay>? SubReminders = null,
-    bool IsSub = false
+    IEnumerable<IReminderEntryDisplay>? SubReminders = null
 ) : IReminderEntryDisplay
 {
     public readonly SDUISprite Icon = new(Texture, SourceRect);
     public readonly bool HasCount = Count > 1;
 
-    internal IList<ReminderEntryDisplay> CastedSubReminders =
-        SubReminders?.Select(subEntry => FromInterface(subEntry, true)).ToList() ?? [];
+    public bool IsSub { get; private set; } = false;
+    public ReminderEntry? Entry { get; private set; } = null;
 
-    internal static ReminderEntryDisplay FromInterface(IReminderEntryDisplay interfaceEntry, bool isSub = false)
+    internal IList<ReminderEntryDisplay> CastedSubReminders =
+        SubReminders?.Select(subEntry => FromInterface(subEntry, null, true)).ToList() ?? [];
+
+    internal static ReminderEntryDisplay FromInterface(
+        IReminderEntryDisplay interfaceEntry,
+        ReminderEntry? entry,
+        bool isSub
+    )
     {
-        return interfaceEntry as ReminderEntryDisplay
+        ReminderEntryDisplay display =
+            interfaceEntry as ReminderEntryDisplay
             ?? new ReminderEntryDisplay(
                 Text: interfaceEntry.Text,
                 Texture: interfaceEntry.Texture,
                 SourceRect: interfaceEntry.SourceRect,
                 Count: interfaceEntry.Count,
-                SubReminders: interfaceEntry.SubReminders,
-                IsSub: isSub
+                SubReminders: interfaceEntry.SubReminders
             );
+
+        display.IsSub = isSub;
+        display.Entry = entry;
+
+        return display;
     }
 }
 
@@ -196,8 +207,7 @@ public static class ReminderEntryFactory
                     group.CraftingDesc,
                     group.ReprInfo.Datum.GetTexture(),
                     group.ReprInfo.Datum.GetSourceRect(),
-                    need.Count,
-                    IsSub: true
+                    need.Count
                 )
             );
         }

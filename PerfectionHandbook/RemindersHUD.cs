@@ -2,8 +2,6 @@ using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Reminders;
-using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Extensions;
 
@@ -75,11 +73,17 @@ public sealed class RemindersContext() : INotifyPropertyChanged
         if (reminders.RemoveWhere(entry.SameAs) > 0)
         {
             entry.Active = false;
-            ModEntry.Log($"Remove: {entry}");
+            ModEntry.Log($"Remove: {entry.EntryId}");
             RaisePropertyChanged(nameof(Reminders));
             if (reminders.Count == 0)
                 RaisePropertyChanged(nameof(HasReminders));
         }
+    }
+
+    public void RemoveEntryDisplay(ReminderEntryDisplay? display)
+    {
+        if (display?.Entry != null)
+            RemoveEntry(display.Entry);
     }
 
     internal ReminderEntry? GetEntry(string kind, string entryId, string fromMod)
@@ -90,15 +94,13 @@ public sealed class RemindersContext() : INotifyPropertyChanged
 
 public sealed class RemindersHUD
 {
-    private readonly Func<IViewDrawable> makeDrawable;
-    private readonly int screenId;
+    private readonly Func<RemindersContext, IMenuController> makeMenuCtrl;
     internal readonly RemindersContext ctx;
-    private IViewDrawable? drawable = null;
+    private IMenuController? menuCtrl = null;
 
-    public RemindersHUD(Func<IViewDrawable> makeDrawable, int screenId)
+    public RemindersHUD(Func<RemindersContext, IMenuController> makeMenuCtrl)
     {
-        this.makeDrawable = makeDrawable;
-        this.screenId = screenId;
+        this.makeMenuCtrl = makeMenuCtrl;
         this.ctx = new();
         this.ctx.PropertyChanged += OnCtxPropertyChanged;
     }
@@ -112,28 +114,47 @@ public sealed class RemindersHUD
     public ReminderEntry GetOrCreateEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>
         ctx.GetEntry(kind, entryId, fromMod) ?? new ReminderEntry(kind, entryId, fromMod);
 
+    private Point HUDPositionSelector()
+    {
+        if (menuCtrl == null)
+            return Point.Zero;
+        return ModEntry
+            .config.RemindersHUDPosition.GetViewportPosition(new(menuCtrl.Menu.width, menuCtrl.Menu.height))
+            .ToPoint();
+    }
+
+    internal void Reposition()
+    {
+        menuCtrl?.Reposition();
+    }
+
     public void Activate()
     {
-        if (drawable != null)
+        if (menuCtrl != null)
             return;
-        ModEntry.help.Events.Display.RenderedHud += OnRenderedHud;
-        drawable = makeDrawable();
-        drawable.MaxSize = new(256, Game1.viewport.Height);
-        drawable.Context = ctx;
+        menuCtrl = makeMenuCtrl(ctx);
+        menuCtrl.DimmingAmount = 0;
+        menuCtrl.HideHUD = false;
+        menuCtrl.OpenSound = string.Empty;
+        menuCtrl.NavigateSound = string.Empty;
+        menuCtrl.PositionSelector = HUDPositionSelector;
+        menuCtrl.SetGutters(0, 0);
+        Game1.onScreenMenus.Add(menuCtrl.Menu);
+        Reposition();
     }
 
     public void Deactivate()
     {
-        if (drawable == null)
+        if (menuCtrl == null)
             return;
-        ModEntry.help.Events.Display.RenderedHud -= OnRenderedHud;
-        drawable.Dispose();
-        drawable = null;
+        Game1.onScreenMenus.Remove(menuCtrl.Menu);
+        menuCtrl?.Dispose();
+        menuCtrl = null;
     }
 
     public void ToggleVisibility()
     {
-        if (drawable != null)
+        if (menuCtrl != null)
             Deactivate();
         else
             Activate();
@@ -143,27 +164,15 @@ public sealed class RemindersHUD
     {
         if (e.PropertyName == nameof(RemindersContext.Reminders))
         {
-            if (drawable != null && ctx.reminders.Count == 0)
+            if (menuCtrl != null && ctx.reminders.Count == 0)
             {
                 Deactivate();
             }
-            else if (drawable == null && ctx.reminders.Count > 0)
+            else if (menuCtrl == null && ctx.reminders.Count > 0)
             {
                 Activate();
             }
         }
-    }
-
-    private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
-    {
-        if (drawable == null)
-        {
-            ModEntry.help.Events.Display.RenderedHud -= OnRenderedHud;
-            return;
-        }
-        if (Context.ScreenId != screenId)
-            return;
-        drawable.Draw(e.SpriteBatch, ModEntry.config.RemindersHUDPosition.GetViewportPosition(drawable.ActualSize));
     }
 
     #region tracking

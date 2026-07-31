@@ -18,7 +18,7 @@ public static class MenuHandler
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
 
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
-        new(static () => viewEngine.CreateDrawableFromAsset(VIEW_ASSET_REMINDERS), Context.ScreenId)
+        new(static (ctx) => viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_REMINDERS, ctx))
     );
     internal static RemindersHUD Reminders => reminders.Value;
 

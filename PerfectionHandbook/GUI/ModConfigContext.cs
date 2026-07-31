@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using PerfectionHandbook;
-using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;

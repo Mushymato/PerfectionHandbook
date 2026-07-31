@@ -16,6 +16,9 @@
     },
     "blueExclaim": {
       "SourceRect": "398,497,3,8"
+    },
+    "crossBox": {
+      "SourceRect": "301,345,9,9"
     }
   }
 }
