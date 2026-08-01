@@ -60,10 +60,11 @@ public static class DrawHelper
 
     public static RenderTarget2D GetEntireFarmer(Farmer who)
     {
+        // instead of daybg size 128x192 use 176x208 to let some out of bounds FS stuff work
         RenderTarget2D? farmerRT = new(
             Game1.graphics.GraphicsDevice,
-            Game1.daybg.Width,
-            Game1.daybg.Height,
+            176,
+            208,
             false,
             SurfaceFormat.Color,
             DepthFormat.None,
@@ -74,14 +75,14 @@ public static class DrawHelper
             farmerRT,
             (renderBatch) =>
             {
-                renderBatch.Draw(Game1.daybg, Vector2.Zero, Color.White);
+                renderBatch.Draw(Game1.daybg, new Vector2(24, 16), Color.White);
                 FarmerRenderer.isDrawingForUI = true;
                 who.FarmerRenderer.draw(
                     renderBatch,
                     new FarmerSprite.AnimationFrame(0, 0, secondaryArm: false, flip: false),
                     0,
                     new Rectangle(0, 0, 16, 32),
-                    new Vector2(32, 32),
+                    new Vector2(24 + 32, 16 + 32),
                     Vector2.Zero,
                     0.8f,
                     2,

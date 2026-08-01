@@ -77,15 +77,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual bool SearchMatch(string txt) => Info.SearchMatch(txt);
 
-    public void ToggleReminder()
-    {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            if (Reminder is not ReminderEntry entry)
-                return;
-            MenuHandler.Reminders.ToggleEntry(entry);
-        }
-    }
+    public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
 }
 
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>

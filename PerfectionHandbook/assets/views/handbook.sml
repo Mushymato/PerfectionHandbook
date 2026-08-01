@@ -15,6 +15,7 @@
         default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
         hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
         left-click=|ExportCard()|
+        right-click=|OpenCardDir()|
         tooltip={ExportMsg}
         horizontal-content-alignment="Start"
         vertical-content-alignment="Start"

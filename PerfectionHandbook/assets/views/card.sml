@@ -1,15 +1,15 @@
 <frame layout="1440px 620px" background={@Mods/StardewUI/Sprites/MenuBackground}>
   <!-- Main -->
   <lane layout="content content">
-    <lane margin="24,16,16,16" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >
-      <image layout="128px 192px" sprite={:FarmerPanel} />
+    <lane margin="0,0,16,0" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >
+      <image layout="176px 208px" sprite={:FarmerPanel} />
       <banner text={:PlayerName} />
       <panel layout="content stretch" vertical-content-alignment="End">
         <image layout="88px 80px" sprite={:FarmIcon} shadow-alpha="0.4" shadow-offset="-4,4"/>
       </panel>
       <label margin="0,8" text={:FarmName} shadow-alpha="0.8" />
     </lane>
-    <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} margin="8,0,16,0" layout="content stretch" fit="Stretch"/>
+    <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} margin="-15,0,16,0" layout="content stretch" fit="Stretch"/>
     <lane layout="stretch content" orientation="Vertical">
       <banner margin="10,16" text={:PerfectionTitle} />
       <goal-grid goals={:PerfectionGoals}/>

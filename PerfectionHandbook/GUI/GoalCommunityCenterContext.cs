@@ -38,15 +38,7 @@ public sealed record CommunityCenterBundleDisplay(
 
     public void SetStatus(Farmer who) { }
 
-    public void ToggleReminder()
-    {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            if (Reminder is not ReminderEntry entry)
-                return;
-            MenuHandler.Reminders.ToggleEntry(entry);
-        }
-    }
+    public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
 }
 
 public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)

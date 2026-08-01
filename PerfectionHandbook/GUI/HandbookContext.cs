@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
@@ -95,22 +96,36 @@ public sealed partial class HandbookContext
             SelectedCtx = ctx;
     }
 
+    private static readonly string exportDir = Path.Combine(ModEntry.help.DirectoryPath, "cards");
+
     public void ExportCard()
     {
-        string exportPath = Path.Combine(
-            ModEntry.help.DirectoryPath,
-            $"{who.displayName}-{who.farmName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png"
-        );
+        Directory.CreateDirectory(exportDir);
+        string exportFile = $"{who.displayName}-{who.farmName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
+        string exportPath = Path.Combine(exportDir, exportFile);
         try
         {
             MenuHandler.ExportCard(this, exportPath);
-            ExportMsg = I18n.Ui_ExportPath(exportPath);
+            ExportMsg = I18n.Ui_ExportPath(exportFile);
         }
         catch (Exception ex)
         {
             ModEntry.Log($"Failed to export card:\n{ex}", LogLevel.Warn);
             ExportMsg = I18n.Ui_ExportError();
         }
+    }
+
+    public void OpenCardDir()
+    {
+        Directory.CreateDirectory(exportDir);
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = exportDir,
+                UseShellExecute = true,
+                Verb = "open",
+            }
+        );
     }
 
     internal void CloseAction()

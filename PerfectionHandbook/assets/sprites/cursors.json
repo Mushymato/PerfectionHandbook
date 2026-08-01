@@ -19,6 +19,11 @@
     },
     "crossBox": {
       "SourceRect": "301,345,9,9"
+    },
+    "buildingShadow": {
+      "SourceRect": "656,394,48,16",
+      "FixedEdges": "16,0,16,0",
+      "Scale": 3
     }
   }
 }

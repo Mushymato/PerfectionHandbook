@@ -17,19 +17,22 @@
             horizontal-content-alignment="End"
             vertical-content-alignment="End"
             left-click=|ToggleReminder()|
-            pointer-enter=|^HoveredEnter(this)|>
-            <image sprite={:NeededFor.Repr}
-              tooltip={Tooltip}
-              hovered-subject={:ReprItem}
-              tint={DisplayTint}
-              shadow-alpha={DisplayShadow}
-              scale={DisplayScale}
-              layout="96px 64px"
-              shadow-offset="-4,4"
-              +transition:scale="100ms EaseInSine"
-              horizontal-alignment="Middle"
-              margin="0,8,0,4"
-            />
+            pointer-enter=|^HoveredEnter(this)|
+            screen-read={ScreenRead}>
+            <panel layout="96px 64px" margin="0,8,0,4">
+              <image sprite={:NeededFor.Repr}
+                tooltip={Tooltip}
+                hovered-subject={:ReprItem}
+                tint={DisplayTint}
+                shadow-alpha={DisplayShadow}
+                scale={DisplayScale}
+                layout="96px 64px"
+                shadow-offset="-4,4"
+                +transition:scale="100ms EaseInSine"
+                horizontal-alignment="Middle"
+              />
+              <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="8,0,0,0" />
+            </panel>
             <digits scale="3" margin="0,2,6,4" tint={DigitTint} number={NeededCount} />
             <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" fit="Stretch"/>
             <digits scale="3" margin="0,2,6,4" tint={DigitTint} number={Count} />

@@ -4,11 +4,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using PerfectionHandbook.GUI;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.GameData.Buildings;
+using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.Reminders;
 
@@ -16,6 +20,8 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
     : IReminderEntry,
         INotifyPropertyChanged
 {
+    public override int GetHashCode() => HashCode.Combine(Kind, EntryId, FromMod);
+
     public event EventHandler<bool>? ActiveStatusChanged;
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -34,7 +40,8 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
         }
     }
 
-    internal ReminderEntryDisplay? Display =>
+    [JsonIgnore]
+    public ReminderEntryDisplay? Display =>
         field ??= ReminderEntryFactory.TryCreate(this, out IReminderEntryDisplay? entryDisplay)
             ? ReminderEntryDisplay.FromInterface(entryDisplay, this, false)
             : null;
@@ -57,6 +64,7 @@ public sealed partial record ReminderEntryDisplay(
     public readonly bool HasCount = Count > 1;
 
     public bool IsSub { get; private set; } = false;
+
     public ReminderEntry? Entry { get; private set; } = null;
 
     [Notify]
@@ -65,9 +73,7 @@ public sealed partial record ReminderEntryDisplay(
     [Notify]
     private string displayText = Text;
 
-    public string Transition => IsSub ? "500ms EaseOutCubic" : string.Empty;
-
-    internal IList<ReminderEntryDisplay> CastedSubReminders =
+    public IReadOnlyList<ReminderEntryDisplay> CastedSubReminders =
         SubReminders?.Select(subEntry => FromInterface(subEntry, null, true)).ToList() ?? [];
 
     internal static ReminderEntryDisplay FromInterface(
@@ -119,6 +125,7 @@ public static class ReminderEntryFactory
     public const string Kind_ItemShippedPolyculture = "ItemShippedPolyculture";
     public const string Kind_ItemShippedMonoculture = "ItemShippedMonoculture";
     public const string Kind_CommunityCenterBundle = "CommunityCenterBundle";
+    public const string Kind_BuildingsConstructed = "BuildingsConstructed";
 
     public const string Kind_RecipesIngredient = "RecipesIngredient";
 
@@ -173,6 +180,7 @@ public static class ReminderEntryFactory
         );
         AddEntryMaker(ModEntry.ModId, Kind_RecipesIngredient, RecipesIngredient_GetReminderEntryDisplay);
         AddEntryMaker(ModEntry.ModId, Kind_CommunityCenterBundle, CommunityCenterBundle_GetReminderEntryDisplay);
+        AddEntryMaker(ModEntry.ModId, Kind_BuildingsConstructed, BuildingsConstructed_GetReminderEntryDisplay);
     }
 
     public static void AddEntryMaker(string modId, string kind, TryMakeReminderEntryDisplay makeDisplay)
@@ -353,6 +361,53 @@ public static class ReminderEntryFactory
             I18n.Reminder_Verb_Bundle(bundle.label),
             sprite.Texture,
             sprite.SourceRect ?? sprite.Texture.Bounds,
+            SubReminders: subReminders
+        );
+        return true;
+    }
+
+    private static bool BuildingsConstructed_GetReminderEntryDisplay(
+        string entryId,
+        [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
+    )
+    {
+        entryDisplay = null;
+        if (!Game1.buildingData.TryGetValue(entryId, out BuildingData? buildingData))
+        {
+            return false;
+        }
+        ParsedItemData goldCoin = ItemRegistry.GetDataOrErrorItem("(O)GoldCoin");
+        List<IReminderEntryDisplay> subReminders =
+        [
+            new ReminderEntryDisplay(
+                buildingData.BuildCost.ToString(),
+                goldCoin.GetTexture(),
+                goldCoin.GetSourceRect()
+            ),
+        ];
+        if (buildingData.BuildMaterials != null)
+        {
+            foreach (BuildingMaterial material in buildingData.BuildMaterials)
+            {
+                if (ItemInfoCache.Cache.TryGetValue(material.ItemId, out ItemInfo? itemInfo))
+                {
+                    subReminders.Add(
+                        new ReminderEntryDisplay(
+                            itemInfo.ReprItem.DisplayName,
+                            itemInfo.Datum.GetTexture(),
+                            itemInfo.Datum.GetSourceRect(),
+                            material.Amount
+                        )
+                    );
+                }
+            }
+        }
+
+        Texture2D buildingTx = DrawHelper.SafeLoad(buildingData.Texture);
+        entryDisplay = new ReminderEntryDisplay(
+            I18n.Reminder_Verb_Build(TokenParser.ParseText(buildingData.Name) ?? entryId),
+            buildingTx,
+            buildingData.SourceRect.IsEmpty ? buildingTx.Bounds : buildingData.SourceRect,
             SubReminders: subReminders
         );
         return true;

@@ -37,6 +37,8 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
             RequiredItemAmount: NeededCount
         );
 
+    public string ScreenRead => I18n.Screenread_Ingredient(NeededCount, NeededFor.ReprInfo.ReprItem, OwnedCount);
+
     private const string SPACER = "  ";
 
     public override string GetTooltipDesc()

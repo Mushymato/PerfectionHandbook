@@ -28,6 +28,16 @@ public sealed class RemindersHUD
 
     public void RemoveEntry(ReminderEntry entry) => ctx.RemoveEntry(entry);
 
+    public void ToggleEntryKeyChecked(ReminderEntry? entry)
+    {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            if (entry == null)
+                return;
+            MenuHandler.Reminders.ToggleEntry(entry);
+        }
+    }
+
     public ReminderEntry GetOrCreateEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>
         ctx.GetEntry(kind, entryId, fromMod) ?? new ReminderEntry(kind, entryId, fromMod);
 
@@ -79,13 +89,13 @@ public sealed class RemindersHUD
 
     private void OnCtxPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(RemindersContext.Reminders))
+        if (e.PropertyName == nameof(RemindersContext.HasReminders))
         {
-            if (menuCtrl != null && ctx.reminders.Count == 0)
+            if (menuCtrl != null && !ctx.HasReminders)
             {
                 Deactivate();
             }
-            else if (menuCtrl == null && ctx.reminders.Count > 0)
+            else if (menuCtrl == null && ctx.HasReminders)
             {
                 Activate();
             }
@@ -103,7 +113,7 @@ public sealed class RemindersHUD
 
         Game1.netWorldState.Value.MuseumPieces.OnValueAdded += MuseumPiecesOnValueAdded;
 
-        ctx.reminders.Clear();
+        ctx.Reminders.Clear();
         if (
             who.modData.TryGetValue(ModDataReminders, out string reminderStr)
             && JsonConvert.DeserializeObject<List<ReminderEntry>>(reminderStr) is List<ReminderEntry> savedReminders
@@ -111,31 +121,19 @@ public sealed class RemindersHUD
         {
             foreach (ReminderEntry entry in savedReminders)
             {
-                if (entry.Display != null)
-                {
-                    ctx.reminders.Add(entry);
-                }
+                ctx.AddEntry(entry);
             }
-            if (ctx.reminders.Count > 0)
+            if (ctx.Reminders.Count > 0)
             {
                 Activate();
             }
         }
     }
 
-    public void OnUpdatedTicked()
-    {
-        // do updates even while hud is not drawn to advance any anim
-        if (!Game1.IsHudDrawn && menuCtrl != null)
-        {
-            menuCtrl?.Menu.update(Game1.currentGameTime);
-        }
-    }
-
     internal void Saving(Farmer who)
     {
-        ModEntry.Log($"Saving {ctx.reminders.Count} reminders");
-        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.reminders);
+        ModEntry.Log($"Saving {ctx.Reminders.Count} reminders");
+        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.Reminders);
     }
 
     // shipped

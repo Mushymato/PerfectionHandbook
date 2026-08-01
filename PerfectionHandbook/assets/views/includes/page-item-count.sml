@@ -27,8 +27,8 @@
             +transition:scale="100ms EaseInSine"
             horizontal-alignment="Middle"
           />
-          <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />
           <digits *if={HasCount} scale="3" number={Count} />
+          <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />
         </panel>
       </grid>
     </scrollable>
