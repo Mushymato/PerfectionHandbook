@@ -11,11 +11,22 @@
       <panel layout="stretch content">
         <banner margin="4,12,0,0" text={:PerfectionTitle} />
       </panel>
+      <button
+        default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
+        hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
+        left-click=|ExportCard()|
+        tooltip={ExportMsg}
+        horizontal-content-alignment="Start"
+        vertical-content-alignment="Start"
+        margin="2"
+        padding="12,12,16,0"
+        layout="72px 72px">
+        <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:camera} layout="48px 48px" />
+      </button>
       <button *repeat={:MiscPages}
         default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
         hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
         left-click=|^ChangePage(this)|
-        screen-read={:DisplayName}
         tooltip={:DisplayName}
         horizontal-content-alignment="Start"
         vertical-content-alignment="Start"

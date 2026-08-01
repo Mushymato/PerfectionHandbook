@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
@@ -16,6 +17,7 @@ public static class MenuHandler
     internal const string VIEW_ASSET_PREFIX = $"{ModEntry.ModId}/views";
     internal const string VIEW_ASSET_HANDBOOK = $"{VIEW_ASSET_PREFIX}/handbook";
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
+    internal const string VIEW_ASSET_CARD = $"{VIEW_ASSET_PREFIX}/card";
 
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
         new(static (ctx) => viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_REMINDERS, ctx))
@@ -57,6 +59,17 @@ public static class MenuHandler
         menuCtrl.CloseAction = context.CloseAction;
         menuCtrl.EnableCloseButton();
         Game1.activeClickableMenu = menuCtrl.Menu;
+    }
+
+    public static void ExportCard(HandbookContext context, string exportPath)
+    {
+        IViewDrawable? drawable = viewEngine.CreateDrawableFromAsset(VIEW_ASSET_CARD);
+        drawable.Context = context;
+        drawable.MaxSize = new Vector2(1280, 4096);
+        RenderTarget2D exportRT = DrawHelper.RenderDrawableToTarget(drawable);
+        using Stream stream = File.Create(exportPath);
+        exportRT.SaveAsPng(stream, exportRT.Width, exportRT.Height);
+        exportRT.Dispose();
     }
 
     public static bool IsPreloading { get; private set; } = false;

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
@@ -482,7 +483,7 @@ public static class ItemInfoCache
                             if (spacecoreVAEIngredient.OverrideTexturePath != null)
                             {
                                 reprIcon = new(
-                                    Game1.content.Load<Texture2D>(spacecoreVAEIngredient.OverrideTexturePath),
+                                    DrawHelper.SafeLoad(spacecoreVAEIngredient.OverrideTexturePath),
                                     spacecoreVAEIngredient.OverrideTextureRect
                                 );
                                 ingredientInfo = newCache.Values.First(); // weeds

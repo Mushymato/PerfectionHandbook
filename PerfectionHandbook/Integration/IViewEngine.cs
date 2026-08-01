@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI.Events;
 using StardewValley.Menus;
 
 namespace PerfectionHandbook.Integration;
@@ -23,6 +24,14 @@ public interface IViewEngine
     /// <returns>An <see cref="IViewDrawable"/> for drawing directly to the <see cref="SpriteBatch"/> of a rendering
     /// event or other draw handler.</returns>
     IViewDrawable CreateDrawableFromAsset(string assetName);
+
+    /// <summary>
+    /// Similar to <see cref="CreateDrawableFromAsset"/> but the resulting <see cref="IViewDrawable"/> will
+    /// not be updated each tick. You must call <see cref="IViewDrawable.DoUpdate"/> manually.
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <returns></returns>
+    IViewDrawable CreateUnmanagedDrawableFromAsset(string assetName);
 
     /// <summary>
     /// Creates an <see cref="IViewDrawable"/> from arbitrary markup.
@@ -242,6 +251,12 @@ public interface IViewDrawable : IDisposable
     /// <param name="b">Target sprite batch.</param>
     /// <param name="position">Position on the screen or viewport to use as the top-left corner.</param>
     void Draw(SpriteBatch b, Vector2 position);
+
+    /// <summary>
+    /// Perform a forced update not dependent on the <see cref="IGameLoopEvents.UpdateTicked"/> event.
+    /// </summary>
+    /// <param name="elapsed">Time elapsed since last game tick.</param>
+    void DoUpdate(TimeSpan elapsed);
 }
 
 /// <summary>

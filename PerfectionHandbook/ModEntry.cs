@@ -63,12 +63,25 @@ public sealed class ModEntry : Mod
             "Debug toggle the reminder hud",
             static (cmd, args) => MenuHandler.Reminders.ToggleVisibility()
         );
-#if DEBUG
         help.ConsoleCommands.Add(
             "ph-qicat",
             "Debug show the vanilla perfection tracker",
             static (cmd, args) => Game1.currentLocation?.ShowQiCat()
         );
+        help.ConsoleCommands.Add(
+            "ph-export",
+            "Export handbook png",
+            static (cmd, args) =>
+            {
+                if (!Context.IsWorldReady)
+                    return;
+                MenuHandler.ExportCard(
+                    new(Game1.player),
+                    Path.Combine(ModEntry.help.DirectoryPath, $"{Game1.player.displayName}-{Game1.player.farmName}.png")
+                );
+            }
+        );
+#if DEBUG
         help.ConsoleCommands.Add(
             "ph-invalidate",
             "Invalidate some asset",

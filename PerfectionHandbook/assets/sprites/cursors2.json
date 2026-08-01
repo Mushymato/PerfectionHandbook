@@ -1,13 +1,11 @@
 {
   "Texture": "LooseSprites/Cursors2",
   "Sprites": {
-    "animalSlotBg": {
-      "SourceRect": "80,144,16,16",
-      "FixedEdges": "4,4,4,4",
-      "Scale": 4
-    },
     "dotdotdot": {
       "SourceRect": "16,144,16,16"
+    },
+    "camera": {
+      "SourceRect": "96,32,16,16"
     }
   }
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
@@ -23,7 +24,7 @@ public sealed record NPCInfo(string Name, CharacterData Data)
             if (Game1.content.DoesAssetExist<Texture2D>(textureName))
             {
                 return new(
-                    Game1.content.Load<Texture2D>(textureName),
+                    DrawHelper.SafeLoad(textureName),
                     Data.MugShotSourceRect ?? new Rectangle(0, (Data.Age == NpcAge.Child) ? 4 : 0, 16, 24)
                 );
             }

@@ -10,12 +10,13 @@ public record SeasonSprite(string Name, SDUISprite Sprite);
 
 public static class DrawHelper
 {
-    private static readonly Dictionary<long, RenderTarget2D> cachedMiniIconRT = [];
-    private static Dictionary<Season, SeasonSprite>? seasonSprites = null;
+    private static readonly List<(long, RenderTarget2D)> cachedMiniIconRT = [];
+    private static IReadOnlyList<SeasonSprite>? seasonSprites = null;
+    private static int[] playerPanelFrames = [0, 1, 0, 2];
 
     public static void DisposeCache()
     {
-        foreach (RenderTarget2D renderTarget in cachedMiniIconRT.Values)
+        foreach ((_, RenderTarget2D renderTarget) in cachedMiniIconRT)
         {
             renderTarget.Dispose();
         }
@@ -28,7 +29,9 @@ public static class DrawHelper
         if (MenuHandler.IsPreloading || who == null)
             return null;
         if (
-            !cachedMiniIconRT.TryGetValue(who.UniqueMultiplayerID, out RenderTarget2D? renderTarget)
+            cachedMiniIconRT.FirstOrDefault(thing => thing.Item1 == who.UniqueMultiplayerID)
+                is not
+                (_, RenderTarget2D renderTarget)
             || renderTarget.IsDisposed
         )
         {
@@ -42,7 +45,7 @@ public static class DrawHelper
                 0,
                 RenderTargetUsage.DiscardContents
             );
-            cachedMiniIconRT[who.UniqueMultiplayerID] = renderTarget;
+            cachedMiniIconRT.Add((who.UniqueMultiplayerID, renderTarget));
         }
 
         RenderToTarget(
@@ -51,8 +54,65 @@ public static class DrawHelper
                 who.FarmerRenderer.drawMiniPortrat(renderBatch, Vector2.Zero, 1f, 3f, who.facingDirection.Value, who)
         );
 
-        cachedMiniIconRT[who.UniqueMultiplayerID] = renderTarget;
+        cachedMiniIconRT.Add((who.UniqueMultiplayerID, renderTarget));
         return renderTarget;
+    }
+
+    public static RenderTarget2D GetEntireFarmer(Farmer who)
+    {
+        RenderTarget2D? farmerRT = new(
+            Game1.graphics.GraphicsDevice,
+            Game1.daybg.Width,
+            Game1.daybg.Height,
+            false,
+            SurfaceFormat.Color,
+            DepthFormat.None,
+            0,
+            RenderTargetUsage.DiscardContents
+        );
+        RenderToTarget(
+            farmerRT,
+            (renderBatch) =>
+            {
+                renderBatch.Draw(Game1.daybg, Vector2.Zero, Color.White);
+                FarmerRenderer.isDrawingForUI = true;
+                who.FarmerRenderer.draw(
+                    renderBatch,
+                    new FarmerSprite.AnimationFrame(0, 0, secondaryArm: false, flip: false),
+                    0,
+                    new Rectangle(0, 0, 16, 32),
+                    new Vector2(32, 32),
+                    Vector2.Zero,
+                    0.8f,
+                    2,
+                    Color.White,
+                    0f,
+                    1f,
+                    who
+                );
+                FarmerRenderer.isDrawingForUI = false;
+            }
+        );
+        return farmerRT;
+    }
+
+    public static RenderTarget2D RenderDrawableToTarget(IViewDrawable drawable)
+    {
+        drawable.DoUpdate(Game1.currentGameTime.ElapsedGameTime);
+        int actualWidth = (int)drawable.ActualSize.X;
+        int actualHeight = (int)drawable.ActualSize.Y;
+        RenderTarget2D? exportRT = new(
+            Game1.graphics.GraphicsDevice,
+            actualWidth,
+            actualHeight,
+            false,
+            SurfaceFormat.Color,
+            DepthFormat.None,
+            0,
+            RenderTargetUsage.DiscardContents
+        );
+        RenderToTarget(exportRT, (renderBatch) => drawable.Draw(renderBatch, Vector2.Zero));
+        return exportRT;
     }
 
     private static RenderTarget2D RenderToTarget(RenderTarget2D renderTarget, Action<SpriteBatch> drawCallback)
@@ -83,7 +143,7 @@ public static class DrawHelper
         return renderTarget;
     }
 
-    public static Texture2D SafeLoad(string? assetName, Texture2D? fallbackTx)
+    public static Texture2D SafeLoad(string? assetName, Texture2D? fallbackTx = null)
     {
         if (string.IsNullOrEmpty(assetName))
             return fallbackTx ?? Game1.mouseCursors;
@@ -94,32 +154,34 @@ public static class DrawHelper
 
     public static SeasonSprite GetSeasonSprite(Season season)
     {
-        if ((seasonSprites ??= GetAllSeasonSprites()).TryGetValue(season, out SeasonSprite? sprite))
-            return sprite;
+        seasonSprites ??= GetAllSeasonSprites();
+        if (seasonSprites.Count > (int)season)
+            return seasonSprites[(int)season];
         ModEntry.Log($"Unrecognized season: {season}", LogLevel.Error);
-        return seasonSprites[Season.Spring];
+        return seasonSprites[0];
     }
 
-    private static Dictionary<Season, SeasonSprite> GetAllSeasonSprites()
+    private static IReadOnlyList<SeasonSprite> GetAllSeasonSprites()
     {
-        Dictionary<Season, SeasonSprite> sprites = [];
-        sprites[Season.Spring] = new(
-            Game1.content.LoadString("Strings/StringsFromCSFiles:spring"),
-            new(Game1.mouseCursors, new(406, 441, 12, 8))
-        );
-        sprites[Season.Summer] = new(
-            Game1.content.LoadString("Strings/StringsFromCSFiles:summer"),
-            new(Game1.mouseCursors, new(406, 449, 12, 8))
-        );
-        sprites[Season.Fall] = new(
-            Game1.content.LoadString("Strings/StringsFromCSFiles:fall"),
-            new(Game1.mouseCursors, new(406, 457, 12, 8))
-        );
-        sprites[Season.Winter] = new(
-            Game1.content.LoadString("Strings/StringsFromCSFiles:winter"),
-            new(Game1.mouseCursors, new(406, 465, 12, 8))
-        );
-        return sprites;
+        return
+        [
+            new(
+                Game1.content.LoadString("Strings/StringsFromCSFiles:spring"),
+                new(Game1.mouseCursors, new(406, 441, 12, 8))
+            ),
+            new(
+                Game1.content.LoadString("Strings/StringsFromCSFiles:summer"),
+                new(Game1.mouseCursors, new(406, 441, 12, 8))
+            ),
+            new(
+                Game1.content.LoadString("Strings/StringsFromCSFiles:spring"),
+                new(Game1.mouseCursors, new(406, 441, 12, 8))
+            ),
+            new(
+                Game1.content.LoadString("Strings/StringsFromCSFiles:winter"),
+                new(Game1.mouseCursors, new(406, 441, 12, 8))
+            ),
+        ];
     }
 
     public static SDUISprite? GetQualityStar(int quality)

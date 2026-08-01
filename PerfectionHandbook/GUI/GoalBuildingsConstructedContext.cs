@@ -54,7 +54,7 @@ public sealed class GoalBuildingsConstructedContext(IGoalContext goalCtx)
                 continue;
             }
             int builtCount = Game1.GetNumberBuildingsConstructed(buildingId);
-            Texture2D buildingTx = Game1.content.Load<Texture2D>(buildingData.Texture);
+            Texture2D buildingTx = DrawHelper.SafeLoad(buildingData.Texture);
             builtDisplay.Add(
                 new(
                     buildingId,

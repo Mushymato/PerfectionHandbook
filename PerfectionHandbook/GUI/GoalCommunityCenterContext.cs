@@ -14,7 +14,7 @@ public sealed partial record CommunityCenterBundleIngredient(ItemInfo Info, int 
 {
     public bool HasCount => Count > 1;
     public SDUISprite IngredientBorder =>
-        new(Game1.content.Load<Texture2D>("LooseSprites\\JunimoNote"), new(Complete ? 620 : 512, 244, 18, 18));
+        new(DrawHelper.SafeLoad("LooseSprites\\JunimoNote"), new(Complete ? 620 : 512, 244, 18, 18));
     public SDUISprite? QualityStar = DrawHelper.GetQualityStar(Quality);
     public bool HasQualityStar => QualityStar != null;
 }

@@ -88,7 +88,8 @@ public static class Goals
 
     public sealed class Perfection_BuildingsConstructed : IPerfectionGoal
     {
-        public float PercentWeight => 4f;
+        public float PercentWeight =>
+            Math.Min(Utility.GetObeliskTypesBuilt(), 4) * 1f + (Game1.IsBuildingConstructed("Gold Clock") ? 10 : 0);
         public bool IsShared => true;
 
         public object? GetPageContext(GoalContext goalCtx) => new GoalBuildingsConstructedContext(goalCtx);
