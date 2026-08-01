@@ -68,7 +68,7 @@ public sealed partial record ReminderEntryDisplay(
     public ReminderEntry? Entry { get; private set; } = null;
 
     [Notify]
-    private bool showing = true;
+    private bool subDisplayed = true;
 
     [Notify]
     private string displayText = Text;
@@ -95,8 +95,8 @@ public sealed partial record ReminderEntryDisplay(
         display.IsSub = isSub;
         display.Entry = entry;
 
-        if (display.IsSub)
-            display.Showing = ModEntry.config.RemindersDefaultExpanded;
+        if (!display.IsSub)
+            display.SubDisplayed = ModEntry.config.RemindersDefaultExpanded;
 
         return display;
     }
@@ -105,13 +105,8 @@ public sealed partial record ReminderEntryDisplay(
     {
         if (IsSub || CastedSubReminders.Count == 0)
             return;
-        bool state = false;
-        foreach (ReminderEntryDisplay entryDisplay in CastedSubReminders)
-        {
-            entryDisplay.Showing = !entryDisplay.Showing;
-            state = entryDisplay.Showing;
-        }
-        DisplayText = state ? Text : I18n.Ui_ReminderWithCount(CastedSubReminders.Count, Text);
+        SubDisplayed = !SubDisplayed;
+        DisplayText = SubDisplayed ? Text : I18n.Ui_ReminderWithCount(CastedSubReminders.Count, Text);
     }
 }
 

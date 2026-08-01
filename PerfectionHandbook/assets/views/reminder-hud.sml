@@ -5,7 +5,7 @@
   >
   <lane orientation="vertical" padding="16">
     <label *!if={HasReminders} margin="4" font="small" text={#ui.no-reminders} shadow-alpha="0.8" max-lines="1"/>
-    <lane *repeat={:Reminders} *if={Display.Showing} *context={:Display} orientation="vertical">
+    <lane *repeat={:Reminders} *context={:Display} orientation="vertical">
       <!-- main entry -->
       <lane layout="content 36px"
         orientation="horizontal"
@@ -22,11 +22,12 @@
         <label margin="8,0" font="small" text={DisplayText} shadow-alpha="0.8" max-lines="-1"/>
       </lane>
       <!-- sub entries -->
-      <lane *repeat={:CastedSubReminders} *if={Showing}
+      <lane *repeat={:CastedSubReminders}
         layout="content 0px"
         opacity="0"
-        +show:opacity="1"
-        +show:layout="content 36px"
+        +state:showing={^SubDisplayed}
+        +state:showing:opacity="1"
+        +state:showing:layout="content 36px"
         +transition:opacity="300ms EaseOutCubic"
         +transition:layout="300ms EaseOutCubic"
         >
