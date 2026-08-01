@@ -62,6 +62,7 @@ public sealed class RemindersHUD
         menuCtrl = makeMenuCtrl(ctx);
         menuCtrl.DimmingAmount = 0;
         menuCtrl.HideHUD = false;
+        menuCtrl.ShowMouse = false;
         menuCtrl.OpenSound = string.Empty;
         menuCtrl.NavigateSound = string.Empty;
         menuCtrl.PositionSelector = HUDPositionSelector;

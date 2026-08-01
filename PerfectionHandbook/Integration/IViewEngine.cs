@@ -343,10 +343,19 @@ public interface IMenuController : IDisposable
     float DimmingAmount { get; set; }
 
     /// <summary>
-    /// Whether to hide the game HUD while menu is active.
+    /// Whether to hide the game HUD while menu is active, default true.
     /// <c>(unofficial-mushymato)</c>
     /// </summary>
     bool HideHUD { get; set; }
+
+    /// <summary>
+    /// Whether to render the mouse, default true.
+    /// <c>(unofficial-mushymato)</c>
+    /// <remarks>
+    /// The main situation where you might not want the mouse is when this menu is being used via <see cref="Game1.onScreenMenus"/>.
+    /// </remarks>
+    /// </summary>
+    bool ShowMouse { get; set; }
 
     /// <summary>
     /// Gets the menu, which can be opened using <see cref="Game1.activeClickableMenu"/>, or as a child menu.
