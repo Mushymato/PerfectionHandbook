@@ -75,10 +75,14 @@ public sealed class RemindersContext() : INotifyPropertyChanged
         }
     }
 
-    public void RemoveEntryDisplay(ReminderEntryDisplay? display)
+    public bool RemoveEntryDisplay(ReminderEntryDisplay? display)
     {
         if (display?.Entry != null)
+        {
             RemoveEntry(display.Entry);
+            return true;
+        }
+        return false;
     }
 
     internal ReminderEntry? GetEntry(string kind, string entryId, string fromMod)

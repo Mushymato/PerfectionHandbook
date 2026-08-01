@@ -5,4 +5,5 @@
   "reminder.verb.craft": "Craft: {{thing}}",
   "reminder.verb.donate": "Donate: {{thing}}",
   "reminder.verb.prepare": "Prepare: {{thing}}",
+  "reminder.verb.bundle": "Bundle: {{thing}}",
 }

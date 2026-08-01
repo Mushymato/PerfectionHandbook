@@ -3,9 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using PerfectionHandbook.GUI;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace PerfectionHandbook.Reminders;
 
@@ -42,7 +45,7 @@ public sealed record ReminderEntry(string Kind, string EntryId, string FromMod =
     }
 }
 
-public sealed record ReminderEntryDisplay(
+public sealed partial record ReminderEntryDisplay(
     string Text,
     Texture2D Texture,
     Rectangle SourceRect,
@@ -55,6 +58,14 @@ public sealed record ReminderEntryDisplay(
 
     public bool IsSub { get; private set; } = false;
     public ReminderEntry? Entry { get; private set; } = null;
+
+    [Notify]
+    private bool showing = true;
+
+    [Notify]
+    private string displayText = Text;
+
+    public string Transition => IsSub ? "500ms EaseOutCubic" : string.Empty;
 
     internal IList<ReminderEntryDisplay> CastedSubReminders =
         SubReminders?.Select(subEntry => FromInterface(subEntry, null, true)).ToList() ?? [];
@@ -78,7 +89,23 @@ public sealed record ReminderEntryDisplay(
         display.IsSub = isSub;
         display.Entry = entry;
 
+        if (display.IsSub)
+            display.Showing = ModEntry.config.RemindersDefaultExpanded;
+
         return display;
+    }
+
+    public void ToggleSubEntries()
+    {
+        if (IsSub || CastedSubReminders.Count == 0)
+            return;
+        bool state = false;
+        foreach (ReminderEntryDisplay entryDisplay in CastedSubReminders)
+        {
+            entryDisplay.Showing = !entryDisplay.Showing;
+            state = entryDisplay.Showing;
+        }
+        DisplayText = state ? Text : I18n.Ui_ReminderWithCount(CastedSubReminders.Count, Text);
     }
 }
 
@@ -91,6 +118,7 @@ public static class ReminderEntryFactory
     public const string Kind_ItemShipped = "ItemShipped";
     public const string Kind_ItemShippedPolyculture = "ItemShippedPolyculture";
     public const string Kind_ItemShippedMonoculture = "ItemShippedMonoculture";
+    public const string Kind_CommunityCenterBundle = "CommunityCenterBundle";
 
     public const string Kind_RecipesIngredient = "RecipesIngredient";
 
@@ -144,6 +172,7 @@ public static class ReminderEntryFactory
                 ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, MonocultureCount)
         );
         AddEntryMaker(ModEntry.ModId, Kind_RecipesIngredient, RecipesIngredient_GetReminderEntryDisplay);
+        AddEntryMaker(ModEntry.ModId, Kind_CommunityCenterBundle, CommunityCenterBundle_GetReminderEntryDisplay);
     }
 
     public static void AddEntryMaker(string modId, string kind, TryMakeReminderEntryDisplay makeDisplay)
@@ -282,6 +311,49 @@ public static class ReminderEntryFactory
             neededForInfoGroup.ReprInfo.Datum.GetTexture(),
             neededForInfoGroup.ReprInfo.Datum.GetSourceRect(),
             Count: neededForInfoGroup.GetNotYetCrafted(Game1.player).Sum(notYet => notYet.Count)
+        );
+        return true;
+    }
+
+    private static bool CommunityCenterBundle_GetReminderEntryDisplay(
+        string entryId,
+        [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
+    )
+    {
+        entryDisplay = null;
+        if (!Game1.netWorldState.Value.BundleData.TryGetValue(entryId, out string? bundleData))
+        {
+            return false;
+        }
+        int bundleId = Convert.ToInt32(entryId.Split('/')[1]);
+        if (!Game1.netWorldState.Value.Bundles.TryGetValue(bundleId, out bool[] completion))
+        {
+            return false;
+        }
+        Bundle bundle = new(bundleId, bundleData, completion, Point.Zero, "LooseSprites\\JunimoNote", null);
+
+        List<IReminderEntryDisplay> subReminders = [];
+        foreach (CommunityCenterBundleIngredient ingredient in GoalCommunityCenterContext.GetBundleIngredients(bundle))
+        {
+            if (!ingredient.Complete)
+            {
+                subReminders.Add(
+                    new ReminderEntryDisplay(
+                        ingredient.Info.ReprItem.DisplayName,
+                        ingredient.Info.Datum.GetTexture(),
+                        ingredient.Info.Datum.GetSourceRect(),
+                        ingredient.Count
+                    )
+                );
+            }
+        }
+
+        SDUISprite sprite = GoalCommunityCenterContext.GetBundleTexture(bundle);
+        entryDisplay = new ReminderEntryDisplay(
+            I18n.Reminder_Verb_Bundle(bundle.label),
+            sprite.Texture,
+            sprite.SourceRect ?? sprite.Texture.Bounds,
+            SubReminders: subReminders
         );
         return true;
     }

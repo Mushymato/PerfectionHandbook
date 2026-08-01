@@ -1,7 +1,9 @@
 <panel layout="stretch stretch" horizontal-content-alignment="End">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
-    <lane orientation="vertical" layout="stretch content" margin="24,12">
+    <grid item-layout="count: 2" layout="stretch content" margin="24,12">
       <banner margin="4" text={#ui.misc.mod-config} layout="content content"/>
+      <spacer/>
+
       <form-row title={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey}>
         <keybind-editor button-height="64"
             sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
@@ -13,8 +15,10 @@
       <form-row title={#config.name.ItemPerPage} tooltip={#config.desc.ItemPerPage}>
         <spin-box *context={:ItemPerPageSpinBox} />
       </form-row>
-    
+
       <banner margin="4" text={#config.section.Reminders} layout="content content"/>
+      <spacer/>
+
       <form-row title={#config.name.RemindersToggleKey} tooltip={#config.desc.RemindersToggleKey}>
         <keybind-editor button-height="64"
             sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
@@ -23,7 +27,6 @@
             focusable="true"
             keybind-list={<>RemindersToggleKey} />
       </form-row>
-    
       <form-row title={#config.name.RemindersEditModifierKey} tooltip={#config.desc.RemindersEditModifierKey}>
         <keybind-editor button-height="64"
             sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
@@ -35,7 +38,12 @@
       <form-row title={#config.name.RemindersMaxCount} tooltip={#config.desc.RemindersMaxCount}>
         <spin-box *context={:RemindersMaxCountSpinBox} />
       </form-row>
-
+      <form-row title={#config.name.RemindersDefaultExpanded} tooltip={#config.desc.RemindersDefaultExpanded}>
+        <checkbox margin="4"
+          tooltip={#config.desc.RemindersDefaultExpanded}
+          is-checked={<>RemindersDefaultExpanded}
+          label-text={#config.checkbox.RemindersDefaultExpanded}/>
+      </form-row>
       <form-row title={#config.name.RemindersHUDPosition} tooltip={#config.desc.RemindersHUDPosition}>
         <nine-grid-editor layout="80px"
           hover-tint-color="orange"
@@ -46,7 +54,8 @@
           <include *context={:RemindersHUDCtx} name="mushymato.PerfectionHandbook/views/reminder-hud" />
         </nine-grid-editor>
       </form-row>
-    </lane>
+
+    </grid>
   </scrollable>
   <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     font="dialogue"
@@ -59,11 +68,11 @@
 <template name="form-row">
   <lane layout="content content"
         vertical-content-alignment="middle"
-        margin="16">
-    <label layout="300px content"
+        margin="16"
+        tooltip={&tooltip}>
+    <label layout="320px content"
             font="dialogue"
             text={&title}
-            tooltip={&tooltip}
             shadow-alpha="0.8"
             shadow-color="#4448"
             shadow-offset="-2, 2" />

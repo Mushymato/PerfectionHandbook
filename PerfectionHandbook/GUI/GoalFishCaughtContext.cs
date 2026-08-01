@@ -10,7 +10,7 @@ namespace PerfectionHandbook.GUI;
 
 public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
-    public override bool Needed => Count == 0;
+    public override bool Needed => Count < 0;
     private int biggestCatch = 0;
     internal IReadOnlyList<string>? canCatchIn = null;
     public override Color DisplayTint =>
@@ -25,7 +25,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         }
         else
         {
-            completedCount = 0;
+            completedCount = -1;
             biggestCatch = 0;
         }
         Count = completedCount;

@@ -15,14 +15,14 @@ public sealed partial class HandbookContext
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
     public readonly Farmer who;
-
-    private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
-        ? new(new Dictionary<string, OwnedItemGroup>(), [])
-        : ItemOwnedLookup.GetPlayerOwned();
     public readonly IReadOnlyList<GoalContext> PerfectionGoals;
     public readonly string PerfectionTitle;
     public readonly IReadOnlyList<GoalContext> AchievementGoals;
     public readonly IReadOnlyList<MiscContext> MiscPages;
+
+    private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
+        ? new(new Dictionary<string, OwnedItemGroup>(), [])
+        : ItemOwnedLookup.GetPlayerOwned();
 
     public HandbookContext(Farmer who)
     {

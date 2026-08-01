@@ -1,7 +1,7 @@
 <frame layout="1440px 620px" background={@Mods/StardewUI/Sprites/MenuBackground}>
   <!-- Main -->
   <lane layout="content content">
-    <lane margin="16" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >
+    <lane margin="24,16,16,16" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >
       <image layout="128px 192px" sprite={:FarmerPanel} />
       <banner text={:PlayerName} />
       <panel layout="content stretch" vertical-content-alignment="End">

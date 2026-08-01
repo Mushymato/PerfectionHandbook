@@ -16,6 +16,7 @@
             focusable="true"
             horizontal-content-alignment="End"
             vertical-content-alignment="End"
+            left-click=|ToggleReminder()|
             pointer-enter=|^HoveredEnter(this)|>
             <image sprite={:NeededFor.Repr}
               tooltip={Tooltip}

@@ -14,7 +14,7 @@
           focusable="true"
           horizontal-content-alignment="End"
           vertical-content-alignment="End"
-          left-click=|^HandleLeftClick(this)|
+          left-click=|ToggleReminder()|
           pointer-enter=|^HoveredEnter(this)|
           tooltip={Tooltip}
           hovered-subject={:ReprItem}>

@@ -78,6 +78,19 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         1
     );
 
+    public bool RemindersDefaultExpanded
+    {
+        get => config.RemindersDefaultExpanded;
+        set
+        {
+            if (config.RemindersDefaultExpanded != value)
+            {
+                config.RemindersDefaultExpanded = value;
+                RaisePropertyChanged(nameof(RemindersDefaultExpanded));
+            }
+        }
+    }
+
     public SDUINineGridPlacement RemindersHUDPosition
     {
         get => config.RemindersHUDPosition;

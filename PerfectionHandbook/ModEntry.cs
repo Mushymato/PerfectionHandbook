@@ -47,6 +47,7 @@ public sealed class ModEntry : Mod
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         help.Events.GameLoop.DayStarted += OnDayStarted;
         help.Events.GameLoop.Saving += OnSaving;
+        help.Events.GameLoop.UpdateTicked += OnUpdatedTicked;
         help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
         help.Events.Content.LocaleChanged += OnLocaleChanged;
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
@@ -123,8 +124,17 @@ public sealed class ModEntry : Mod
         MenuHandler.Reminders.Saving(Game1.player);
     }
 
+    private void OnUpdatedTicked(object? sender, UpdateTickedEventArgs e)
+    {
+        MenuHandler.Reminders.OnUpdatedTicked();
+    }
+
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
     {
+        foreach ((_, RemindersHUD hud) in MenuHandler.reminders.GetActiveValues())
+        {
+            hud.Deactivate();
+        }
         DrawHelper.DisposeCache();
         ItemInfoCache.ClearLocationCache();
     }

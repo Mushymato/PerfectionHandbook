@@ -100,6 +100,7 @@ public sealed class RemindersHUD
         who.recipesCooked.OnValueAdded += RecipesCookedOnValueAdded;
         who.craftingRecipes.OnValueAdded += CraftingRecipesOnValueAdded;
         who.fishCaught.OnValueAdded += FishCaughtOnValueAdded;
+
         Game1.netWorldState.Value.MuseumPieces.OnValueAdded += MuseumPiecesOnValueAdded;
 
         ctx.reminders.Clear();
@@ -119,6 +120,15 @@ public sealed class RemindersHUD
             {
                 Activate();
             }
+        }
+    }
+
+    public void OnUpdatedTicked()
+    {
+        // do updates even while hud is not drawn to advance any anim
+        if (!Game1.IsHudDrawn && menuCtrl != null)
+        {
+            menuCtrl?.Menu.update(Game1.currentGameTime);
         }
     }
 

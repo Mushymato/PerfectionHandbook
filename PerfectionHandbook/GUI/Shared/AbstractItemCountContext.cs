@@ -76,6 +76,16 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     }
 
     public virtual bool SearchMatch(string txt) => Info.SearchMatch(txt);
+
+    public void ToggleReminder()
+    {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            if (Reminder is not ReminderEntry entry)
+                return;
+            MenuHandler.Reminders.ToggleEntry(entry);
+        }
+    }
 }
 
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>
@@ -153,21 +163,6 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         Hovered?.IsHovered = false;
         Hovered = display;
         display.IsHovered = true;
-    }
-
-    public virtual void HandleLeftClick(TDisplay display)
-    {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            ToggleDisplayToReminders(display);
-        }
-    }
-
-    protected void ToggleDisplayToReminders(TDisplay display)
-    {
-        if (display.Reminder is not ReminderEntry entry)
-            return;
-        MenuHandler.Reminders.ToggleEntry(entry);
     }
 
     public virtual string CompleteCountToggleText => string.Empty;

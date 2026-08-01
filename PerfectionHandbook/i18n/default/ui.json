@@ -32,6 +32,7 @@
   "ui.sort-mode.name": "Name",
   "ui.sort-mode.count": "Count",
   "ui.no-reminders": "No reminders.",
+  "ui.reminder-with-count": "({{count}}) {{text}}",
   "ui.reset": "Reset",
   "ui.export": "Export Farm Card",
   "ui.export-path": "Export Farm Card:\n{{path}}",

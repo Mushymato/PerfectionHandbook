@@ -10,9 +10,7 @@ public sealed class ModConfig
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
     public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");
     public int RemindersMaxCount { get; set; } = 12;
-
-    // public SDUINineGridPlacement RemindersHUDPosition { get; set; } =
-    //     new(SDUIAlignment.Start, SDUIAlignment.Start, new(64, 64));
+    public bool RemindersDefaultExpanded { get; set; } = true;
     public SDUINineGridPlacement RemindersHUDPosition
     {
         get => field;

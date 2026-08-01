@@ -11,6 +11,9 @@
   "config.desc.RemindersEditModifierKey": "While in the perfection handbook, hold this key and click on an entry to add it to your reminders",
   "config.name.RemindersMaxCount": "Max Count",
   "config.desc.RemindersMaxCount": "The maximum number of reminders you can have at a time, new reminders will push out old reminders",
+  "config.name.RemindersDefaultExpanded": "Sub-reminders",
+  "config.desc.RemindersDefaultExpanded": "Change whether sub-reminders (such as crafting recipe ingredients) will be displayed by default",
+  "config.checkbox.RemindersDefaultExpanded": "Expand by Default",
   "config.name.RemindersHUDPosition": "HUD Position",
   "config.desc.RemindersHUDPosition": "Change where the remidners HUD goes on screen."
 }
