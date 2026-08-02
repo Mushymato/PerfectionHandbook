@@ -3,7 +3,12 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Reminders;
+using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData;
+using StardewValley.Locations;
+using StardewValley.Menus;
+using StardewValley.Monsters;
 
 namespace PerfectionHandbook;
 
@@ -37,6 +42,9 @@ public sealed class RemindersHUD
             MenuHandler.Reminders.ToggleEntry(entry);
         }
     }
+
+    public ReminderEntry? GetEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>
+        ctx.GetEntry(kind, entryId, fromMod);
 
     public ReminderEntry GetOrCreateEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>
         ctx.GetEntry(kind, entryId, fromMod) ?? new ReminderEntry(kind, entryId, fromMod);
@@ -113,8 +121,10 @@ public sealed class RemindersHUD
         who.fishCaught.OnValueAdded += FishCaughtOnValueAdded;
 
         Game1.netWorldState.Value.MuseumPieces.OnValueAdded += MuseumPiecesOnValueAdded;
+        ModEntry.help.Events.World.NpcListChanged += OnNpcListChanged;
+        ModEntry.help.Events.Display.MenuChanged += OnMenuChanged;
 
-        ctx.Reminders.Clear();
+        ctx.ReminderEntries.Clear();
         if (
             who.modData.TryGetValue(ModDataReminders, out string reminderStr)
             && JsonConvert.DeserializeObject<List<ReminderEntry>>(reminderStr) is List<ReminderEntry> savedReminders
@@ -124,7 +134,7 @@ public sealed class RemindersHUD
             {
                 ctx.AddEntry(entry);
             }
-            if (ctx.Reminders.Count > 0)
+            if (ctx.ReminderEntries.Count > 0)
             {
                 Activate();
             }
@@ -133,8 +143,8 @@ public sealed class RemindersHUD
 
     internal void Saving(Farmer who)
     {
-        ModEntry.Log($"Saving {ctx.Reminders.Count} reminders");
-        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.Reminders);
+        ModEntry.Log($"Saving {ctx.ReminderEntries.Count} reminders");
+        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.ReminderEntries);
     }
 
     // shipped
@@ -153,9 +163,23 @@ public sealed class RemindersHUD
         if (value >= 1)
             RemoveEntry(new(ReminderEntryFactory.Kind_ItemShipped, key));
         if (value >= ReminderEntryFactory.PolycultureCount)
+        {
             RemoveEntry(new(ReminderEntryFactory.Kind_ItemShippedPolyculture, key));
+        }
+        else
+        {
+            GetEntry(ReminderEntryFactory.Kind_ItemShippedPolyculture, key)?.Display?.DisplayCount =
+                ReminderEntryFactory.PolycultureCount - value;
+        }
         if (value >= ReminderEntryFactory.MonocultureCount)
+        {
             RemoveEntry(new(ReminderEntryFactory.Kind_ItemShippedMonoculture, key));
+        }
+        else
+        {
+            GetEntry(ReminderEntryFactory.Kind_ItemShippedMonoculture, key)?.Display?.DisplayCount =
+                ReminderEntryFactory.MonocultureCount - value;
+        }
     }
 
     // cooking
@@ -180,6 +204,48 @@ public sealed class RemindersHUD
     private void MuseumPiecesOnValueAdded(Vector2 key, string value)
     {
         RemoveEntry(new(ReminderEntryFactory.Kind_MuseumDonate, value));
+    }
+
+    // monster killed
+    private void OnNpcListChanged(object? sender, NpcListChangedEventArgs e)
+    {
+        foreach (NPC chara in e.Removed)
+        {
+            if (chara is not Monster monster)
+            {
+                continue;
+            }
+            foreach (
+                (string slayerId, MonsterSlayerQuestData slayerQuestData) in DataLoader.MonsterSlayerQuests(
+                    Game1.content
+                )
+            )
+            {
+                if (slayerQuestData.Targets == null || !slayerQuestData.Targets.Contains(monster.Name))
+                {
+                    continue;
+                }
+                int slayed = slayerQuestData.Targets.Sum(Game1.player.stats.getMonstersKilled);
+                if (slayed >= slayerQuestData.Count)
+                {
+                    RemoveEntry(new(ReminderEntryFactory.Kind_MonsterSlayer, slayerId));
+                }
+                else
+                {
+                    GetEntry(ReminderEntryFactory.Kind_MonsterSlayer, slayerId)?.Display?.DisplayCount =
+                        slayerQuestData.Count - slayed;
+                }
+            }
+        }
+    }
+
+    // community center bundle
+    private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
+    {
+        if (Game1.currentLocation is CommunityCenter && e.OldMenu is JunimoNoteMenu)
+        {
+            ctx.ReplaceAllBundleEntries();
+        }
     }
     #endregion
 }

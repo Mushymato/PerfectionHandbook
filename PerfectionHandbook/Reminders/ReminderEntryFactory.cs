@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
@@ -9,6 +10,7 @@ using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.GameData;
 using StardewValley.GameData.Buildings;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
@@ -61,7 +63,6 @@ public sealed partial record ReminderEntryDisplay(
 ) : IReminderEntryDisplay
 {
     public readonly SDUISprite Icon = new(Texture, SourceRect);
-    public readonly bool HasCount = Count > 1;
 
     public bool IsSub { get; private set; } = false;
 
@@ -72,6 +73,11 @@ public sealed partial record ReminderEntryDisplay(
 
     [Notify]
     private string displayText = Text;
+
+    [Notify]
+    private int displayCount = Count;
+
+    public bool HasCount => DisplayCount > 1;
 
     public IReadOnlyList<ReminderEntryDisplay> CastedSubReminders =
         SubReminders?.Select(subEntry => FromInterface(subEntry, null, true)).ToList() ?? [];
@@ -121,8 +127,14 @@ public static class ReminderEntryFactory
     public const string Kind_ItemShippedMonoculture = "ItemShippedMonoculture";
     public const string Kind_CommunityCenterBundle = "CommunityCenterBundle";
     public const string Kind_BuildingsConstructed = "BuildingsConstructed";
+    public const string Kind_MonsterSlayer = "MonsterSlayer";
+    public const string Kind_FriendsMade = "FriendsMade";
+    public const string Kind_GoldenWalnutsFound = "GoldenWalnutsFound";
+    public const string Kind_SkillLeveled = "SkillLeveled";
+    public const string Kind_Stardrops = "Stardrops";
 
     public const string Kind_RecipesIngredient = "RecipesIngredient";
+    public const string Kind_Custom = "Custom";
 
     public const int PolycultureCount = 15;
     public const int MonocultureCount = 300;
@@ -159,23 +171,34 @@ public static class ReminderEntryFactory
             ModEntry.ModId,
             Kind_ItemShipped,
             static (entry, [NotNullWhen(true)] out entryDisplay) =>
-                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship)
+                ShippedObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, 1)
         );
         AddEntryMaker(
             ModEntry.ModId,
             Kind_ItemShippedPolyculture,
             static (entry, [NotNullWhen(true)] out entryDisplay) =>
-                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, PolycultureCount)
+                ShippedObjectItemId_GetReminderEntryDisplay(
+                    entry,
+                    out entryDisplay,
+                    I18n.Reminder_Verb_Ship,
+                    PolycultureCount
+                )
         );
         AddEntryMaker(
             ModEntry.ModId,
             Kind_ItemShippedMonoculture,
             static (entry, [NotNullWhen(true)] out entryDisplay) =>
-                ObjectItemId_GetReminderEntryDisplay(entry, out entryDisplay, I18n.Reminder_Verb_Ship, MonocultureCount)
+                ShippedObjectItemId_GetReminderEntryDisplay(
+                    entry,
+                    out entryDisplay,
+                    I18n.Reminder_Verb_Ship,
+                    MonocultureCount
+                )
         );
         AddEntryMaker(ModEntry.ModId, Kind_RecipesIngredient, RecipesIngredient_GetReminderEntryDisplay);
         AddEntryMaker(ModEntry.ModId, Kind_CommunityCenterBundle, CommunityCenterBundle_GetReminderEntryDisplay);
         AddEntryMaker(ModEntry.ModId, Kind_BuildingsConstructed, BuildingsConstructed_GetReminderEntryDisplay);
+        AddEntryMaker(ModEntry.ModId, Kind_MonsterSlayer, MonsterSlayer_GetReminderEntryDisplay);
     }
 
     public static void AddEntryMaker(string modId, string kind, TryMakeReminderEntryDisplay makeDisplay)
@@ -276,6 +299,21 @@ public static class ReminderEntryFactory
             Count: count
         );
         return true;
+    }
+
+    private static bool ShippedObjectItemId_GetReminderEntryDisplay(
+        string entryId,
+        [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay,
+        Func<string, string> getText,
+        int count
+    )
+    {
+        return ObjectItemId_GetReminderEntryDisplay(
+            entryId,
+            out entryDisplay,
+            getText,
+            count - Game1.player.basicShipped.GetValueOrDefault(entryId, 0)
+        );
     }
 
     private static bool ObjectItemId_GetReminderEntryDisplay(
@@ -405,6 +443,44 @@ public static class ReminderEntryFactory
             buildingData.SourceRect.IsEmpty ? buildingTx.Bounds : buildingData.SourceRect,
             SubReminders: subReminders
         );
+        return true;
+    }
+
+    private static bool MonsterSlayer_GetReminderEntryDisplay(
+        string entryId,
+        [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
+    )
+    {
+        entryDisplay = null;
+
+        if (
+            !DataLoader
+                .MonsterSlayerQuests(Game1.content)
+                .TryGetValue(entryId, out MonsterSlayerQuestData? slayerQuestData)
+        )
+        {
+            return false;
+        }
+        if (slayerQuestData.Targets == null || slayerQuestData.Targets.Count == 0)
+        {
+            return false;
+        }
+
+        SDUISprite displaySprite = GoalMonsterSlayerContext.GetMonsterDisplaySprite(slayerQuestData);
+
+        entryDisplay = new ReminderEntryDisplay(
+            TokenParser.ParseText(slayerQuestData.DisplayName) ?? entryId,
+            displaySprite.Texture,
+            displaySprite.SourceRect ?? displaySprite.Texture.Bounds,
+            Count: slayerQuestData.Count
+                - slayerQuestData.Targets.Sum(target =>
+                {
+                    if (Game1.player.stats.specificMonstersKilled.TryGetValue(target, out int count))
+                        return count;
+                    return 0;
+                })
+        );
+
         return true;
     }
     #endregion

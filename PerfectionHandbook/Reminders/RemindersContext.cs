@@ -6,7 +6,7 @@ namespace PerfectionHandbook.Reminders;
 
 public sealed partial class RemindersContext()
 {
-    public readonly ObservableCollection<ReminderEntry> Reminders = [];
+    public readonly ObservableCollection<ReminderEntry> ReminderEntries = [];
 
     [Notify]
     public bool hasReminders = false;
@@ -18,14 +18,14 @@ public sealed partial class RemindersContext()
             return;
 
         // if not in list, add; if in list, remove
-        if (Reminders.RemoveWhere(entry.SameAs) == 0)
+        if (ReminderEntries.RemoveWhere(entry.SameAs) == 0)
         {
-            Reminders.Insert(0, entry);
+            ReminderEntries.Insert(0, entry);
             entry.Active = true;
-            if (Reminders.Count > ModEntry.config.RemindersMaxCount)
+            if (ReminderEntries.Count > ModEntry.config.RemindersMaxCount)
             {
-                Reminders[^1].Active = false;
-                Reminders.RemoveAt(Reminders.Count - 1);
+                ReminderEntries[^1].Active = false;
+                ReminderEntries.RemoveAt(ReminderEntries.Count - 1);
             }
         }
         else
@@ -33,21 +33,21 @@ public sealed partial class RemindersContext()
             entry.Active = false;
         }
 
-        HasReminders = Reminders.Count > 0;
+        HasReminders = ReminderEntries.Count > 0;
         return;
     }
 
     public bool HasEntry(ReminderEntry entry)
     {
-        return Reminders.Any(entry.SameAs);
+        return ReminderEntries.Any(entry.SameAs);
     }
 
     public void RemoveEntry(ReminderEntry entry)
     {
-        if (Reminders.RemoveWhere(entry.SameAs) > 0)
+        if (ReminderEntries.RemoveWhere(entry.SameAs) > 0)
         {
             entry.Active = false;
-            HasReminders = Reminders.Count > 0;
+            HasReminders = ReminderEntries.Count > 0;
         }
     }
 
@@ -55,9 +55,9 @@ public sealed partial class RemindersContext()
     {
         if (entry.Display != null)
         {
-            Reminders.Add(entry);
+            ReminderEntries.Add(entry);
             entry.Active = true;
-            HasReminders = Reminders.Count > 0;
+            HasReminders = ReminderEntries.Count > 0;
         }
     }
 
@@ -71,8 +71,22 @@ public sealed partial class RemindersContext()
         return false;
     }
 
-    internal ReminderEntry? GetEntry(string kind, string entryId, string fromMod)
+    public ReminderEntry? GetEntry(string kind, string entryId, string fromMod)
     {
-        return Reminders.FirstOrDefault(en => en.FromMod == fromMod && en.Kind == kind && en.EntryId == entryId);
+        return ReminderEntries.FirstOrDefault(en => en.FromMod == fromMod && en.Kind == kind && en.EntryId == entryId);
+    }
+
+    internal void ReplaceAllBundleEntries()
+    {
+        for (int i = 0; i < ReminderEntries.Count; ++i)
+        {
+            ReminderEntry entry = ReminderEntries[i];
+            if (ReminderEntries[i].Kind == ReminderEntryFactory.Kind_CommunityCenterBundle)
+            {
+                entry = new(entry.Kind, entry.EntryId, entry.FromMod);
+                ReminderEntries[i] = entry;
+                entry.Active = true;
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
+public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 {
     [Notify]
     private Friendship? currentFriendship = null;
@@ -52,7 +52,7 @@ public sealed partial record FriendDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
     }
 }
 
-public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendDisplay>(goalCtx)
+public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
 {
     public override bool HasSortModes => true;
     protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];
@@ -74,21 +74,21 @@ public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageL
         return ModEntry.config.ItemPerPage / 2;
     }
 
-    protected override IReadOnlyList<FriendDisplay> MakeAllDisplay()
+    protected override IReadOnlyList<FriendsMadeDisplay> MakeAllDisplay()
     {
-        List<FriendDisplay> friendDisplay = [];
+        List<FriendsMadeDisplay> friendDisplay = [];
         foreach (NPCInfo npcInfo in NPCInfoCache.Cache.Values)
         {
             if (!npcInfo.CountForPerfection)
                 continue;
-            FriendDisplay display = new(npcInfo);
+            FriendsMadeDisplay display = new(npcInfo);
             if (display.MugShotSprite != null)
                 friendDisplay.Add(display);
         }
         return friendDisplay;
     }
 
-    protected override List<FriendDisplay> SortAllDisplay(List<FriendDisplay> displayList)
+    protected override List<FriendsMadeDisplay> SortAllDisplay(List<FriendsMadeDisplay> displayList)
     {
         return SortMode switch
         {
