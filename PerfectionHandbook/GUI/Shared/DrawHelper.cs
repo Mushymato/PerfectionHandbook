@@ -6,13 +6,13 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public record SeasonSprite(string Name, SDUISprite Sprite);
+public record SeasonSprite(Season Ssn, string Name, SDUISprite Sprite);
 
 public static class DrawHelper
 {
     private static readonly List<(long, RenderTarget2D)> cachedMiniIconRT = [];
     private static IReadOnlyList<SeasonSprite>? seasonSprites = null;
-    private static int[] playerPanelFrames = [0, 1, 0, 2];
+    public static IReadOnlyList<SeasonSprite> SeasonSprites => seasonSprites ??= GetAllSeasonSprites();
 
     public static void DisposeCache()
     {
@@ -155,11 +155,29 @@ public static class DrawHelper
 
     public static SeasonSprite GetSeasonSprite(Season season)
     {
-        seasonSprites ??= GetAllSeasonSprites();
-        if (seasonSprites.Count > (int)season)
-            return seasonSprites[(int)season];
+        if (SeasonSprites.Count > (int)season)
+            return SeasonSprites[(int)season];
         ModEntry.Log($"Unrecognized season: {season}", LogLevel.Error);
-        return seasonSprites[0];
+        return SeasonSprites[0];
+    }
+
+    public static SDUISprite? GetWeatherSprite(string weather)
+    {
+        int weatherIcon = weather.ToLower() switch
+        {
+            "rain" => 4,
+            "greenrain" => 999,
+            "storm" => 5,
+            "wind" => 6,
+            "snow" => 7,
+            "sun" => 2,
+            _ => -1,
+        };
+        if (weatherIcon <= 0)
+            return null;
+        if (weatherIcon == 999)
+            return new(Game1.mouseCursors_1_6, new(243, 293, 12, 8));
+        return new(Game1.mouseCursors, new(317 + 12 * weatherIcon, 421, 12, 8));
     }
 
     private static IReadOnlyList<SeasonSprite> GetAllSeasonSprites()
@@ -167,20 +185,24 @@ public static class DrawHelper
         return
         [
             new(
-                Game1.content.LoadString("Strings/StringsFromCSFiles:spring"),
+                Season.Spring,
+                Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5680"),
                 new(Game1.mouseCursors, new(406, 441, 12, 8))
             ),
             new(
-                Game1.content.LoadString("Strings/StringsFromCSFiles:summer"),
-                new(Game1.mouseCursors, new(406, 441, 12, 8))
+                Season.Summer,
+                Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5681"),
+                new(Game1.mouseCursors, new(406, 449, 12, 8))
             ),
             new(
-                Game1.content.LoadString("Strings/StringsFromCSFiles:spring"),
-                new(Game1.mouseCursors, new(406, 441, 12, 8))
+                Season.Fall,
+                Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5682"),
+                new(Game1.mouseCursors, new(406, 457, 12, 8))
             ),
             new(
-                Game1.content.LoadString("Strings/StringsFromCSFiles:winter"),
-                new(Game1.mouseCursors, new(406, 441, 12, 8))
+                Season.Winter,
+                Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5683"),
+                new(Game1.mouseCursors, new(406, 465, 12, 8))
             ),
         ];
     }

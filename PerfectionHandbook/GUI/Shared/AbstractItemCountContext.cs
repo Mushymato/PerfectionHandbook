@@ -139,7 +139,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
             SORTMODE_DEFAULT => displayList
                 .OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId))
                 .ToList(),
-            SORTMODE_NAME => displayList.OrderBy(static disp => disp.Info.ReprItem.DisplayName).ToList(),
+            SORTMODE_NAME => displayList.OrderBy(static disp => disp.Info.Datum.DisplayName).ToList(),
             SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.Count).ToList(),
             _ => base.SortAllDisplay(displayList),
         };
@@ -148,9 +148,20 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     [Notify]
     protected TDisplay? hovered = null;
 
+    [Notify]
+    private bool hoverable = true;
+
     public bool HasHovered => Hovered != null;
 
     public virtual void HoveredEnter(TDisplay display)
+    {
+        if (Hoverable)
+        {
+            DoHoveredEnter(display);
+        }
+    }
+
+    protected void DoHoveredEnter(TDisplay display)
     {
         Hovered?.IsHovered = false;
         Hovered = display;

@@ -1,0 +1,9 @@
+{
+  "Texture": "LooseSprites/Cursors_1_6",
+  "Sprites": {
+    "checkmark": {
+      "SourceRect": "297,228,9,9",
+      "Scale": 4
+    }
+  }
+}

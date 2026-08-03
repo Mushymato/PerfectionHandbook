@@ -56,7 +56,6 @@
             layout="content content"
             border={@Mods/StardewUI/Sprites/MenuSlotInset}
             border-tint={:CellBorderTint}
-            scroll-with-children="Horizontal"
             focusable="true"
             margin="-4,-2"
             border-thickness="14,4"
@@ -111,7 +110,7 @@
         padding="0,12"
         text={:Seed.DisplayName} />
     </lane>
-    <!-- Scroll -->
+    <!-- Divider -->
     <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" fit="Stretch"/>
     <!-- Scroll -->
     <scrollable progress={<>ScrollProgress} 
@@ -141,8 +140,8 @@
               shadow-offset="-4,4"
               +transition:scale="100ms EaseInSine"
             />
-            <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />
             <digits *if={HasCount} scale="3" number={Count} />
+            <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />
           </panel>
         </frame>
       </grid>

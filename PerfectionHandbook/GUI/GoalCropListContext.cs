@@ -439,9 +439,6 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
         cropCalendarSettings.UseAgriculturist = fulfillment.Who?.professions.Contains(Farmer.agriculturist) ?? false;
     }
 
-    [Notify]
-    private bool hoverable = true;
-
     public void ToggleHoverable(CropDisplay display)
     {
         if (ModEntry.config.RemindersEditModifierKey.IsDown())

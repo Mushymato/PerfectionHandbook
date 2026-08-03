@@ -15,6 +15,7 @@ public sealed partial class HandbookContext
     public static readonly Color ActiveColor = Color.White;
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
+
     public readonly Farmer who;
     public readonly IReadOnlyList<GoalContext> PerfectionGoals;
     public readonly string PerfectionTitle;

@@ -270,8 +270,8 @@ public static class ReminderEntryFactory
         }
         entryDisplay = new ReminderEntryDisplay(
             isCooking
-                ? I18n.Reminder_Verb_Cook(itemInfo.ReprItem.DisplayName)
-                : I18n.Reminder_Verb_Craft(itemInfo.ReprItem.DisplayName),
+                ? I18n.Reminder_Verb_Cook(itemInfo.Datum.DisplayName)
+                : I18n.Reminder_Verb_Craft(itemInfo.Datum.DisplayName),
             itemInfo.Datum.GetTexture(),
             itemInfo.Datum.GetSourceRect(),
             recipe.numberProducedPerCraft,
@@ -293,7 +293,7 @@ public static class ReminderEntryFactory
             return false;
         }
         entryDisplay = new ReminderEntryDisplay(
-            getText(itemInfo.ReprItem.DisplayName),
+            getText(itemInfo.Datum.DisplayName),
             itemInfo.Datum.GetTexture(),
             itemInfo.Datum.GetSourceRect(),
             Count: count
@@ -329,7 +329,7 @@ public static class ReminderEntryFactory
             return false;
         }
         entryDisplay = new ReminderEntryDisplay(
-            getText(itemInfo.ReprItem.DisplayName),
+            getText(itemInfo.Datum.DisplayName),
             itemInfo.Datum.GetTexture(),
             itemInfo.Datum.GetSourceRect(),
             Count: count
@@ -348,7 +348,7 @@ public static class ReminderEntryFactory
             return false;
         }
         entryDisplay = new ReminderEntryDisplay(
-            I18n.Reminder_Verb_Prepare(neededForInfoGroup.ReprInfo.ReprItem.DisplayName),
+            I18n.Reminder_Verb_Prepare(neededForInfoGroup.ReprInfo.Datum.DisplayName),
             neededForInfoGroup.ReprInfo.Datum.GetTexture(),
             neededForInfoGroup.ReprInfo.Datum.GetSourceRect(),
             Count: neededForInfoGroup.GetNotYetCrafted(Game1.player).Sum(notYet => notYet.Count)
@@ -380,7 +380,7 @@ public static class ReminderEntryFactory
             {
                 subReminders.Add(
                     new ReminderEntryDisplay(
-                        ingredient.Info.ReprItem.DisplayName,
+                        ingredient.Info.Datum.DisplayName,
                         ingredient.Info.Datum.GetTexture(),
                         ingredient.Info.Datum.GetSourceRect(),
                         ingredient.Count
@@ -426,7 +426,7 @@ public static class ReminderEntryFactory
                 {
                     subReminders.Add(
                         new ReminderEntryDisplay(
-                            itemInfo.ReprItem.DisplayName,
+                            itemInfo.Datum.DisplayName,
                             itemInfo.Datum.GetTexture(),
                             itemInfo.Datum.GetSourceRect(),
                             material.Amount

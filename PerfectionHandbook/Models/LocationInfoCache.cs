@@ -14,6 +14,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
     public IReadOnlyDictionary<string, SpawnFishData>? Fishes { get; private set; }
     public string? EventAsset { get; private set; }
     public Dictionary<string, string>? Events { get; private set; }
+    public bool HasWater { get; set; } = false;
 
     public void ReloadLocationData()
     {
@@ -21,6 +22,20 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
         Data = Location.GetData();
         if (Data == null)
             return;
+
+        // water tiles
+        HasWater = false;
+        if (Location.waterTiles != null)
+        {
+            foreach (WaterTiles.WaterTileData waterTile in Location.waterTiles.waterTiles)
+            {
+                if (waterTile.isWater)
+                {
+                    HasWater = true;
+                    break;
+                }
+            }
+        }
 
         // fish
         Dictionary<string, SpawnFishData> fishes = [];

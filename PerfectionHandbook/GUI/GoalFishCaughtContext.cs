@@ -1,20 +1,249 @@
 using System.Text;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
+using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
 using StardewValley;
+using StardewValley.Extensions;
 using StardewValley.GameData.Locations;
+using StardewValley.ItemTypeDefinitions;
+using StardewValley.Objects;
 
 namespace PerfectionHandbook.GUI;
+
+public sealed record CatchInSeason(SDUISprite Sprite, Color DisplayTint);
+
+public sealed record CatchInTimeRange(string Text, bool WithinTime);
+
+public sealed record CatchInDisplay(
+    string LocationId,
+    string LocationName,
+    bool CatchableToday,
+    HashSet<Season> SpawnSeasons,
+    HashSet<string> SpawnWeather,
+    HashSet<(int, int)> SpawnTimeRange,
+    int SpawnMinFishingLevel,
+    string? CrabPot = null
+)
+{
+    public ParsedItemData CrabPotIcon => ItemRegistry.GetData("(O)710");
+
+    public CatchInDisplay(string LocationId, string LocationName)
+        : this(LocationId, LocationName, true, [], [], [(0600, 2600)], 0) { }
+
+    public CatchInDisplay(string LocationId, string LocationName, string CrabPot)
+        : this(LocationId, LocationName, true, [], [], [], 0, CrabPot: CrabPot) { }
+
+    public readonly float Opacity = CatchableToday ? 1f : 0.4f;
+    public readonly bool HasSpawnWeather = SpawnWeather.Any();
+    public readonly string DisplayText =
+        SpawnMinFishingLevel > 0 ? I18n.Ui_FishReqLevel(SpawnMinFishingLevel, LocationName) : LocationName;
+    public readonly bool IsCrabPot = CrabPot != null;
+
+    private static string FormatTime(int timeCode)
+    {
+        int hour = timeCode / 100;
+        if (hour > 24)
+            hour -= 24;
+        return $"{hour:D2}:{timeCode % 100:D2}";
+    }
+
+    public IEnumerable<CatchInSeason> SpawnSeasonSprites
+    {
+        get
+        {
+            foreach (SeasonSprite seasonSprite in DrawHelper.SeasonSprites)
+            {
+                yield return new(
+                    seasonSprite.Sprite,
+                    SpawnSeasons.Count == 0 || SpawnSeasons.Contains(seasonSprite.Ssn)
+                        ? HandbookContext.ActiveColor
+                        : HandbookContext.InactiveColor
+                );
+            }
+        }
+    }
+    public IEnumerable<SDUISprite> SpawnWeatherSprites
+    {
+        get
+        {
+            foreach (string weather in SpawnWeather)
+            {
+                if (DrawHelper.GetWeatherSprite(weather) is SDUISprite weatherSprite)
+                {
+                    yield return weatherSprite;
+                }
+            }
+        }
+    }
+    public IEnumerable<CatchInTimeRange> SpawnTimeRangeText
+    {
+        get
+        {
+            foreach ((int startTime, int endTime) in SpawnTimeRange)
+            {
+                string text = I18n.Ui_FishTimeRange(FormatTime(startTime), FormatTime(endTime));
+                yield return new(text, CatchableToday && startTime <= Game1.timeOfDay && endTime >= Game1.timeOfDay);
+            }
+        }
+    }
+
+    public static void MakeOrMerge(
+        Dictionary<string, CatchInDisplay> canCatchIn,
+        LocationInfo locInfo,
+        SpawnFishData spawnFish,
+        SpawnFishParsedReq? spawnReq
+    )
+    {
+        if (!locInfo.HasWater)
+            return;
+        if (spawnFish.RequireMagicBait)
+            return;
+
+        bool catchableToday = true;
+        bool? rain = spawnReq?.Rain;
+        if (spawnFish.Season != null && spawnFish.Season != Game1.GetSeasonForLocation(locInfo.Location))
+        {
+            catchableToday = false;
+        }
+        else if (rain.HasValue && rain.Value != locInfo.Location.IsRainingHere())
+        {
+            catchableToday = false;
+        }
+        else if (
+            !GameQueryHelper.ContextLocationCheck(spawnFish.Condition, locInfo.Location, GameQueryHelper.fishIgnoreKeys)
+        )
+        {
+            catchableToday = false;
+        }
+
+        GameStateQuery.ParsedGameStateQuery[] conditions = string.IsNullOrEmpty(spawnFish.Condition)
+            ? []
+            : GameStateQuery.Parse(spawnFish.Condition);
+
+        HashSet<Season> seasons = [];
+        HashSet<string> weather = [];
+        HashSet<(int, int)> timeRanges = [];
+
+        if (spawnFish.Season != null)
+        {
+            seasons.Add(spawnFish.Season.Value);
+        }
+
+        if (spawnFish.ItemId == "(O)698" && locInfo.LocationId == "Mountain")
+        {
+            ModEntry.Log("hrm");
+        }
+
+        foreach (GameStateQuery.ParsedGameStateQuery cond in conditions)
+        {
+            string query = cond.Query[0];
+            if (query == "SEASON")
+            {
+                foreach (string seasonStr in cond.Query.Skip(1))
+                {
+                    if (Enum.TryParse(seasonStr, out Season season))
+                        seasons.Add(season);
+                }
+            }
+            else if (query == "LOCATION_SEASON")
+            {
+                foreach (string seasonStr in cond.Query.Skip(2))
+                {
+                    if (Enum.TryParse(seasonStr, ignoreCase: true, out Season season))
+                        seasons.Add(season);
+                }
+            }
+            else if (query == "WEATHER")
+            {
+                foreach (string seasonStr in cond.Query.Skip(2))
+                {
+                    weather.Add(seasonStr.ToLower());
+                }
+            }
+            else if (query == "TIME")
+            {
+                if (
+                    ArgUtility.TryGetInt(cond.Query, 1, out int minTime, out _, "int minTime")
+                    && ArgUtility.TryGetOptionalInt(cond.Query, 2, out int maxTime, out _, int.MaxValue, "int maxTime")
+                )
+                {
+                    timeRanges.Add((minTime, maxTime));
+                }
+            }
+        }
+
+        if (spawnReq != null)
+        {
+            if (weather.Count == 0 && rain.HasValue)
+            {
+                if (rain.Value)
+                {
+                    weather.Add("rain");
+                    weather.Add("storm");
+                    weather.Add("greenrain");
+                }
+                else
+                {
+                    weather.Add("sun");
+                }
+            }
+            if (timeRanges.Count == 0)
+                timeRanges.AddRange(spawnReq.TimeRanges);
+        }
+
+        int minFishingLevel = Math.Max(spawnFish?.MinFishingLevel ?? 0, spawnReq?.MinFishing ?? 0);
+
+        if (canCatchIn.TryGetValue(locInfo.Location.NameOrUniqueName, out CatchInDisplay? existingCanCatchIn))
+        {
+            existingCanCatchIn.SpawnSeasons.UnionWith(seasons);
+            existingCanCatchIn.SpawnWeather.UnionWith(weather);
+            existingCanCatchIn.SpawnTimeRange.UnionWith(timeRanges);
+            canCatchIn[locInfo.Location.NameOrUniqueName] = new(
+                locInfo.Location.NameOrUniqueName,
+                existingCanCatchIn.LocationName,
+                existingCanCatchIn.CatchableToday || catchableToday,
+                existingCanCatchIn.SpawnSeasons,
+                existingCanCatchIn.SpawnWeather,
+                existingCanCatchIn.SpawnTimeRange,
+                Math.Min(minFishingLevel, existingCanCatchIn.SpawnMinFishingLevel)
+            );
+        }
+        else
+        {
+            canCatchIn[locInfo.Location.NameOrUniqueName] = new(
+                locInfo.Location.NameOrUniqueName,
+                locInfo.Location.DisplayName ?? locInfo.LocationId,
+                catchableToday,
+                seasons,
+                weather,
+                timeRanges.Any() ? timeRanges : [(0600, 2600)],
+                Math.Max(spawnFish?.MinFishingLevel ?? 0, spawnReq?.MinFishing ?? 0)
+            );
+        }
+    }
+}
 
 public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override bool Needed => Count < 0;
     private int biggestCatch = 0;
-    internal IReadOnlyList<string>? canCatchIn = null;
-    public override Color DisplayTint =>
-        canCatchIn != null ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
+    public IReadOnlyList<CatchInDisplay> CanCatchIn { get; set; } = [];
+
+    public override Color DisplayTint
+    {
+        get
+        {
+            if (countMode == CountMode.Owned)
+            {
+                return base.DisplayTint;
+            }
+            return CanCatchIn.Any(cci => cci.CatchableToday)
+                ? HandbookContext.ActiveColor
+                : HandbookContext.HiddenColor;
+        }
+    }
 
     public override void SetStatus(Farmer who)
     {
@@ -32,11 +261,6 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
-    public void SetCanCatchIn(IReadOnlyList<string> canCatchIn)
-    {
-        this.canCatchIn = canCatchIn.Any() ? canCatchIn : null;
-    }
-
     private static readonly StringBuilder sb = new();
 
     public override string GetTooltipDesc()
@@ -50,15 +274,6 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
                 I18n.Ui_FishCatch(Count, biggestCatch > 0 ? I18n.Ui_FishCatchLength(biggestCatch) : string.Empty)
             );
         }
-        if (canCatchIn != null)
-        {
-            sb.Append(Environment.NewLine);
-            sb.Append(Environment.NewLine);
-            sb.Append(I18n.Ui_FishFrom());
-            sb.Append(Environment.NewLine);
-            sb.Append("  ");
-            sb.AppendJoin(Environment.NewLine + "  ", canCatchIn);
-        }
         string result = sb.ToString();
         sb.Clear();
         return result;
@@ -66,6 +281,19 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 
     public override ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
+
+    public Color BorderTint
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged(new(nameof(BorderTint)));
+            }
+        }
+    }
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
@@ -87,44 +315,51 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
         displayList = base.FinalizeDisplay(displayList);
         foreach (FishCaughtDisplay disp in displayList)
         {
-            HashSet<string> canCatchIn = [];
+            Dictionary<string, CatchInDisplay> canCatchIn = [];
             foreach ((LocationInfo locInfo, SpawnFishData spawn) in disp.Info.FromFishing)
             {
-                if (spawn.RequireMagicBait)
-                    continue;
-                Season? season = spawn.Season;
-                if (season != null && season != Game1.GetSeasonForLocation(locInfo.Location))
-                    continue;
-                string? condition = spawn.Condition;
-                if (condition != null && !GameQueryHelper.ContextLocationCheckNoRandom(condition, locInfo.Location))
-                    continue;
-                if (disp.Info.FishReq is FishSpawnReq spawnReq)
-                {
-                    if (
-                        spawnReq.CrabPotGroups == null
-                        && spawnReq.Rain != null
-                        && spawnReq.Rain != locInfo.Location.IsRainingHere()
-                    )
-                        continue;
-                }
-                canCatchIn.Add(locInfo.Location.DisplayName ?? locInfo.LocationId);
+                CatchInDisplay.MakeOrMerge(canCatchIn, locInfo, spawn, disp.Info.FishReq);
             }
+
             // mines fish hardcoding
             switch (disp.Info.Datum.QualifiedItemId)
             {
                 case "(O)158":
-                    canCatchIn.Add(I18n.Location_Mines_20());
+                    canCatchIn[$"{ModEntry.ModId}_mines_20"] = new(
+                        $"{ModEntry.ModId}_mines_20",
+                        I18n.Location_Mines_20()
+                    );
                     break;
                 case "(O)161":
-                    canCatchIn.Add(I18n.Location_Mines_60());
+                    canCatchIn[$"{ModEntry.ModId}_mines_60"] = new(
+                        $"{ModEntry.ModId}_mines_60",
+                        I18n.Location_Mines_60()
+                    );
                     break;
                 case "(O)162":
-                    canCatchIn.Add(I18n.Location_Mines_100());
+                case "(O)CaveJelly":
+                    canCatchIn[$"{ModEntry.ModId}_mines_100"] = new(
+                        $"{ModEntry.ModId}_mines_100",
+                        I18n.Location_Mines_100()
+                    );
                     break;
             }
-            List<string> canCatchInLst = canCatchIn.ToList();
-            canCatchInLst.Sort();
-            disp.SetCanCatchIn(canCatchInLst);
+
+            // crab pots
+            if (disp.Info.FishReq?.CrabPotGroups?.Any() ?? false)
+            {
+                foreach (string crabPot in disp.Info.FishReq.CrabPotGroups)
+                {
+                    string id = $"{disp.Info.Datum.QualifiedItemId}_crabpot_{crabPot}";
+                    canCatchIn[id] = new(id, ItemRegistry.GetData("(O)710").DisplayName, crabPot);
+                    break;
+                }
+            }
+
+            List<CatchInDisplay> canCatchInLst = canCatchIn
+                .Values.OrderBy(cci => (cci.CatchableToday ? 0 : 1, !cci.IsCrabPot ? 0 : 1, cci.LocationName))
+                .ToList();
+            disp.CanCatchIn = canCatchInLst;
         }
         return displayList;
     }
@@ -136,7 +371,8 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
             return displayList
                 .OrderBy(static disp =>
                     (
-                        (disp.canCatchIn?.Any() ?? false) ? -int.MaxValue : 0,
+                        disp.CanCatchIn.Any(cci => cci.CatchableToday) ? 0 : 1,
+                        disp.CanCatchIn.Any(cci => !cci.IsCrabPot) ? 0 : 1,
                         disp.Info.Datum.Category,
                         disp.Info.Datum.QualifiedItemId
                     )
@@ -144,5 +380,34 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
                 .ToList();
         }
         return base.SortAllDisplay(displayList);
+    }
+
+    public void ToggleHoverable(FishCaughtDisplay display)
+    {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            display.ToggleReminder();
+            return;
+        }
+        if (Hoverable)
+        {
+            Hoverable = false;
+            base.HoveredEnter(display);
+            Hovered?.BorderTint = Color.White;
+        }
+        else
+        {
+            if (display == Hovered)
+            {
+                Hoverable = true;
+                Hovered?.BorderTint = Color.Transparent;
+            }
+            else
+            {
+                Hovered?.BorderTint = Color.Transparent;
+                base.HoveredEnter(display);
+                Hovered?.BorderTint = Color.White;
+            }
+        }
     }
 }

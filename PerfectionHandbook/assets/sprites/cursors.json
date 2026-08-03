@@ -24,6 +24,9 @@
       "SourceRect": "656,394,48,16",
       "FixedEdges": "16,0,16,0",
       "Scale": 3
+    },
+    "clock": {
+      "SourceRect": "434,475,9,9"
     }
   }
 }

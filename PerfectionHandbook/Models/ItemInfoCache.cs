@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
@@ -16,11 +15,11 @@ using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.Models;
 
-public sealed record FishSpawnReq(
-    bool? Rain,
+public sealed record SpawnFishParsedReq(
     int MinFishing,
-    IReadOnlyList<(int, int)> TimeRanges,
-    IReadOnlyList<string>? CrabPotGroups
+    bool? Rain,
+    IReadOnlySet<(int, int)> TimeRanges,
+    IReadOnlyList<string>? CrabPotGroups = null
 );
 
 public sealed record NeededForInfo(int Count, CraftingRecipe Recipe, ItemInfo ResultItem);
@@ -53,6 +52,7 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public bool IsPotentialShipped = ItemInfoCache.IsPotentialBasicShipped(Datum);
     public bool IsMuseumDonation = ItemInfoCache.IsMuseumDonation(Datum);
     public bool IsCatchableFish = ItemInfoCache.IsCatchableFish(Datum);
+    public string DisplayName => TokenParser.ParseText(Datum.DisplayName) ?? Datum.DisplayName;
 
     public bool CountForPolyculture = false;
     public bool CountForMonoculture = false;
@@ -60,7 +60,7 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public List<CraftingRecipeWithNeeds> FromRecipe = [];
     public Dictionary<string, CropData> FromCrop = [];
     public List<(LocationInfo, SpawnFishData)> FromFishing = [];
-    public FishSpawnReq? FishReq = null;
+    public SpawnFishParsedReq? FishReq = null;
     public SDUISprite Sprite => new(Datum.GetTexture(), Datum.GetSourceRect());
 
     public bool SearchMatch(string txt)
@@ -616,8 +616,7 @@ public static class ItemInfoCache
             string[] fishReqs = fishReqStr.Split('/');
 
             List<string>? crabPotsList = null;
-            List<(int, int)> timeRanges = [];
-            bool? rain = null;
+            HashSet<(int, int)> timeRanges = [];
 
             if (
                 ArgUtility.Get(fishReqs, 1) == "trap"
@@ -628,7 +627,7 @@ public static class ItemInfoCache
             }
 
             if (
-                !ArgUtility.TryGet(
+                ArgUtility.TryGet(
                     fishReqs,
                     5,
                     out string rawTimeSpansStr,
@@ -650,6 +649,7 @@ public static class ItemInfoCache
                 }
             }
 
+            bool? rain = null;
             if (ArgUtility.TryGet(fishReqs, 7, out string weather, out _, allowBlank: true, "string weather"))
             {
                 if (weather == "rainy")
@@ -660,7 +660,7 @@ public static class ItemInfoCache
 
             ArgUtility.TryGetInt(fishReqs, 12, out int minFishing, out _, "int minFishingLevel");
 
-            itemInfo.FishReq = new(rain, minFishing, timeRanges, crabPotsList);
+            itemInfo.FishReq = new(minFishing, rain, timeRanges, crabPotsList);
         }
     }
 

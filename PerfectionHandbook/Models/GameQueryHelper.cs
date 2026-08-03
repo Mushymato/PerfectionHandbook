@@ -53,12 +53,13 @@ internal static class GameQueryHelper
             needsIQR.Add(spawnItemId);
     }
 
-    internal static readonly HashSet<string> GSQRandomKeys =
+    internal static readonly HashSet<string> fishIgnoreKeys =
     [
         "RANDOM", /*"SYNCED_RANDOM"*/
+        "TIME",
     ];
 
-    internal static bool ContextLocationCheckNoRandom(string condition, GameLocation location)
+    internal static bool ContextLocationCheck(string condition, GameLocation location, HashSet<string> ignoreKeys)
     {
         List<string> parts = ArgUtility.SplitQuoteAware(condition, ' ', StringSplitOptions.None).ToList();
         for (int i = 0; i < parts.Count; i++)
@@ -69,7 +70,7 @@ internal static class GameQueryHelper
         return GameStateQuery.CheckConditions(
             ArgUtility.UnsplitQuoteAware(parts.ToArray(), ' '),
             location: location,
-            ignoreQueryKeys: GSQRandomKeys
+            ignoreQueryKeys: ignoreKeys
         );
     }
 }

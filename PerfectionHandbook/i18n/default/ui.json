@@ -10,6 +10,8 @@
   "ui.fish-from": "Fish this in:",
   "ui.fish-catch": "(You caught {{count}} of these{{length}})",
   "ui.fish-catch-length": ", record length {{length}}cm",
+  "ui.fish-req-level": "(Lv. {{level}}) {{location}}",
+  "ui.fish-time-range": "{{startTime}} - {{endTime}}",
   "ui.showing-need": "Need",
   "ui.showing-done": "Done",
   "ui.counting-owned": "Owned",
@@ -37,5 +39,5 @@
   "ui.export": "Export Farm Card",
   "ui.export-path": "Export Farm Card:\n{{path}}\nRight-click to open directory.",
   "ui.export-error": "Export Farm Card:\nerror saving the farm card!",
-  "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}."
+  "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}.",
 }

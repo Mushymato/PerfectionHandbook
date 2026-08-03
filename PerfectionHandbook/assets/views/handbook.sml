@@ -49,7 +49,7 @@
   <!-- Perfection_RecipesCrafted -->
   <include *case="Perfection_RecipesCrafted" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
   <!-- Perfection_FishCaught -->
-  <include *case="Perfection_FishCaught" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
+  <include *case="Perfection_FishCaught" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-fish-list" />
   <!-- Perfection_MonsterSlayered -->
   <include *case="Perfection_MonsterSlayered" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-monster-slayer" />
   <!-- Perfection_BestFriendsMade -->
