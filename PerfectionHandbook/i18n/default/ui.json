@@ -39,5 +39,6 @@
   "ui.export": "Export Farm Card",
   "ui.export-path": "Export Farm Card:\n{{path}}\nRight-click to open directory.",
   "ui.export-error": "Export Farm Card:\nerror saving the farm card!",
+  "ui.week-day": "{{dayOfWeek}} {{day}}",
   "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}.",
 }

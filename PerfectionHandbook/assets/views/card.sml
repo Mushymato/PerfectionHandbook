@@ -2,7 +2,12 @@
   <!-- Main -->
   <lane layout="content content">
     <lane margin="0,0,16,0" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >
-      <image layout="176px 208px" sprite={:FarmerPanel} />
+      <lane margin="8,8,8,0" vertical-content-alignment="Middle">
+        <label text={:GameYear} shadow-alpha="0.8" />
+        <image margin="8,0" layout="36px 24px" sprite={:GameSeason} shadow-alpha="0.4" shadow-offset="-4,4" />
+        <label text={:GameSeasonDay} shadow-alpha="0.8" />
+      </lane>
+      <image layout="200px 208px" sprite={:FarmerPanel} />
       <banner text={:PlayerName} />
       <panel layout="content stretch" vertical-content-alignment="End">
         <image layout="88px 80px" sprite={:FarmIcon} shadow-alpha="0.4" shadow-offset="-4,4"/>

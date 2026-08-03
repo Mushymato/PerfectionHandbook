@@ -350,7 +350,7 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
             {
                 foreach (string crabPot in disp.Info.FishReq.CrabPotGroups)
                 {
-                    string id = $"{disp.Info.Datum.QualifiedItemId}_crabpot_{crabPot}";
+                    string id = $"crabpot_{crabPot}";
                     canCatchIn[id] = new(id, ItemRegistry.GetData("(O)710").DisplayName, crabPot);
                     break;
                 }

@@ -35,7 +35,7 @@
               <image *if={:WithinTime} margin="4,0" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
             </lane>
           </lane>
-          <frame *case="true" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4" padding="8,0">
+          <frame *case="true" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4" padding="12,0">
             <image layout="48px 48px" sprite={:CrabPotIcon} />
           </frame>
           <label *case="true" text={:CrabPot} margin="8,0" shadow-alpha="0.8" />

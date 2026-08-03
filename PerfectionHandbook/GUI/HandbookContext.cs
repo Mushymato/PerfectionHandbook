@@ -82,6 +82,11 @@ public sealed partial class HandbookContext
     public string PlayerName => who.displayName;
     public string FarmName =>
         Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11064", who.farmName.Value);
+    public string GameYear => Game1.content.LoadString("Strings\\UI:Billboard_Year", Game1.year);
+    public SDUISprite GameSeason => DrawHelper.GetSeasonSprite(Game1.season).Sprite;
+    public string GameSeasonDay =>
+        I18n.Ui_WeekDay(Game1.shortDayDisplayNameFromDayOfSeason(Game1.dayOfMonth), Game1.dayOfMonth);
+
     public Texture2D FarmerPanel => DrawHelper.GetEntireFarmer(who) ?? Game1.daybg;
     public SDUISprite FarmIcon =>
         Game1.whichModFarm != null
