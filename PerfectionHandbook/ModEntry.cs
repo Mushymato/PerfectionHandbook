@@ -40,7 +40,7 @@ public sealed class ModEntry : Mod
             help.WriteConfig(config);
         }
 
-        ReminderEntryFactory.Register();
+        ReminderEntryFactory.Setup();
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -100,7 +100,7 @@ public sealed class ModEntry : Mod
 
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        MenuHandler.Register();
+        MenuHandler.Setup();
         ItemInfoCache.Setup();
         GoalSkillLeveledContext.Setup();
     }

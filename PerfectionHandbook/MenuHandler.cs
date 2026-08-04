@@ -24,7 +24,7 @@ public static class MenuHandler
     );
     internal static RemindersHUD Reminders => reminders.Value;
 
-    public static void Register()
+    public static void Setup()
     {
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
         viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");

@@ -141,7 +141,7 @@ public static class ReminderEntryFactory
 
     private static readonly Dictionary<(string, string), TryMakeReminderEntryDisplay> reminderEntryMakers = [];
 
-    public static void Register()
+    public static void Setup()
     {
         AddEntryMaker(
             ModEntry.ModId,
