@@ -52,29 +52,6 @@ public static class AssetManager
             e.LoadFrom(() => new Dictionary<string, EventDescriptionData>(), AssetLoadPriority.Exclusive);
             return;
         }
-
-#if DEBUG
-        // cheez perf test
-        if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
-        {
-            e.Edit(
-                asset =>
-                {
-                    ModEntry.Log("CHEEZ", LogLevel.Warn);
-                    IDictionary<string, ObjectData> data = asset.AsDictionary<string, ObjectData>().Data;
-                    ObjectData cheese = data["424"];
-                    for (int i = 0; i < 50000; i++)
-                    {
-                        ObjectData cheeseI = cheese.DeepClone();
-                        cheeseI.Name = $"{ModEntry.ModId}_cheez_{i}";
-                        cheeseI.DisplayName = $"{cheese.DisplayName}-{i}";
-                        data[cheeseI.Name] = cheeseI;
-                    }
-                },
-                AssetEditPriority.Late
-            );
-        }
-#endif
     }
 
     private static void Edit_DataLocations(IAssetData asset)

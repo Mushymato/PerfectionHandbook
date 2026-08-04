@@ -167,8 +167,6 @@ public sealed class GoalMonsterSlayerContext(IGoalContext goalCtx)
             or "Putrid Ghost"
             or "Fly"
             or "Grub"
-            or "Duggy"
-            or "Magma Duggy"
             or "Stone Golem"
             or "Wilderness Golem"
             or "Iridium Golem"
@@ -176,7 +174,9 @@ public sealed class GoalMonsterSlayerContext(IGoalContext goalCtx)
             or "Dust Spirit"
             or "Shadow Shaman" => new(0, 0, 16, 24),
 
-            "Rock Crab" or "Lava Crab" or "Iridium Crab" or "Truffle Crab" => new(0, 16, 16, 24),
+            "Duggy" or "Magma Duggy" => new(0, 24, 16, 24),
+
+            "Rock Crab" or "Lava Crab" or "Iridium Crab" or "Truffle Crab" => new(16, 0, 16, 24),
 
             "Blue Squid" => new(0, 0, 24, 24),
 
