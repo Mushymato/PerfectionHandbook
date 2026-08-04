@@ -1,6 +1,5 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
-using Netcode;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
@@ -41,6 +40,7 @@ public sealed class ModEntry : Mod
         }
 
         ReminderEntryFactory.Setup();
+        AssetManager.Setup();
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;

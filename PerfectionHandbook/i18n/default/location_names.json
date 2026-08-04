@@ -1,5 +1,64 @@
 {
-  "location.mines.20": "Mines F20",
-  "location.mines.60": "Mines F60",
-  "location.mines.100": "Mines F100"
+  // crab pots
+  "crabpot.ocean": "Saltwater",
+  "crabpot.freshwater": "Freshwater",
+  // backup names for vanilla locations
+  "location.Default": "Default",
+  "location.Temp": "Temp",
+  "location.pneuma163.WorldNavigator_OffLimits": "Hi Cam :)",
+  /*
+https: //codeberg.org/pneuma163/StardewValleyMods/src/branch/main/World%20Navigator/i18n/default.json
+
+MIT License
+
+Copyright (c) 2024-2025 pneuma163
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+  "location.FarmHouse": "Farmhouse",
+  "location.Greenhouse": "Greenhouse",
+  "location.FarmCave": "Farm Cave",
+  "location.Blacksmith": "Clint's Blacksmith",
+  "location.HarveyRoom": "Harvey's Room",
+  "location.BeachNightMarket": "Beach (Night Market)",
+  "location.SebastianRoom": "Sebastian's Room",
+  "location.Tent": "Linus's Tent",
+  "location.Mountain": "The Mountains",
+  "location.BugLand": "Mutant Bug Lair",
+  "location.SandyHouse": "Oasis",
+  "location.WizardHouseBasement": "Wizard's Basement",
+  "location.WitchSwamp": "Witch's Swamp",
+  "location.WitchHut": "Witch's Hut",
+  "location.WitchWarpCave": "Witch Warp Cave",
+  "location.FishShop": "Willy's Fish Shop",
+  "location.BathHouse_Entry": "Spa Entry",
+  "location.BathHouse_MensLocker": "Men's Locker Room",
+  "location.BathHouse_WomensLocker": "Women's Locker Room",
+  "location.BathHouse_Pool": "Spa Pool",
+  "location.SkullCave": "Skull Cavern",
+  "location.MermaidHouse": "Mermaid's Boat",
+  "location.BoatTunnel": "Willy's Boat Tunnel",
+  "location.IslandSouth": "Ginger Island South",
+  "location.IslandSouthEast": "Ginger Island Southeast",
+  "location.IslandSouthEastCave": "Ginger Island Southeast Cave",
+  "location.IslandEast": "Ginger Island Jungle",
+  "location.IslandWest": "Ginger Island West and Farm",
+  "location.IslandNorth": "Ginger Island North",
+  "location.IslandHut": "Leo's Island Hut",
+  "location.IslandWestCave1": "Ginger Island West Puzzle Cave",
+  "location.IslandNorthCave1": "Ginger Island North Mushroom Cave",
+  "location.IslandFieldOffice": "Ginger Island Field Office",
+  "location.IslandFarmHouse": "Ginger Island Farmhouse",
+  "location.CaptainRoom": "Ginger Island Captain's Room",
+  "location.IslandShrine": "Ginger Island Shrine",
+  "location.IslandFarmCave": "Ginger Island Farm Cave",
+  "location.LeoTreeHouse": "Leo's Tree House",
+  "location.QiNutRoom": "Qi's Walnut Room",
+  "location.MasteryCave": "Mastery Cave",
+  "location.DesertFestival": "Desert (Festival)",
+  "location.LewisBasement": "Lewis's Basement",
 }

@@ -27,6 +27,9 @@
     },
     "clock": {
       "SourceRect": "434,475,9,9"
+    },
+    "fishLv": {
+      "SourceRect": "20,428,10,10"
     }
   }
 }

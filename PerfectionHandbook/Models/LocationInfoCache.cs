@@ -36,6 +36,27 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
                 }
             }
         }
+        else if (
+            (Location.IsOutdoors || Location.HasMapPropertyWithValue("indoorWater"))
+            && Location.Map?.Layers?.Count > 0
+        )
+        {
+            // need this check because desert >:(
+            xTile.Layers.Layer layer = Location.Map.Layers[0];
+            for (int i = 0; i < layer.LayerWidth; i++)
+            {
+                for (int j = 0; j < layer.LayerHeight; j++)
+                {
+                    if (layer.Tiles[i, j] is not xTile.Tiles.Tile tile)
+                        continue;
+                    if (tile.Properties.ContainsKey("Water") || tile.TileIndexProperties.ContainsKey("Water"))
+                    {
+                        HasWater = true;
+                        break;
+                    }
+                }
+            }
+        }
 
         // fish
         Dictionary<string, SpawnFishData> fishes = [];

@@ -10,7 +10,6 @@
   "ui.fish-from": "Fish this in:",
   "ui.fish-catch": "(You caught {{count}} of these{{length}})",
   "ui.fish-catch-length": ", record length {{length}}cm",
-  "ui.fish-req-level": "(Lv. {{level}}) {{location}}",
   "ui.fish-time-range": "{{startTime}} - {{endTime}}",
   "ui.showing-need": "Need",
   "ui.showing-done": "Done",
@@ -41,4 +40,5 @@
   "ui.export-error": "Export Farm Card:\nerror saving the farm card!",
   "ui.week-day": "{{dayOfWeek}} {{day}}",
   "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}.",
+  "ui.mines.floor": "Mines F{{floor}}",
 }

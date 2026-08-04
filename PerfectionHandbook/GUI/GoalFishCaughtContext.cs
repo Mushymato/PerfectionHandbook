@@ -37,8 +37,7 @@ public sealed record CatchInDisplay(
 
     public readonly float Opacity = CatchableToday ? 1f : 0.4f;
     public readonly bool HasSpawnWeather = SpawnWeather.Any();
-    public readonly string DisplayText =
-        SpawnMinFishingLevel > 0 ? I18n.Ui_FishReqLevel(SpawnMinFishingLevel, LocationName) : LocationName;
+    public readonly bool HasSpawnMinFishingLevel = SpawnMinFishingLevel > 0;
     public readonly bool IsCrabPot = CrabPot != null;
 
     private static string FormatTime(int timeCode)
@@ -131,11 +130,6 @@ public sealed record CatchInDisplay(
             seasons.Add(spawnFish.Season.Value);
         }
 
-        if (spawnFish.ItemId == "(O)698" && locInfo.LocationId == "Mountain")
-        {
-            ModEntry.Log("hrm");
-        }
-
         foreach (GameStateQuery.ParsedGameStateQuery cond in conditions)
         {
             string query = cond.Query[0];
@@ -174,7 +168,7 @@ public sealed record CatchInDisplay(
             }
         }
 
-        if (spawnReq != null)
+        if (spawnReq != null && !spawnFish.IgnoreFishDataRequirements)
         {
             if (weather.Count == 0 && rain.HasValue)
             {
@@ -327,20 +321,20 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
                 case "(O)158":
                     canCatchIn[$"{ModEntry.ModId}_mines_20"] = new(
                         $"{ModEntry.ModId}_mines_20",
-                        I18n.Location_Mines_20()
+                        I18n.Ui_Mines_Floor(20)
                     );
                     break;
                 case "(O)161":
                     canCatchIn[$"{ModEntry.ModId}_mines_60"] = new(
                         $"{ModEntry.ModId}_mines_60",
-                        I18n.Location_Mines_60()
+                        I18n.Ui_Mines_Floor(60)
                     );
                     break;
                 case "(O)162":
                 case "(O)CaveJelly":
                     canCatchIn[$"{ModEntry.ModId}_mines_100"] = new(
                         $"{ModEntry.ModId}_mines_100",
-                        I18n.Location_Mines_100()
+                        I18n.Ui_Mines_Floor(100)
                     );
                     break;
             }
@@ -350,8 +344,13 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
             {
                 foreach (string crabPot in disp.Info.FishReq.CrabPotGroups)
                 {
-                    string id = $"crabpot_{crabPot}";
-                    canCatchIn[id] = new(id, ItemRegistry.GetData("(O)710").DisplayName, crabPot);
+                    string id = $"crabpot.{crabPot}";
+                    string crabpotTl = id;
+                    if (ModEntry.help.Translation.ContainsKey(crabpotTl))
+                        crabpotTl = ModEntry.help.Translation.Get(crabpotTl);
+                    else
+                        crabpotTl = crabPot;
+                    canCatchIn[id] = new(id, id, crabpotTl);
                     break;
                 }
             }
