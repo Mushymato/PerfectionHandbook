@@ -13,6 +13,9 @@ namespace PerfectionHandbook.GUI;
 public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 {
     [Notify]
+    private bool isHovered = false;
+
+    [Notify]
     private Friendship? currentFriendship = null;
     public Color DisplayTint
     {
@@ -52,9 +55,20 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     }
 
     public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
+
+    public IEnumerable<string> DebugEvents
+    {
+        get
+        {
+            foreach ((string key, EventInfo info) in NpcInfo.Events)
+            {
+                yield return $"{key} | {string.Join(' ', info.Preconditions)}";
+            }
+        }
+    }
 }
 
-public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
+public partial class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
 {
     public override bool HasSortModes => true;
     protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];
@@ -98,5 +112,15 @@ public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageL
             SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.FriendshipFill).ToList(),
             _ => base.SortAllDisplay(displayList),
         };
+    }
+
+    [Notify]
+    protected FriendsMadeDisplay? hovered = null;
+
+    public virtual void HoveredEnter(FriendsMadeDisplay display)
+    {
+        Hovered?.IsHovered = false;
+        Hovered = display;
+        display.IsHovered = true;
     }
 }

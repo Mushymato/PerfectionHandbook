@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Locations;
@@ -6,18 +7,69 @@ using StardewValley.ItemTypeDefinitions;
 
 namespace PerfectionHandbook.Models;
 
-public sealed record EventInfo(string EventId, string[] Preconditions, string Script, string[] Characters);
+public sealed record EventInfo(
+    string LocationId,
+    string EventId,
+    string[] Preconditions,
+    string[] Commands,
+    string[] Actors
+)
+{
+    public static bool TryParse(string locationId, string key, string script, [NotNullWhen(true)] out EventInfo? info)
+    {
+        info = null;
+
+        string[] idPrecond = Event.SplitPreconditions(key);
+        string[] commands = Event.ParseCommands(script);
+        List<string> actors = [];
+
+        if (
+            ArgUtility.TryGet(
+                commands,
+                2,
+                out string setrawCharacterPositionsupChara,
+                out _,
+                allowBlank: false,
+                "string rawCharacterPositions"
+            )
+        )
+        {
+            string[] array = ArgUtility.SplitBySpace(setrawCharacterPositionsupChara);
+            for (int i = 0; i < array.Length; i += 4)
+            {
+                if (
+                    !ArgUtility.TryGet(
+                        array,
+                        i,
+                        out string actorName,
+                        out var error,
+                        allowBlank: true,
+                        "string actorName"
+                    )
+                )
+                {
+                    continue;
+                }
+                actors.Add(actorName);
+            }
+        }
+
+        info = new(locationId, idPrecond[0], idPrecond.Skip(1).ToArray(), commands, actors.ToArray());
+        return true;
+    }
+}
 
 public sealed record LocationInfo(string LocationId, GameLocation Location)
 {
     public LocationData? Data { get; private set; }
     public IReadOnlyDictionary<string, SpawnFishData>? Fishes { get; private set; }
-    public string? EventAsset { get; private set; }
-    public Dictionary<string, string>? Events { get; private set; }
+    private InvalidateTracker? EventInvalidateTracker;
+    public IReadOnlyDictionary<string, EventInfo>? Events { get; private set; }
     public bool HasWater { get; set; } = false;
 
-    public void ReloadLocationData()
+    public void ReloadLocationData(out bool hasNewEvent)
     {
+        hasNewEvent = default;
         Fishes = null;
         Data = Location.GetData();
         if (Data == null)
@@ -73,23 +125,24 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             }
         }
         Fishes = fishes;
-    }
 
-    public void ReloadEventData()
-    {
-        if (Location.TryGetLocationEvents(out string assetName, out Dictionary<string, string> events))
+        // events
+        if (
+            (EventInvalidateTracker == null || EventInvalidateTracker.CheckChanged())
+            && Location.TryGetLocationEvents(out string assetName, out Dictionary<string, string> events)
+        )
         {
-            EventAsset = assetName;
-            Events = events;
-        }
-        foreach (string eventid in events.Keys)
-        {
-            string[] array = Event.SplitPreconditions(eventid);
-            ModEntry.Log($"EVENT: {array[0]}");
-            for (int i = 1; i < array.Length; i++)
+            EventInvalidateTracker ??= InvalidateTracker.GetInvalidateTracker(assetName);
+            Dictionary<string, EventInfo>? eventsInfo = [];
+            foreach ((string key, string commands) in events)
             {
-                ModEntry.Log($"- {array[i]}");
+                if (EventInfo.TryParse(LocationId, key, commands, out EventInfo? info))
+                {
+                    eventsInfo[info.EventId] = info;
+                }
             }
+            Events = eventsInfo;
+            hasNewEvent = true;
         }
     }
 }
@@ -134,22 +187,30 @@ public static class LocationInfoCache
             stopwatch = Stopwatch.StartNew();
             cacheRet = cache = RefreshCache();
             lastUpdatedTick = Game1.ticks;
+            NPCInfoCache.RefreshEvents(cacheRet.Values);
         }
         else
         {
             cacheRet = cache;
             if (hashLocationData.CheckChanged())
             {
+                List<LocationInfo> newEventLocations = [];
                 foreach (LocationInfo locationInfo in cacheRet.Values)
                 {
-                    locationInfo.ReloadLocationData();
+                    locationInfo.ReloadLocationData(out bool hasNewEvent);
+                    if (hasNewEvent)
+                    {
+                        newEventLocations.Add(locationInfo);
+                    }
                 }
                 lastUpdatedTick = Game1.ticks;
+                NPCInfoCache.RefreshEvents(newEventLocations);
             }
         }
 
         if (stopwatch != null)
             ModEntry.LogDebug($"LocationInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Debug);
+
         return cacheRet;
     }
 
@@ -164,7 +225,7 @@ public static class LocationInfoCache
             Game1._locationLookup.TryAdd(location.Name, location);
             LocationInfo locInfo = new(location.Name, location);
             newCache[location.Name] = locInfo;
-            locInfo.ReloadLocationData();
+            locInfo.ReloadLocationData(out _);
         }
         return newCache;
     }

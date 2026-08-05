@@ -1,7 +1,7 @@
 <lane layout="stretch 100%">
   <!-- Fish Where -->
-  <scrollable scrollbar-visibility="Hidden">
-    <lane *context={Hovered} layout="528px content" orientation="vertical">
+  <scrollable *context={Hovered} scrollbar-visibility="Hidden">
+    <lane layout="528px content" orientation="vertical">
       <lane vertical-content-alignment="Middle" >
         <image sprite={:Info.Datum}
           shadow-alpha="0.35"

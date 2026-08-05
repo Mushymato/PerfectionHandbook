@@ -45,13 +45,6 @@ public static class AssetManager
                 );
             }
         }
-
-        // event info
-        if (e.NameWithoutLocale.IsEquivalentTo(AssetName_EventInfo))
-        {
-            e.LoadFrom(() => new Dictionary<string, EventDescriptionData>(), AssetLoadPriority.Exclusive);
-            return;
-        }
     }
 
     private static void Edit_DataLocations(IAssetData asset)

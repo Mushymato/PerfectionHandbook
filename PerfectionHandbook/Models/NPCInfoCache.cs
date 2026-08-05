@@ -15,6 +15,7 @@ public sealed record NPCInfo(string Name, CharacterData Data)
         Data.PerfectionScore && !GameStateQuery.IsImmutablyFalse(Data.CanSocialize);
     public readonly int MaxPoints = (Data.CanBeRomanced ? 8 : 10) * 250;
     public NPC? Chara { get; set; } = null;
+    public Dictionary<string, EventInfo> Events { get; private set; } = GetEvents(Name, LocationInfoCache.Cache.Values);
 
     public SDUISprite? GetMugShot()
     {
@@ -31,6 +32,29 @@ public sealed record NPCInfo(string Name, CharacterData Data)
             return null;
         }
         return new(Chara.Sprite.Texture, Chara.getMugShotSourceRect());
+    }
+
+    private static Dictionary<string, EventInfo> GetEvents(string name, IEnumerable<LocationInfo> locationInfos)
+    {
+        Dictionary<string, EventInfo> events = [];
+        foreach (LocationInfo locInfo in locationInfos)
+        {
+            if (locInfo.Events == null)
+                continue;
+            foreach (EventInfo eventInfo in locInfo.Events.Values)
+            {
+                if (eventInfo.Actors.Contains(name))
+                {
+                    events[eventInfo.EventId] = eventInfo;
+                }
+            }
+        }
+        return events;
+    }
+
+    public void RefreshEvents(IEnumerable<LocationInfo> refreshedLocationInfo)
+    {
+        Events = GetEvents(Name, refreshedLocationInfo);
     }
 }
 
@@ -78,6 +102,7 @@ public static class NPCInfoCache
                 cacheRet[key] = new(key, data);
             }
         }
+
         return cacheRet;
     }
 
@@ -92,5 +117,15 @@ public static class NPCInfoCache
             npcInfo.Chara = chara;
             return true;
         });
+    }
+
+    public static void RefreshEvents(IEnumerable<LocationInfo> refreshedLocationInfo)
+    {
+        if (cache == null)
+            return;
+        foreach (NPCInfo npcInfo in cache.Values)
+        {
+            npcInfo.RefreshEvents(refreshedLocationInfo);
+        }
     }
 }
