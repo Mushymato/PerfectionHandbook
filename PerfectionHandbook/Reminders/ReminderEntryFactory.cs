@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
@@ -12,6 +11,7 @@ using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData;
 using StardewValley.GameData.Buildings;
+using StardewValley.GameData.Characters;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
@@ -199,6 +199,7 @@ public static class ReminderEntryFactory
         AddEntryMaker(ModEntry.ModId, Kind_CommunityCenterBundle, CommunityCenterBundle_GetReminderEntryDisplay);
         AddEntryMaker(ModEntry.ModId, Kind_BuildingsConstructed, BuildingsConstructed_GetReminderEntryDisplay);
         AddEntryMaker(ModEntry.ModId, Kind_MonsterSlayer, MonsterSlayer_GetReminderEntryDisplay);
+        AddEntryMaker(ModEntry.ModId, Kind_FriendsMade, FriendsMade_GetReminderEntryDisplay);
     }
 
     public static void AddEntryMaker(string modId, string kind, TryMakeReminderEntryDisplay makeDisplay)
@@ -469,7 +470,7 @@ public static class ReminderEntryFactory
         SDUISprite displaySprite = GoalMonsterSlayerContext.GetMonsterDisplaySprite(slayerQuestData);
 
         entryDisplay = new ReminderEntryDisplay(
-            TokenParser.ParseText(slayerQuestData.DisplayName) ?? entryId,
+            I18n.Reminder_Verb_Slay(TokenParser.ParseText(slayerQuestData.DisplayName) ?? entryId),
             displaySprite.Texture,
             displaySprite.SourceRect ?? displaySprite.Texture.Bounds,
             Count: slayerQuestData.Count
@@ -479,6 +480,32 @@ public static class ReminderEntryFactory
                         return count;
                     return 0;
                 })
+        );
+
+        return true;
+    }
+
+    private static bool FriendsMade_GetReminderEntryDisplay(
+        string entryId,
+        [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
+    )
+    {
+        entryDisplay = null;
+
+        if (!NPCInfoCache.Cache.TryGetValue(entryId, out NPCInfo? npcInfo))
+        {
+            return false;
+        }
+        if (npcInfo.GetMugShot() is not SDUISprite mugshot)
+        {
+            return false;
+        }
+
+        Rectangle sourceRect = mugshot.SourceRect ?? mugshot.Texture.Bounds;
+        entryDisplay = new ReminderEntryDisplay(
+            I18n.Reminder_Verb_Friend(TokenParser.ParseText(npcInfo.Data.DisplayName) ?? entryId),
+            mugshot.Texture,
+            new(sourceRect.X, sourceRect.Y + 4, sourceRect.Width, sourceRect.Width)
         );
 
         return true;

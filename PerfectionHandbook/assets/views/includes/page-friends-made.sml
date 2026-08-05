@@ -7,7 +7,8 @@
         focusable="true"
         background={@Mods/StardewUI/Sprites/ShopEntryBorder}
         screen-read={ScreenRead}
-        hovered-subject={:NpcInfo.Chara}>
+        hovered-subject={:NpcInfo.Chara}
+        left-click=|ToggleReminder()|>
         <panel vertical-content-alignment="End">
           <lane orientation="Horizontal" vertical-content-alignment="Middle">
             <image layout="64px 80px"
@@ -28,6 +29,7 @@
               </frame>
             </lane>
           </lane>
+          <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="4,0,0,44" />
         </panel>
       </frame>
     </grid>

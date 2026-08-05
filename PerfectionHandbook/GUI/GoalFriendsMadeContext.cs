@@ -34,7 +34,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 
     public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
-    public ReminderEntry? Reminder => throw new NotImplementedException();
+    public ReminderEntry? Reminder { get; } = new ReminderEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
 
@@ -50,6 +50,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
         else
             CurrentFriendship = null;
     }
+
+    public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
 }
 
 public sealed class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
