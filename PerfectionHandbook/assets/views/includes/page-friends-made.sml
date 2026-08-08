@@ -20,7 +20,7 @@
               tint={:DisplayTint}/>
             <lane orientation="Vertical" margin="0,0,12,0" >
               <label layout="stretch content" margin="4,0,0,8" font="small" text={:DisplayName} max-lines="1" shadow-alpha="0.8"/>
-              <frame layout="100% 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} focusable="true">
+              <frame layout="100% 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                 <panel layout="100% stretch" vertical-content-alignment="End">
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>

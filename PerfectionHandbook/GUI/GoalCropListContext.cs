@@ -362,20 +362,9 @@ public sealed partial record CropDisplay(
     CropDetailDisplaySettings CropCalendarSettings
 ) : ItemShippedDisplay(Info, OwnedCount, NeededCount)
 {
-    public override bool Needed => completedCount <= NeededCount;
+    public string ViewName => $"crop-{Info.Datum.QualifiedItemId}";
 
-    public Color BorderTint
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(new(nameof(BorderTint)));
-            }
-        }
-    }
+    public override bool Needed => completedCount <= NeededCount;
 
     public CropDetailDisplay CropDetail => field ??= new(Info, CropCalendarSettings);
 
@@ -439,41 +428,6 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
         cropCalendarSettings.UseAgriculturist = fulfillment.Who?.professions.Contains(Farmer.agriculturist) ?? false;
     }
 
-    public void ToggleHoverable(CropDisplay display)
-    {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            display.ToggleReminder();
-            return;
-        }
-        if (Hoverable)
-        {
-            Hoverable = false;
-            base.HoveredEnter(display);
-            Hovered?.BorderTint = Color.White;
-        }
-        else
-        {
-            if (display == Hovered)
-            {
-                Hoverable = true;
-                Hovered?.BorderTint = Color.Transparent;
-            }
-            else
-            {
-                Hovered?.BorderTint = Color.Transparent;
-                base.HoveredEnter(display);
-                Hovered?.BorderTint = Color.White;
-            }
-        }
-    }
-
-    public override void HoveredEnter(CropDisplay display)
-    {
-        if (Hoverable)
-            base.HoveredEnter(display);
-    }
-
     private readonly CropDetailDisplaySettings cropCalendarSettings = new();
 
     protected override CropDisplay MakeDisplay(ItemInfo itemInfo, int ownedCount) =>
@@ -488,4 +442,33 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
             },
             cropCalendarSettings
         );
+
+    public void ToggleHoverable(CropDisplay display)
+    {
+        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        {
+            display.ToggleReminder();
+            return;
+        }
+        HoveredClick(display);
+    }
+
+    public override void LockHoverable(CropDisplay display)
+    {
+        base.LockHoverable(display);
+        MenuHandler.Handbook_FocusOnTaggedView("side-panel-title");
+    }
+
+    public override void UnlockHoverable(CropDisplay display)
+    {
+        base.UnlockHoverable(display);
+        MenuHandler.Handbook_FocusOnTaggedView(display.ViewName);
+    }
+
+    public override bool TryOpenPage()
+    {
+        if (FilteredDisplayPaginated.Count > 0)
+            DoHoveredEnter(FilteredDisplayPaginated[0]);
+        return base.TryOpenPage();
+    }
 }

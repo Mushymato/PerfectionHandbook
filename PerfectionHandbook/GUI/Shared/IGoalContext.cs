@@ -12,6 +12,6 @@ public interface IGoalContext
     public string SummaryText { get; }
     string DisplayName { get; }
     ParsedItemData DisplayIcon { get; }
-    public object? PageCtx { get; }
+    public IPageContext? PageCtx { get; }
     public IReadOnlyList<GoalFulfillment> Fulfillments { get; }
 }

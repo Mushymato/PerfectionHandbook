@@ -6,7 +6,7 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public abstract partial class AbstractPageListContext<TDisplay>
+public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     where TDisplay : IPageDisplayEntry
 {
     public readonly IGoalContext GoalCtx;
@@ -213,4 +213,8 @@ public abstract partial class AbstractPageListContext<TDisplay>
             return filtered.GetRange(startIdx, nextPageSize);
         }
     }
+
+    public virtual bool TryOpenPage() => true;
+
+    public virtual bool TryExitPage() => true;
 }

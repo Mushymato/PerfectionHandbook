@@ -37,7 +37,7 @@ public sealed record GoalContext(
     }
 
     public string PageName => Goal.GetType().Name;
-    public object? PageCtx => field ??= Goal.GetPageContext(this);
+    public IPageContext? PageCtx => field ??= Goal.GetPageContext(this);
     public string DisplayName => Goal.DisplayName;
     public ParsedItemData DisplayIcon => Goal.DisplayIcon;
 }

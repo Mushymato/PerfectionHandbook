@@ -24,6 +24,8 @@ public static class MenuHandler
     );
     internal static RemindersHUD Reminders => reminders.Value;
 
+    internal static readonly PerScreen<WeakReference<IMenuController?>> handbookCtrl = new(static () => new(null));
+
     public static void Setup()
     {
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
@@ -59,6 +61,20 @@ public static class MenuHandler
         menuCtrl.CloseAction = context.CloseAction;
         menuCtrl.EnableCloseButton();
         Game1.activeClickableMenu = menuCtrl.Menu;
+        handbookCtrl.Value.SetTarget(menuCtrl);
+    }
+
+    public static bool Handbook_FocusOnTaggedView(string name)
+    {
+        if (!Game1.options.gamepadControls)
+        {
+            return false;
+        }
+        if (handbookCtrl.Value.TryGetTarget(out IMenuController? menuCtrl) && menuCtrl != null)
+        {
+            return menuCtrl.FocusOnTaggedView(name);
+        }
+        return false;
     }
 
     public static void ExportCard(HandbookContext context, string exportPath)

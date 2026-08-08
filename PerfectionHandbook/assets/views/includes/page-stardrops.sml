@@ -5,6 +5,7 @@
         layout="stretch content"
         padding="12"
         focusable="true"
+        screen-read={:Description}
         background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
         <lane vertical-content-alignment="Middle">
           <image sprite={:^GoalCtx.DisplayIcon} layout="48px 48px" margin="6" />

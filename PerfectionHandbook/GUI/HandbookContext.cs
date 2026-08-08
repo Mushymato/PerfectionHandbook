@@ -98,8 +98,11 @@ public sealed partial class HandbookContext
 
     public void ChangePage(IGoalContext ctx)
     {
-        if (ctx.PageCtx != null)
+        if (ctx.PageCtx?.TryOpenPage() ?? false)
+        {
+            SelectedCtx?.PageCtx?.TryExitPage();
             SelectedCtx = ctx;
+        }
     }
 
     private static readonly string exportDir = Path.Combine(ModEntry.help.DirectoryPath, "cards");
@@ -138,7 +141,10 @@ public sealed partial class HandbookContext
     {
         if (SelectedCtx != null)
         {
-            SelectedCtx = null;
+            if (SelectedCtx.PageCtx is IPageContext ctx && ctx.TryExitPage())
+            {
+                SelectedCtx = null;
+            }
         }
         else
         {

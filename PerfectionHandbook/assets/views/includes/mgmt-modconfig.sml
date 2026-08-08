@@ -61,7 +61,7 @@
     font="dialogue"
     margin="0,8,16,0"
     text={#ui.reset}
-    left-click=|Reset()|
+    left-click=|ResetConfigsToDefault()|
   />
 </panel>
 

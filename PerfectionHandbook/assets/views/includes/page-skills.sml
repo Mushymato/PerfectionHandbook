@@ -4,7 +4,8 @@
       <frame *repeat={FilteredDisplayPaginated}
         layout="100% content"
         border-thickness="12"
-        border={@Mods/StardewUI/Sprites/ShopEntryBorder}>
+        border={@Mods/StardewUI/Sprites/ShopEntryBorder}
+        focusable="true">
         <lane orientation="Vertical">
           <lane padding="4,4,4,0" orientation="Horizontal" layout="content content" vertical-content-alignment="Middle">
             <image sprite={:SkillIcon} margin="8" layout="64px 64px" />
@@ -23,7 +24,7 @@
               </lane>
             </panel>
           </lane>
-          <frame layout="100% 28px" margin="8,4,8,8" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} focusable="true" screen-read={SkillCountDisplay}>
+          <frame layout="100% 28px" margin="8,4,8,8" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} screen-read={SkillCountDisplay}>
             <panel layout="100% stretch" vertical-content-alignment="End">
               <image
                 sprite={@Mods/StardewUI/Sprites/White}

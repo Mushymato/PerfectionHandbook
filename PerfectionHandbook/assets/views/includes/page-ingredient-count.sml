@@ -15,11 +15,11 @@
           vertical-content-alignment="End"
           left-click=|ToggleReminder()|
           pointer-enter=|^HoveredEnter(this)|
-          screen-read={ScreenRead}>
+          screen-read={ScreenRead}
+          tooltip={Tooltip}
+          hovered-subject={:ReprItem}>
           <panel layout="96px 64px" margin="0,8,0,4">
             <image sprite={:NeededFor.Repr}
-              tooltip={Tooltip}
-              hovered-subject={:ReprItem}
               tint={DisplayTint}
               shadow-alpha={DisplayShadow}
               scale={DisplayScale}

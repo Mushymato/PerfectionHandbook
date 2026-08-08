@@ -10,7 +10,7 @@
           <image layout="content 384px" fit="None" horizontal-alignment="middle" vertical-alignment="end" sprite={:Sprite} tint={:DisplayTint}/>
           <panel horizontal-content-alignment="Middle">
             <image *if={:HasShadow} layout={:ShadowLayout} fit="None" sprite={@mushymato.PerfectionHandbook/sprites/cursors:buildingShadow} tint={:DisplayTint}/>
-            <label horizontal-alignment="middle"  layout="128px content" focusable="true" font="dialogue" text={:DisplayName} shadow-alpha="0.8" max-lines="2"/>
+            <label horizontal-alignment="middle"  layout="128px content" font="dialogue" text={:DisplayName} shadow-alpha="0.8" max-lines="2"/>
             <panel *context={:Reminder} layout="stretch stretch" vertical-content-alignment="Middle">
               <image *if={Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="-24,0,0,0" />
             </panel>

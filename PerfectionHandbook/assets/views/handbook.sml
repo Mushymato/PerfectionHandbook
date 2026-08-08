@@ -41,44 +41,38 @@
     <banner margin="10,16" text={#ui.title.achievements}/>
     <goal-grid goals={:AchievementGoals}/>
   </lane>
-  <lane *!case="Main" layout="stretch stretch" orientation="vertical">
-    <include *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
-    <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
-      <!-- Perfection_ItemShipped -->
-      <include *case="Perfection_ItemShipped" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
-      <!-- Perfection_RecipesCooked -->
-      <include *case="Perfection_RecipesCooked" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
-      <!-- Perfection_RecipesCrafted -->
-      <include *case="Perfection_RecipesCrafted" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
-      <!-- Perfection_FishCaught -->
-      <include *case="Perfection_FishCaught" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-fish-list" />
-      <!-- Perfection_MonsterSlayered -->
-      <include *case="Perfection_MonsterSlayered" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-monster-slayer" />
-      <!-- Perfection_BestFriendsMade -->
-      <include *case="Perfection_BestFriendsMade" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-friends-made" />
-      <!-- Perfection_SkillLeveled -->
-      <include *case="Perfection_SkillLeveled" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-skills" />
-      <!-- Perfection_BuildingsConstructed -->
-      <include *case="Perfection_BuildingsConstructed" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-buildings" />
-      <!-- Perfection_StardropsFound -->
-      <include *case="Perfection_StardropsFound" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-stardrops" />
-      <!-- Perfection_GoldenWalnutsFound -->
-      <include *case="Perfection_GoldenWalnutsFound" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-golden-walnuts" />
-      <!-- Achievement_CommunityCenter -->
-      <include *case="Achievement_CommunityCenter" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-community-center" />
-      <!-- Achievement_Museum -->
-      <include *case="Achievement_Museum" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-item-count" />
-      <!-- Achievement_Polyculture -->
-      <include *case="Achievement_Polyculture" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
-      <!-- Achievement_Monoculture -->
-      <include *case="Achievement_Monoculture" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
-      <!-- Misc_Mod_Config -->
-      <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
-      <!-- Misc_Crop_Calendar -->
-      <include *case="Misc_Crop_Calendar" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-crop-calendar" />
-      <!-- Misc_Required_Ingredients -->
-      <include *case="Misc_Required_Ingredients" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/page-ingredient-count" />
-  </lane>
+  <!-- Perfection_ItemShipped -->
+  <infobar-page page-name="Perfection_ItemShipped" page-include="mushymato.PerfectionHandbook/views/includes/page-item-count"/>
+  <!-- Perfection_RecipesCooked -->
+  <infobar-page page-name="Perfection_RecipesCooked" page-include="mushymato.PerfectionHandbook/views/includes/page-item-count"/>
+  <!-- Perfection_RecipesCrafted -->
+  <infobar-page page-name="Perfection_RecipesCrafted" page-include="mushymato.PerfectionHandbook/views/includes/page-item-count"/>
+  <!-- Perfection_FishCaught -->
+  <infobar-page page-name="Perfection_FishCaught" page-include="mushymato.PerfectionHandbook/views/includes/page-fish-list"/>
+  <!-- Perfection_MonsterSlayered -->
+  <infobar-page page-name="Perfection_MonsterSlayered" page-include="mushymato.PerfectionHandbook/views/includes/page-monster-slayer"/>
+  <!-- Perfection_BestFriendsMade -->
+  <infobar-page page-name="Perfection_BestFriendsMade" page-include="mushymato.PerfectionHandbook/views/includes/page-friends-made"/>
+  <!-- Perfection_BuildingsConstructed -->
+  <infobar-page page-name="Perfection_BuildingsConstructed" page-include="mushymato.PerfectionHandbook/views/includes/page-buildings"/>
+  <!-- Perfection_StardropsFound -->
+  <infobar-page page-name="Perfection_StardropsFound" page-include="mushymato.PerfectionHandbook/views/includes/page-stardrops"/>
+  <!-- Perfection_GoldenWalnutsFound -->
+  <infobar-page page-name="Perfection_GoldenWalnutsFound" page-include="mushymato.PerfectionHandbook/views/includes/page-golden-walnuts"/>
+  <!-- Achievement_CommunityCenter -->
+  <infobar-page page-name="Achievement_CommunityCenter" page-include="mushymato.PerfectionHandbook/views/includes/page-community-center"/>
+  <!-- Achievement_Museum -->
+  <infobar-page page-name="Achievement_Museum" page-include="mushymato.PerfectionHandbook/views/includes/page-item-count"/>
+  <!-- Achievement_Polyculture -->
+  <infobar-page page-name="Achievement_Polyculture" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
+  <!-- Achievement_Monoculture -->
+  <infobar-page page-name="Achievement_Monoculture" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
+  <!-- Misc_Mod_Config -->
+  <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
+  <!-- Misc_Crop_Calendar -->
+  <infobar-page page-name="Misc_Crop_Calendar" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
+  <!-- Misc_Required_Ingredients -->
+  <infobar-page page-name="Misc_Required_Ingredients" page-include="mushymato.PerfectionHandbook/views/includes/page-ingredient-count"/>
 </frame>
 
 <template name="goal-grid">
@@ -102,4 +96,12 @@
       </panel>
     </button>
   </grid>
+</template>
+
+<template name="infobar-page">
+  <lane *case={&page-name} *context={:SelectedCtx.PageCtx} layout="stretch stretch" orientation="vertical">
+    <include name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
+    <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
+    <include name={&page-include} />
+  </lane>
 </template>

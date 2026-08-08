@@ -6,7 +6,7 @@ using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
 using StardewModdingAPI.Utilities;
 
-internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChanged
+internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChanged, IPageContext
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -106,7 +106,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
 
     public RemindersContext RemindersHUDCtx => MenuHandler.Reminders.ctx;
 
-    public void Reset()
+    public void ResetConfigsToDefault()
     {
         ModConfig defaultConfig = new();
 
@@ -118,4 +118,8 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         RemindersEditModifierKey = defaultConfig.RemindersEditModifierKey;
         RemindersHUDPosition = defaultConfig.RemindersHUDPosition;
     }
+
+    public bool TryOpenPage() => true;
+
+    public bool TryExitPage() => true;
 }

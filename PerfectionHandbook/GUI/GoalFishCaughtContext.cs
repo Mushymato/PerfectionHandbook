@@ -4,11 +4,11 @@ using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
+using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData.Locations;
 using StardewValley.ItemTypeDefinitions;
-using StardewValley.Objects;
 
 namespace PerfectionHandbook.GUI;
 
@@ -221,6 +221,8 @@ public sealed record CatchInDisplay(
 
 public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
+    public string ViewName => $"fish-{Info.Datum.QualifiedItemId}";
+
     public override bool Needed => Count < 0;
     private int biggestCatch = 0;
     public IReadOnlyList<CatchInDisplay> CanCatchIn { get; set; } = [];
@@ -275,19 +277,6 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 
     public override ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
-
-    public Color BorderTint
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged(new(nameof(BorderTint)));
-            }
-        }
-    }
 }
 
 public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
@@ -388,25 +377,25 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
             display.ToggleReminder();
             return;
         }
-        if (Hoverable)
-        {
-            Hoverable = false;
-            base.HoveredEnter(display);
-            Hovered?.BorderTint = Color.White;
-        }
-        else
-        {
-            if (display == Hovered)
-            {
-                Hoverable = true;
-                Hovered?.BorderTint = Color.Transparent;
-            }
-            else
-            {
-                Hovered?.BorderTint = Color.Transparent;
-                base.HoveredEnter(display);
-                Hovered?.BorderTint = Color.White;
-            }
-        }
+        HoveredClick(display);
+    }
+
+    public override void LockHoverable(FishCaughtDisplay display)
+    {
+        base.LockHoverable(display);
+        MenuHandler.Handbook_FocusOnTaggedView("side-panel-title");
+    }
+
+    public override void UnlockHoverable(FishCaughtDisplay display)
+    {
+        base.UnlockHoverable(display);
+        MenuHandler.Handbook_FocusOnTaggedView(display.ViewName);
+    }
+
+    public override bool TryOpenPage()
+    {
+        if (FilteredDisplayPaginated.Count > 0)
+            DoHoveredEnter(FilteredDisplayPaginated[0]);
+        return base.TryOpenPage();
     }
 }

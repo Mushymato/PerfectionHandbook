@@ -2,6 +2,13 @@
   <!-- Crop Calendar -->
   <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
     <lane orientation="Vertical" layout="100% content">
+      <banner focusable-tag="side-panel-title"
+        focusable="true"
+        background={@Mods/StardewUI/Sprites/BannerBackground}
+        background-border-thickness="24,0"
+        margin="0,4,-8,4"
+        padding="0,12"
+        text={:Seed.DisplayName} />
       <lane *context={:Settings} margin="4" vertical-content-alignment="Middle">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
           <segments highlight={@Mods/StardewUI/Sprites/White}
@@ -101,11 +108,6 @@
         </frame>
       </grid>
     </lane>
-    <banner background={@Mods/StardewUI/Sprites/BannerBackground}
-      background-border-thickness="24,0"
-      margin="0,4,-8,4"
-      padding="0,12"
-      text={:Seed.DisplayName} />
   </lane>
   <!-- Divider -->
   <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" fit="Stretch"/>
@@ -117,19 +119,20 @@
     z-index="2">
     <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content">
       <frame *repeat={FilteredDisplayPaginated}
+        focusable-tag={:ViewName}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
         border-thickness="10"
         layout="64px 64px"
         border-tint={BorderTint}
-        focusable="true">
+        focusable="true"
+        left-click=|^ToggleHoverable(this)|
+        pointer-enter=|^HoveredEnter(this)|
+        tooltip={Tooltip}
+        hovered-subject={:ReprItem}>
         <panel
           horizontal-content-alignment="End"
-          vertical-content-alignment="End"
-          left-click=|^ToggleHoverable(this)|
-          pointer-enter=|^HoveredEnter(this)|>
+          vertical-content-alignment="End">
           <image sprite={:Info.Datum}
-            tooltip={Tooltip}
-            hovered-subject={:ReprItem}
             tint={DisplayTint}
             shadow-alpha={DisplayShadow}
             scale={DisplayScale}

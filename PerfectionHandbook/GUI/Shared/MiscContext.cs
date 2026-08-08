@@ -11,10 +11,10 @@ public sealed record MiscContext(
     string DisplayName,
     ParsedItemData DisplayIcon,
     string SummaryText,
-    Func<IGoalContext, object?> GetPageCtx
+    Func<IGoalContext, IPageContext?> GetPageCtx
 ) : IGoalContext
 {
     private static readonly IReadOnlyList<GoalFulfillment> Empty = [];
-    public object? PageCtx => GetPageCtx(this);
+    public IPageContext? PageCtx => GetPageCtx(this);
     public IReadOnlyList<GoalFulfillment> Fulfillments => Empty;
 }

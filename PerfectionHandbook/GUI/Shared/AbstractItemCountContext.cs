@@ -33,7 +33,12 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     [Notify]
     private bool isHovered = false;
 
+    [Notify]
+    private bool isLocked = false;
+
     public float DisplayScale => IsHovered ? 1.1f : 1f;
+
+    public Color BorderTint => IsHovered && IsLocked ? Color.White : Color.Transparent;
 
     public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
@@ -161,11 +166,44 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         }
     }
 
+    public virtual void HoveredClick(TDisplay display)
+    {
+        if (Hoverable)
+        {
+            DoHoveredEnter(display);
+            LockHoverable(display);
+        }
+        else
+        {
+            if (display == Hovered)
+            {
+                UnlockHoverable(display);
+            }
+            else
+            {
+                DoHoveredEnter(display);
+                LockHoverable(display);
+            }
+        }
+    }
+
     protected void DoHoveredEnter(TDisplay display)
     {
         Hovered?.IsHovered = false;
         Hovered = display;
         display.IsHovered = true;
+    }
+
+    public virtual void LockHoverable(TDisplay display)
+    {
+        Hoverable = false;
+        display.IsLocked = true;
+    }
+
+    public virtual void UnlockHoverable(TDisplay display)
+    {
+        Hoverable = true;
+        display.IsLocked = false;
     }
 
     public virtual string CompleteCountToggleText => string.Empty;
@@ -201,5 +239,24 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         {
             ReSortFilteredDisplay();
         }
+    }
+
+    public override bool TryOpenPage()
+    {
+        return base.TryOpenPage();
+    }
+
+    public override bool TryExitPage()
+    {
+        if (Hovered != null)
+        {
+            bool locked = Hovered.IsLocked;
+            UnlockHoverable(Hovered);
+            Hovered.IsHovered = false;
+            Hoverable = true;
+            Hovered = null;
+            return !locked;
+        }
+        return base.TryExitPage();
     }
 }

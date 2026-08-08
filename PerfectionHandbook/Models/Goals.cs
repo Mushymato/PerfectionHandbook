@@ -49,7 +49,7 @@ public interface IGoal
     string DisplayName { get; }
     ParsedItemData DisplayIcon { get; }
     GoalFulfillment GetFulfillment(Farmer who);
-    object? GetPageContext(GoalContext goalCtx);
+    IPageContext? GetPageContext(GoalContext goalCtx);
 }
 
 public interface IPerfectionGoal : IGoal
@@ -83,7 +83,7 @@ public static class Goals
             return new(who, count, total);
         }
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalItemShippedContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalItemShippedContext(goalCtx);
     }
 
     public sealed class Perfection_BuildingsConstructed : IPerfectionGoal
@@ -92,7 +92,7 @@ public static class Goals
             Math.Min(Utility.GetObeliskTypesBuilt(), 4) * 1f + (Game1.IsBuildingConstructed("Gold Clock") ? 10 : 0);
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalBuildingsConstructedContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalBuildingsConstructedContext(goalCtx);
 
         public string DisplayName => I18n.Ui_Goals_BuildingsConstructed();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)688");
@@ -112,7 +112,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalMonsterSlayerContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalMonsterSlayerContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_MonsterSlayer");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)767");
@@ -146,7 +146,7 @@ public static class Goals
         public float PercentWeight => 11f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalFriendsMadeContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalFriendsMadeContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GreatFriends");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)StardropTea");
@@ -176,7 +176,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalSkillLeveledContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalSkillLeveledContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_FarmerLevel");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)PurpleBook");
@@ -189,7 +189,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalStardropsFoundContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalStardropsFoundContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Stardrops");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)434");
@@ -205,7 +205,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, true);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, true);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Cooking");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)201");
@@ -237,7 +237,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, false);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalRecipesContext(goalCtx, false);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Crafting");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)621");
@@ -265,7 +265,7 @@ public static class Goals
         public float PercentWeight => 10f;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalFishCaughtContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalFishCaughtContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_Fish");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)130");
@@ -293,7 +293,7 @@ public static class Goals
         public float PercentWeight => 5f;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalGoldenWalnutsFoundContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalGoldenWalnutsFoundContext(goalCtx);
 
         public string DisplayName => Game1.content.LoadString("Strings\\UI:PT_GoldenWalnut");
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)73");
@@ -330,7 +330,7 @@ public static class Goals
 
         public string DisplayName => Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11117");
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalCommunityCenterContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalCommunityCenterContext(goalCtx);
 
         public ParsedItemData DisplayIcon => IsJoja ? ItemRegistry.GetData("(O)167") : ItemRegistry.GetData("(F)1760");
 
@@ -366,7 +366,7 @@ public static class Goals
         public readonly int AchievementId = 5;
         public bool IsShared => true;
 
-        public object? GetPageContext(GoalContext goalCtx) => new GoalMuseumDonateContext(goalCtx);
+        public IPageContext? GetPageContext(GoalContext goalCtx) => new GoalMuseumDonateContext(goalCtx);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
         public ParsedItemData DisplayIcon => ItemRegistry.GetDataOrErrorItem("(O)587");
@@ -380,7 +380,7 @@ public static class Goals
         public readonly int AchievementId = 31;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) =>
+        public IPageContext? GetPageContext(GoalContext goalCtx) =>
             new GoalCropListContext(goalCtx, CropListKind.Polyculture);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
@@ -410,7 +410,7 @@ public static class Goals
         public readonly int AchievementId = 32;
         public bool IsShared => false;
 
-        public object? GetPageContext(GoalContext goalCtx) =>
+        public IPageContext? GetPageContext(GoalContext goalCtx) =>
             new GoalCropListContext(goalCtx, CropListKind.Monoculture);
 
         public string DisplayName => Game1.achievements[AchievementId].Split('^').First();
