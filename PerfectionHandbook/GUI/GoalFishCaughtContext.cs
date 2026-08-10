@@ -372,11 +372,8 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
 
     public void ToggleHoverable(FishCaughtDisplay display)
     {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            display.ToggleReminder();
+        if (display.ToggleReminder())
             return;
-        }
         HoveredClick(display);
     }
 

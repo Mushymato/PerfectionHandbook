@@ -53,6 +53,8 @@
   <infobar-page page-name="Perfection_MonsterSlayered" page-include="mushymato.PerfectionHandbook/views/includes/page-monster-slayer"/>
   <!-- Perfection_BestFriendsMade -->
   <infobar-page page-name="Perfection_BestFriendsMade" page-include="mushymato.PerfectionHandbook/views/includes/page-friends-made"/>
+  <!-- Perfection_SkillLeveled -->
+  <infobar-page page-name="Perfection_SkillLeveled" page-include="mushymato.PerfectionHandbook/views/includes/page-skills"/>
   <!-- Perfection_BuildingsConstructed -->
   <infobar-page page-name="Perfection_BuildingsConstructed" page-include="mushymato.PerfectionHandbook/views/includes/page-buildings"/>
   <!-- Perfection_StardropsFound -->

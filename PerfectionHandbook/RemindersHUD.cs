@@ -33,14 +33,14 @@ public sealed class RemindersHUD
 
     public void RemoveEntry(ReminderEntry entry) => ctx.RemoveEntry(entry);
 
-    public void ToggleEntryKeyChecked(ReminderEntry? entry)
+    public bool ToggleEntryKeyChecked(ReminderEntry? entry)
     {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
+        if (entry != null && ModEntry.config.RemindersEditModifierKey.IsDown())
         {
-            if (entry == null)
-                return;
             MenuHandler.Reminders.ToggleEntry(entry);
+            return true;
         }
+        return false;
     }
 
     public ReminderEntry? GetEntry(string kind, string entryId, string fromMod = ModEntry.ModId) =>

@@ -1,25 +1,70 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Delegates;
 using StardewValley.GameData.Locations;
 using StardewValley.ItemTypeDefinitions;
 
 namespace PerfectionHandbook.Models;
 
-public sealed record EventInfo(
-    string LocationId,
-    string EventId,
-    string[] Preconditions,
-    string[] Commands,
-    string[] Actors
+public sealed record EventPreconditionInfo(
+    string Precond,
+    bool Negated,
+    string[] Args,
+    EventPreconditionDelegate Handler
 )
 {
-    public static bool TryParse(string locationId, string key, string script, [NotNullWhen(true)] out EventInfo? info)
+    public readonly string DisplayText = $"{(Negated ? '!' : "")}{Handler.Method.Name}:{FormArgDesc(Args, Handler)}";
+
+    private static string FormArgDesc(string[] args, EventPreconditionDelegate handler)
+    {
+        StringBuilder sb = new();
+        IReadOnlyList<string> tryGetPairs = DelegateInspector.ExtractTryGetPairs(handler);
+        for (int i = 1; i < args.Length; i++)
+        {
+            sb.Append(' ');
+            sb.Append(args[i]);
+            if (tryGetPairs.Count > i && !string.IsNullOrEmpty(tryGetPairs[i]))
+            {
+                sb.Append('(');
+                sb.Append(tryGetPairs[i]);
+                sb.Append(')');
+            }
+        }
+        return sb.ToString();
+    }
+}
+
+public sealed record EventInfo(
+    string EventId,
+    EventPreconditionInfo[] Preconditions,
+    string[] Commands,
+    string[] Actors,
+    string LocationId,
+    string LocationName,
+    string EventKey
+)
+{
+    public readonly string HeaderText = $"[{EventId}] @ {LocationName}";
+
+    public static bool TryParse(
+        string locationId,
+        string locationName,
+        string key,
+        string script,
+        [NotNullWhen(true)] out EventInfo? info
+    )
     {
         info = null;
 
         string[] idPrecond = Event.SplitPreconditions(key);
+        string eventId = idPrecond[0];
+        if (!TryNormalizePrecond(idPrecond.Skip(1), out EventPreconditionInfo[]? preconds))
+        {
+            return false;
+        }
         string[] commands = Event.ParseCommands(script);
         List<string> actors = [];
 
@@ -54,8 +99,35 @@ public sealed record EventInfo(
             }
         }
 
-        info = new(locationId, idPrecond[0], idPrecond.Skip(1).ToArray(), commands, actors.ToArray());
+        info = new(eventId, preconds, commands, actors.ToArray(), locationId, locationName, key);
         return true;
+
+        static bool TryNormalizePrecond(
+            IEnumerable<string> preconds,
+            [NotNullWhen(true)] out EventPreconditionInfo[]? normalized
+        )
+        {
+            normalized = null;
+            List<EventPreconditionInfo> normalizedList = [];
+            foreach (string precond in preconds)
+            {
+                string[] parts = ArgUtility.SplitBySpaceQuoteAware(precond);
+                string realPrecond = parts[0];
+                bool negated = false;
+                if (realPrecond.StartsWith('!'))
+                {
+                    realPrecond = realPrecond[1..];
+                    negated = true;
+                }
+                if (!Event.TryGetPreconditionHandler(realPrecond, out EventPreconditionDelegate handler))
+                {
+                    return false;
+                }
+                normalizedList.Add(new(realPrecond, negated, parts, handler));
+            }
+            normalized = normalizedList.ToArray();
+            return true;
+        }
     }
 }
 
@@ -136,7 +208,15 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             Dictionary<string, EventInfo>? eventsInfo = [];
             foreach ((string key, string commands) in events)
             {
-                if (EventInfo.TryParse(LocationId, key, commands, out EventInfo? info))
+                if (
+                    EventInfo.TryParse(
+                        LocationId,
+                        Location.DisplayName ?? LocationId,
+                        key,
+                        commands,
+                        out EventInfo? info
+                    )
+                )
                 {
                     eventsInfo[info.EventId] = info;
                 }

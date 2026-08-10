@@ -82,7 +82,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual bool SearchMatch(string txt) => Info.SearchMatch(txt);
 
-    public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
+    public bool ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
 }
 
 public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageListContext<TDisplay>

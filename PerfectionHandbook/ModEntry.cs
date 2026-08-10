@@ -7,6 +7,7 @@ using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Delegates;
 
 namespace PerfectionHandbook;
 
@@ -69,16 +70,13 @@ public sealed class ModEntry : Mod
             static (cmd, args) => Game1.currentLocation?.ShowQiCat()
         );
         help.ConsoleCommands.Add(
-            "ph-export",
-            "Export handbook png",
+            "ph-card",
+            "Export handbook card png",
             static (cmd, args) =>
             {
                 if (!Context.IsWorldReady)
                     return;
-                MenuHandler.ExportCard(
-                    new(Game1.player),
-                    Path.Combine(ModEntry.help.DirectoryPath, $"{Game1.player.displayName}-{Game1.player.farmName}.png")
-                );
+                MenuHandler.ExportCard(new(Game1.player), Path.Combine(help.DirectoryPath, "testcard.png"));
             }
         );
 #if DEBUG
@@ -86,6 +84,22 @@ public sealed class ModEntry : Mod
             "ph-invalidate",
             "Invalidate some asset",
             static (cmd, args) => help.GameContent.InvalidateCache(args[0])
+        );
+        help.ConsoleCommands.Add(
+            "ph-tryget",
+            "Test tryget extraction",
+            static (cmd, args) =>
+            {
+                if (Event.TryGetPreconditionHandler("Dating", out EventPreconditionDelegate handler))
+                {
+                    int idx = 0;
+                    foreach (string name in DelegateInspector.ExtractTryGetPairs(handler))
+                    {
+                        Log($"{idx}: {name}");
+                        idx++;
+                    }
+                }
+            }
         );
 #endif
     }
@@ -107,8 +121,8 @@ public sealed class ModEntry : Mod
 
     private static void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
     {
-        MenuHandler.PreloadHandbook();
         help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
+        MenuHandler.PreloadHandbook();
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

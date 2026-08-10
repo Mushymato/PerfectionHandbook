@@ -10,22 +10,20 @@ using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
+public sealed partial record EventInfoDisplay(EventInfo Info)
+{
+    [Notify]
+    private bool hasSeen = false;
+
+    [Notify]
+    private bool isExpanded = false;
+}
+
 public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 {
     [Notify]
-    private bool isHovered = false;
-
-    [Notify]
     private Friendship? currentFriendship = null;
-    public Color DisplayTint
-    {
-        get
-        {
-            if (CurrentFriendship == null)
-                return HandbookContext.InactiveColor;
-            return HandbookContext.ActiveColor;
-        }
-    }
+    public Color DisplayTint => CurrentFriendship == null ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
     public bool Needed => CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints;
     public float FriendshipFill =>
         100f * MathF.Min(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints) / NpcInfo.MaxPoints;
@@ -40,6 +38,10 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     public ReminderEntry? Reminder { get; } = new ReminderEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
+    public readonly IReadOnlyList<EventInfoDisplay> EventDisplays = NpcInfo
+        .Events.Values.OrderBy(ei => ei.LocationName)
+        .Select(ei => new EventInfoDisplay(ei))
+        .ToList();
 
     public bool SearchMatch(string txt)
     {
@@ -52,23 +54,17 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
             CurrentFriendship = friendship;
         else
             CurrentFriendship = null;
-    }
-
-    public void ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
-
-    public IEnumerable<string> DebugEvents
-    {
-        get
+        foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
-            foreach ((string key, EventInfo info) in NpcInfo.Events)
-            {
-                yield return $"{key} | {string.Join(' ', info.Preconditions)}";
-            }
+            eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
         }
     }
+
+    public bool ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
 }
 
-public partial class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
+public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
+    : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
 {
     public override bool HasSortModes => true;
     protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];
@@ -115,12 +111,24 @@ public partial class GoalFriendsMadeContext(IGoalContext goalCtx) : AbstractPage
     }
 
     [Notify]
-    protected FriendsMadeDisplay? hovered = null;
+    private FriendsMadeDisplay? selected = null;
 
-    public virtual void HoveredEnter(FriendsMadeDisplay display)
+    public bool InEventPage => Selected != null;
+
+    public void HandleLeftClick(FriendsMadeDisplay display)
     {
-        Hovered?.IsHovered = false;
-        Hovered = display;
-        display.IsHovered = true;
+        if (display.ToggleReminder())
+            return;
+        Selected = display;
+    }
+
+    public override bool TryExitPage()
+    {
+        if (Selected != null)
+        {
+            Selected = null;
+            return false;
+        }
+        return base.TryExitPage();
     }
 }

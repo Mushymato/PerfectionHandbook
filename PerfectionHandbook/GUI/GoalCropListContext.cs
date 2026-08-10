@@ -445,11 +445,8 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     public void ToggleHoverable(CropDisplay display)
     {
-        if (ModEntry.config.RemindersEditModifierKey.IsDown())
-        {
-            display.ToggleReminder();
+        if (display.ToggleReminder())
             return;
-        }
         HoveredClick(display);
     }
 
