@@ -6,6 +6,8 @@ using StardewValley.Delegates;
 
 namespace PerfectionHandbook.Models;
 
+public sealed record ArgGetInfo(IReadOnlyList<string> FixedIndex, IReadOnlyList<(int, int, string)> LoopIndex);
+
 public static class DelegateInspector
 {
     public static readonly IReadOnlyList<MethodInfo> ArgUtilityTryGetters = GetArgUtilityTryGetters();
@@ -18,56 +20,69 @@ public static class DelegateInspector
             ParameterInfo[] parameterInfo = methodInfo.GetParameters();
             if (parameterInfo.Length < 3)
                 continue;
+            ParameterInfo firstParam = parameterInfo[0];
+            if (firstParam.Name != "array")
+                continue;
+            Type firstParamType = firstParam.GetType();
+            if (firstParamType.IsGenericType) { }
             ParameterInfo secondParam = parameterInfo[1];
             if (secondParam.Name != "index" || secondParam.ParameterType != typeof(int))
-            {
                 continue;
-            }
             ParameterInfo lastParam = parameterInfo.Last();
             if (lastParam.Name != "name" || lastParam.ParameterType != typeof(string))
-            {
                 continue;
-            }
             tryGetters.Add(methodInfo);
         }
         return tryGetters;
     }
 
-    private static readonly Dictionary<EventPreconditionDelegate, IReadOnlyList<string>> TryGetPairsCached = [];
+    private static readonly Dictionary<EventPreconditionDelegate, ArgGetInfo> TryGetInfoCached = [];
 
-    public static IReadOnlyList<string> ExtractTryGetPairs(EventPreconditionDelegate precondHandler)
+    public static ArgGetInfo ExtractTryGetPairs(EventPreconditionDelegate precondHandler)
     {
-        if (TryGetPairsCached.TryGetValue(precondHandler, out IReadOnlyList<string>? cached))
+        if (!TryGetInfoCached.TryGetValue(precondHandler, out ArgGetInfo? cached))
         {
-            return cached;
+            cached = InnerExtractTryGetPairs(precondHandler);
+            TryGetInfoCached[precondHandler] = cached;
         }
-        // TODO: identify the for loop pattern as well
-        List<string> tryGetPairs = [];
+        return cached;
+    }
+
+    private static ArgGetInfo InnerExtractTryGetPairs(EventPreconditionDelegate precondHandler)
+    {
+        // pass 1
+        List<string> fixedIndex = [];
         int? indexValue = null;
-        KeyValuePair<OpCode, object>? previous = null;
-        foreach (KeyValuePair<OpCode, object> kv in PatchProcessor.ReadMethodBody(precondHandler.Method))
+        IList<KeyValuePair<OpCode, object>> methodBody = PatchProcessor.ReadMethodBody(precondHandler.Method).ToList();
+        for (int i = 1; i < methodBody.Count; i++)
         {
-            if (previous?.Key == OpCodes.Ldarg_2)
+            KeyValuePair<OpCode, object> previous = methodBody[i - 1];
+            KeyValuePair<OpCode, object> current = methodBody[i];
+
+            if (previous.Key == OpCodes.Ldarg_2)
             {
-                indexValue = GetConstI4(kv.Key, kv.Value);
+                indexValue = GetConstI4(current.Key, current.Value);
             }
-            else if (kv.Key == OpCodes.Call)
+            else if (current.Key == OpCodes.Call)
             {
-                if (indexValue.HasValue && previous?.Key == OpCodes.Ldstr && ArgUtilityTryGetters.Contains(kv.Value))
+                if (
+                    indexValue.HasValue
+                    && previous.Key == OpCodes.Ldstr
+                    && ArgUtilityTryGetters.Contains(current.Value)
+                )
                 {
-                    while (tryGetPairs.Count < indexValue.Value)
-                        tryGetPairs.Add(string.Empty);
-                    tryGetPairs.Add((string)previous.Value.Value);
+                    while (fixedIndex.Count < indexValue.Value)
+                        fixedIndex.Add(string.Empty);
+                    fixedIndex.Add((string)previous.Value);
                 }
                 indexValue = null;
             }
-            else if (kv.Key == OpCodes.Callvirt)
+            else if (current.Key == OpCodes.Callvirt)
             {
                 indexValue = null;
             }
-            previous = kv;
         }
-        return tryGetPairs;
+        return new(fixedIndex, []);
 
         static int? GetConstI4(OpCode opcode, object operand)
         {

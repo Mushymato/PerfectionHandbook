@@ -52,7 +52,7 @@ public sealed class ModEntry : Mod
         help.Events.Content.LocaleChanged += OnLocaleChanged;
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
 
-        help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
+        // help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
 
         help.ConsoleCommands.Add(
             "ph-show",
@@ -93,7 +93,7 @@ public sealed class ModEntry : Mod
                 if (Event.TryGetPreconditionHandler("Dating", out EventPreconditionDelegate handler))
                 {
                     int idx = 0;
-                    foreach (string name in DelegateInspector.ExtractTryGetPairs(handler))
+                    foreach (string name in DelegateInspector.ExtractTryGetPairs(handler).FixedIndex)
                     {
                         Log($"{idx}: {name}");
                         idx++;
@@ -119,16 +119,17 @@ public sealed class ModEntry : Mod
         GoalSkillLeveledContext.Setup();
     }
 
-    private static void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
-    {
-        help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
-        MenuHandler.PreloadHandbook();
-    }
+    // private static void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
+    // {
+    //     help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
+    //     MenuHandler.PreloadHandbook();
+    // }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         // preload the cache
-        DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
+        // DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
+        MenuHandler.PreloadHandbook();
         MenuHandler.Reminders.SaveLoaded(Game1.player);
     }
 

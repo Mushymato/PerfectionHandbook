@@ -391,7 +391,10 @@ public enum CropListKind
 }
 
 public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKind kind)
-    : AbstractItemCountContext<CropDisplay>(goalCtx)
+    : AbstractItemCountContext<CropDisplay>(
+        goalCtx,
+        defaultCountMode: kind == CropListKind.Any ? CountMode.Owned : CountMode.Completed
+    )
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
 

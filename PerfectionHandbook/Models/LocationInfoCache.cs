@@ -21,7 +21,7 @@ public sealed record EventPreconditionInfo(
     private static string FormArgDesc(string[] args, EventPreconditionDelegate handler)
     {
         StringBuilder sb = new();
-        IReadOnlyList<string> tryGetPairs = DelegateInspector.ExtractTryGetPairs(handler);
+        IReadOnlyList<string> tryGetPairs = DelegateInspector.ExtractTryGetPairs(handler).FixedIndex;
         for (int i = 1; i < args.Length; i++)
         {
             sb.Append(' ');
