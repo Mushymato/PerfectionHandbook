@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
@@ -17,6 +18,11 @@ public sealed partial record EventInfoDisplay(EventInfo Info)
 
     [Notify]
     private bool isExpanded = false;
+
+    internal bool Matches(string searchText)
+    {
+        return Info.HeaderText.ContainsIgnoreCase(searchText);
+    }
 }
 
 public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
@@ -43,6 +49,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
         .Select(ei => new EventInfoDisplay(ei))
         .ToList();
 
+    public readonly ObservableCollection<EventInfoDisplay> EventDisplaysFiltered = [];
+
     public bool SearchMatch(string txt)
     {
         return DisplayName.ContainsIgnoreCase(txt);
@@ -61,6 +69,19 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     }
 
     public bool ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
+
+    internal void SearchEvents(string searchText)
+    {
+        EventDisplaysFiltered.Clear();
+        bool empty = string.IsNullOrEmpty(searchText);
+        foreach (EventInfoDisplay eventInfo in EventDisplays)
+        {
+            if (empty || eventInfo.Matches(searchText))
+            {
+                EventDisplaysFiltered.Add(eventInfo);
+            }
+        }
+    }
 }
 
 public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
@@ -80,6 +101,28 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
             }
         }
     } = SORTMODE_NAME;
+
+    public override string SearchText
+    {
+        get => field;
+        set
+        {
+            if (!field.EqualsIgnoreCase(value))
+            {
+                field = value;
+                filteredDisplay = null;
+                OnPropertyChanged(new(nameof(SearchText)));
+                if (selected == null)
+                {
+                    OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+                }
+                else
+                {
+                    selected.SearchEvents(field);
+                }
+            }
+        }
+    } = string.Empty;
 
     protected override int GetItemPerPage()
     {
@@ -112,7 +155,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
 
     [Notify]
     private FriendsMadeDisplay? selected = null;
-
+    private string previousSearchText = string.Empty;
     public bool InEventPage => Selected != null;
 
     public void HandleLeftClick(FriendsMadeDisplay display)
@@ -120,6 +163,10 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         if (display.ToggleReminder())
             return;
         Selected = display;
+        previousSearchText = SearchText;
+        if (string.IsNullOrEmpty(previousSearchText))
+            display.SearchEvents(string.Empty);
+        SearchText = string.Empty;
     }
 
     public override bool TryExitPage()
@@ -127,6 +174,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         if (Selected != null)
         {
             Selected = null;
+            SearchText = previousSearchText;
             return false;
         }
         return base.TryExitPage();

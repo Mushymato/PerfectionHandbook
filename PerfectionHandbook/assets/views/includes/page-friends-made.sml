@@ -14,24 +14,24 @@
       </frame>
     </grid>
   </scrollable>
-  <lane *case="true" *context={Selected} margin="4,0,12,0" orientation="vertical">
+  <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
     <frame padding="12" focusable="true" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
       <friend-grid-cell />
     </frame>
     <scrollable peeking="128" scrollbar-margin="-18,0,0,0" >
       <lane orientation="vertical" layout="stretch content" margin="8">
-        <expander *repeat={:EventDisplays} layout="stretch content" margin="0,0,0,4" is-expanded={<>IsExpanded}>
-          <lane *outlet="header" *switch={HasSeen} orientation="horizontal">
-            <image *case="true" margin="-8,0,8,0" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
-            <spacer *case="false" margin="-8,0,8,0" layout="27px 27px" />
-            <label text={:Info.HeaderText} shadow-alpha="0.8"/>
-          </lane>
-          <frame *if={IsExpanded} background={@Mods/StardewUI/Sprites/MenuSlotTransparent} padding="8" margin="48,0,0,0">
-            <lane layout="stretch content" orientation="vertical">
-              <label *repeat={:Info.Preconditions} text={:DisplayText} padding="4" shadow-alpha="0.8" />
-            </lane>
-          </frame>
-        </expander>
+        <lane *repeat={:EventDisplaysFiltered} *switch={HasSeen} orientation="horizontal">
+          <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+          <spacer *case="false" layout="27px 27px" />
+          <expander layout="stretch content" margin="0,0,0,4" is-expanded={<>IsExpanded}>
+            <label *outlet="header" margin="-8,0,8,0" text={:Info.HeaderText} shadow-alpha="0.8"/>
+            <frame *if={IsExpanded} background={@Mods/StardewUI/Sprites/MenuSlotTransparent} padding="8" margin="48,0,0,0">
+              <lane layout="stretch content" orientation="vertical">
+                <label *repeat={:Info.Preconditions} text={:DisplayText} padding="4" shadow-alpha="0.8" />
+              </lane>
+            </frame>
+          </expander>
+        </lane>
       </lane>
     </scrollable>
   </lane>

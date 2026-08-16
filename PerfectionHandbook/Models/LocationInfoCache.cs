@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Delegates;
@@ -16,25 +15,8 @@ public sealed record EventPreconditionInfo(
     EventPreconditionDelegate Handler
 )
 {
-    public readonly string DisplayText = $"{(Negated ? '!' : "")}{Handler.Method.Name}:{FormArgDesc(Args, Handler)}";
-
-    private static string FormArgDesc(string[] args, EventPreconditionDelegate handler)
-    {
-        StringBuilder sb = new();
-        IReadOnlyList<string> tryGetPairs = DelegateInspector.ExtractTryGetPairs(handler).FixedIndex;
-        for (int i = 1; i < args.Length; i++)
-        {
-            sb.Append(' ');
-            sb.Append(args[i]);
-            if (tryGetPairs.Count > i && !string.IsNullOrEmpty(tryGetPairs[i]))
-            {
-                sb.Append('(');
-                sb.Append(tryGetPairs[i]);
-                sb.Append(')');
-            }
-        }
-        return sb.ToString();
-    }
+    private readonly ArgGetInfo argGetInfo = DelegateInspector.ExtractTryGetPairs(Handler);
+    public string DisplayText => $"{(Negated ? '!' : "")}{Handler.Method.Name}:{argGetInfo.FormArgDesc(Negated, Args)}";
 }
 
 public sealed record EventInfo(

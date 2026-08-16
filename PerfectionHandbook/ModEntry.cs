@@ -90,14 +90,11 @@ public sealed class ModEntry : Mod
             "Test tryget extraction",
             static (cmd, args) =>
             {
-                if (Event.TryGetPreconditionHandler("Dating", out EventPreconditionDelegate handler))
+                if (Event.TryGetPreconditionHandler("Tile", out EventPreconditionDelegate handler))
                 {
-                    int idx = 0;
-                    foreach (string name in DelegateInspector.ExtractTryGetPairs(handler).FixedIndex)
-                    {
-                        Log($"{idx}: {name}");
-                        idx++;
-                    }
+                    ArgGetInfo argGetInfo = DelegateInspector.ExtractTryGetPairs(handler);
+                    argGetInfo.LogRepr();
+                    Log(argGetInfo.FormArgDesc(false, ["", "44", "55"]));
                 }
             }
         );

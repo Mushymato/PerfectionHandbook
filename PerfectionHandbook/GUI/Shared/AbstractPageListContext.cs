@@ -69,7 +69,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         return ModEntry.config.ItemPerPage;
     }
 
-    public string SearchText
+    public virtual string SearchText
     {
         get => field;
         set
@@ -190,7 +190,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     }
 
-    public IReadOnlyList<TDisplay> FilteredDisplayPaginated
+    public virtual IReadOnlyList<TDisplay> FilteredDisplayPaginated
     {
         get
         {
