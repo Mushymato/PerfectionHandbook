@@ -53,12 +53,12 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
         if (pageCtx.Fulfillments.Any())
         {
-            ShowNeeded = !pageCtx.Fulfillments[0].Filled;
+            NeededIndex = pageCtx.Fulfillments[0].Filled ? 1 : 0;
             UpdateDisplayingFulfillment(pageCtx.Fulfillments[0]);
         }
         else
         {
-            ShowNeeded = true;
+            NeededIndex = 0;
             CanToggleNeeded = false;
             UpdateAllStatus(pageCtx.Who);
         }
@@ -84,7 +84,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     } = string.Empty;
 
-    public bool ShowNeeded
+    public int NeededIndex
     {
         get => field;
         set
@@ -93,11 +93,11 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             {
                 field = value;
                 filteredDisplay = null;
-                OnPropertyChanged(new(nameof(ShowNeeded)));
+                OnPropertyChanged(new(nameof(NeededIndex)));
                 OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
             }
         }
-    } = true;
+    } = 0;
 
     [Notify]
     private int scrollPage = 1;
@@ -126,13 +126,6 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
             }
         }
-    }
-
-    public void ClickShowNeeded()
-    {
-        filteredDisplay = null;
-        ShowNeeded = !ShowNeeded;
-        OnPropertyChanged(new(nameof(FilteredDisplay)));
     }
 
     public void ClickFulfilment(GoalFulfillment fulfillment)
@@ -173,7 +166,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         {
             if (this.filteredDisplay != null)
                 return this.filteredDisplay;
-            bool showNeed = ShowNeeded;
+            bool showNeed = NeededIndex == 0;
             string txt = SearchText;
             List<TDisplay> filteredDisplay = [];
             foreach (TDisplay display in AllDisplay)

@@ -1,7 +1,7 @@
 <frame layout="80%[1250..] 80%[680..]"
   background={@Mods/StardewUI/Sprites/MenuBackground}
   border={@Mods/StardewUI/Sprites/MenuBorder}
-  border-thickness="32, 36, 32, 36"
+  border-thickness="32, 32, 32, 36"
   *switch={PageName}>
   <!-- Main -->
   <lane *case="Main" margin="6,0,0,0" layout="stretch content" orientation="Vertical">
@@ -103,7 +103,7 @@
 <template name="infobar-page">
   <lane *case={&page-name} *context={:SelectedCtx.PageCtx} layout="stretch stretch" orientation="vertical">
     <include name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
-    <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,4,0,0" fit="Stretch"/>
+    <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,0,0,0" fit="Stretch"/>
     <include name={&page-include} />
   </lane>
 </template>

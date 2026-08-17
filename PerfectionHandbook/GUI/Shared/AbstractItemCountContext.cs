@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
@@ -98,10 +99,8 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     )
         : base(goalCtx, canToggleNeeded: canToggleNeeded, canToggleCountMode: canToggleCountMode)
     {
-        if (defaultCountMode != CountMode.Owned)
-            ClickToggleCount();
-        else
-            SetAllCountMode();
+        PropertyChanged += OnPropertyChanged_CountMode;
+        CountMode = defaultCountMode;
     }
 
     protected override IReadOnlyList<TDisplay> MakeAllDisplay()
@@ -209,24 +208,22 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     public virtual string CompleteCountToggleText => string.Empty;
 
     [Notify]
-    public string countToggleText = I18n.Ui_CountingOwned();
-
     private CountMode countMode = CountMode.Owned;
-
-    public virtual void ClickToggleCount()
+    public int CountModeIndex
     {
-        switch (countMode)
-        {
-            case CountMode.Owned:
-                countMode = CountMode.Completed;
-                CountToggleText = CompleteCountToggleText;
-                break;
-            case CountMode.Completed:
-                countMode = CountMode.Owned;
-                CountToggleText = I18n.Ui_CountingOwned();
-                break;
-        }
-        SetAllCountMode();
+        get => CountMode == CountMode.Completed ? 1 : 0;
+        set =>
+            CountMode = value switch
+            {
+                1 => CountMode.Completed,
+                _ => CountMode.Owned,
+            };
+    }
+
+    private void OnPropertyChanged_CountMode(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(CountMode))
+            SetAllCountMode();
     }
 
     private void SetAllCountMode()

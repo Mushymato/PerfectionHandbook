@@ -29,7 +29,7 @@ public sealed partial record GoalFulfillment(Farmer? Who, int Count, int Total) 
         }
     }
     public Texture2D MiniIcon => DrawHelper.GetFarmerMiniIcon(Who) ?? Game1.staminaRect;
-    public bool HasMiniIcon => MiniIcon != null;
+    public bool HasMiniIcon => Who != null && MiniIcon != null;
 
     [Notify]
     private Color displayTint;

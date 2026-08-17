@@ -1,42 +1,56 @@
-<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" margin="0,0,16,0">
-  <textinput text={<>^SearchText} placeholder={#ui.search} font="dialogue" margin="4,4,0,0" layout="400px content" />
-  <panel *if={:^HasSortModes} *context={:^SortModeCtx} >
-    <panel focusable="true" margin="4,0,0,0" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
+<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle">
+  <!-- Sort -->
+  <panel margin="8,0,0,0" layout="content stretch" vertical-content-alignment="middle" pointer-style="Search"  *if={:^HasSortModes} *context={:^SortModeCtx} >
+    <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
     </panel>
   </panel>
-  <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-    *if={:^CanToggleNeeded}
-    font="dialogue"
-    layout="120px content"
-    margin="4,0"
-    text={#ui.showing-done}
-    left-click=|^ClickShowNeeded()|
-    +state:needed={^ShowNeeded}
-    +state:needed:text={#ui.showing-need}
-  />
-  <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-    *if={:^CanToggleCountMode}
-    font="dialogue"
-    layout="180px content"
-    margin="4,0"
-    text={^CountToggleText}
-    left-click=|^ClickToggleCount()|
-  />
+  <!-- Search Bar -->
+  <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="300px content" />
+  <!-- Search Bar -->
+  <lane orientation="vertical" margin="4,0" layout="content content">
+    <two-segment *if={:^CanToggleNeeded}
+      binding={<>^NeededIndex}
+      option1={#ui.showing-need}
+      option2={#ui.showing-done} />
+    <two-segment *if={:^CanToggleCountMode}
+      binding={<>^CountModeIndex}
+      option1={#ui.counting-owned}
+      option2={:^CompleteCountToggleText} />
+  </lane>
   <frame *repeat={:Fulfillments}
     left-click=|^^ClickFulfilment(this)|
-    background={@Mods/StardewUI/Sprites/MenuSlotTransparent}
-    background-tint={DisplayTint}
+    border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
+    border-tint={DisplayTint}
     tooltip={:TooltipText}
-    +hover:background-tint="#00000040"
-    +transition:background-tint="100ms EaseInSine"
+    +hover:border-tint="#00000040"
+    +transition:border-tint="100ms EaseInSine"
     focusable="true"
-    margin="4"
-    padding="12">
-    <lane>
-      <image *if={:HasMiniIcon} padding="0,-5,0,0" sprite={:MiniIcon}/>
-      <label font="dialogue" text={:DisplayText} />
+    layout="content content"
+    margin="0,8,0,8"
+    padding="0,0,12,4"
+    vertical-content-alignment="middle">
+    <lane *switch={:HasMiniIcon} vertical-content-alignment="middle">
+      <image *case="true" margin="4,0,0,0" layout="48px 48px" sprite={:MiniIcon}/>
+      <image *case="false" layout="48px 48px" fit="Contain" vertical-alignment="end" sprite={:~HandbookContext.FarmIcon}/>
+      <label text={:DisplayText} shadow-alpha="0.4"/>
     </lane>
   </frame>
 </lane>
+
+<template name="two-segment">
+  <frame margin="0,-2" border={@Mods/StardewUI/Sprites/ScrollBarTrack}>
+    <segments balanced="true"
+        highlight={@Mods/StardewUI/Sprites/ButtonDark}
+        highlight-transition="150ms EaseOutQuart"
+        selected-index={&binding}>
+      <panel layout="112px content" horizontal-content-alignment="middle">
+        <label margin="4,8" text={&option1} />
+      </panel>
+      <panel layout="112px content" horizontal-content-alignment="middle">
+        <label margin="4,8" text={&option2}/>
+      </panel>
+    </segments>
+  </frame>
+</template>
