@@ -2,13 +2,17 @@
   <!-- Crop Calendar -->
   <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
     <lane orientation="Vertical" layout="100% content">
-      <banner focusable-tag="side-panel-title"
-        focusable="true"
-        background={@Mods/StardewUI/Sprites/BannerBackground}
-        background-border-thickness="24,0"
-        margin="0,4,-8,4"
-        padding="0,12"
-        text={:Seed.DisplayName} />
+      <lane focusable-tag="side-panel-title" vertical-content-alignment="Middle" focusable="true">
+        <image sprite={:Seed}
+          shadow-alpha="0.35"
+          layout="48px 48px"
+          margin="8"
+          shadow-offset="-4,4"
+          +transition:scale="100ms EaseInSine"
+          horizontal-alignment="Middle"
+        />
+        <label font="dialogue" text={:Seed.DisplayName} shadow-alpha="0.8"/>
+      </lane>
       <lane *context={:Settings} margin="4" vertical-content-alignment="Middle">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
           <segments highlight={@Mods/StardewUI/Sprites/White}

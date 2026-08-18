@@ -1,6 +1,6 @@
 <lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle">
   <!-- Sort -->
-  <panel margin="8,0,0,0" layout="content stretch" vertical-content-alignment="middle" pointer-style="Search"  *if={:^HasSortModes} *context={:^SortModeCtx} >
+  <panel margin="8,0,0,0" layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
@@ -19,6 +19,7 @@
       option1={#ui.counting-owned}
       option2={:^CompleteCountToggleText} />
   </lane>
+  <!-- Farmer Pick -->
   <frame *repeat={:Fulfillments}
     left-click=|^^ClickFulfilment(this)|
     border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
