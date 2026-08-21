@@ -33,6 +33,7 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
         new(
             " ",
             Recipe.DisplayName + ((Recipe.numberProducedPerCraft > 1) ? " x" + Recipe.numberProducedPerCraft : ""),
+            Item: Info.ReprItem,
             CraftingRecipe: Recipe,
             AdditionalCraftingMaterials: OwnedInfo.OwnedRepr
         );
