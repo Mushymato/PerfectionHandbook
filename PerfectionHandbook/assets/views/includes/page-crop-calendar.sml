@@ -121,7 +121,9 @@
     peeking="128"
     scrollbar-margin="-18,0,0,0"
     z-index="2">
-    <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content">
+    <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content"
+        primary-item-count={>PrimaryItemCount}
+        button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={FilteredDisplayPaginated}
         focusable-tag={:ViewName}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}

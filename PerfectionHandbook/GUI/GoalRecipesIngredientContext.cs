@@ -88,11 +88,6 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
         return displayList;
     }
 
-    protected override int GetItemPerPage()
-    {
-        return ModEntry.config.ItemPerPage / 2;
-    }
-
     protected override List<IngredientDisplay> SortAllDisplay(List<IngredientDisplay> displayList)
     {
         return SortMode switch

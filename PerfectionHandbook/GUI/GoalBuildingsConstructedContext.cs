@@ -44,7 +44,7 @@ public sealed record BuildingsConstructedDisplay(string Id, BuildingData Data, i
 }
 
 public sealed class GoalBuildingsConstructedContext(IGoalContext goalCtx)
-    : AbstractPageListContext<BuildingsConstructedDisplay>(goalCtx, canToggleNeeded: false)
+    : AbstractPageListContext<BuildingsConstructedDisplay>(goalCtx, canToggleNeeded: false, canPaginate: false)
 {
     private static readonly string[] ObelisksAndClock =
     [

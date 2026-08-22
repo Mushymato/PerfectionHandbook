@@ -124,11 +124,6 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         }
     } = string.Empty;
 
-    protected override int GetItemPerPage()
-    {
-        return ModEntry.config.ItemPerPage / 2;
-    }
-
     protected override IReadOnlyList<FriendsMadeDisplay> MakeAllDisplay()
     {
         List<FriendsMadeDisplay> friendDisplay = [];

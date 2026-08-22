@@ -1,6 +1,8 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
-    <grid item-layout="count: 3" layout="stretch content" item-spacing="-4,-4" >
+    <grid item-layout="count: 3" layout="stretch content" item-spacing="-4,-4"
+        primary-item-count={>PrimaryItemCount}
+        button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={FilteredDisplayPaginated}
         layout="content content"
         padding="12"

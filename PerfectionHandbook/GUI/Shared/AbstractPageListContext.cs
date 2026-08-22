@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Extensions;
 
@@ -14,8 +15,8 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     public readonly IReadOnlyList<TDisplay> AllDisplay;
 
     public readonly bool CanToggleNeeded = true;
-
     public readonly bool CanToggleCountMode = false;
+    public readonly bool CanPaginate = true;
 
     public const string SORTMODE_DEFAULT = "default";
     public const string SORTMODE_NAME = "name";
@@ -44,12 +45,18 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
     }
 
-    public AbstractPageListContext(IGoalContext pageCtx, bool canToggleNeeded = true, bool canToggleCountMode = false)
+    public AbstractPageListContext(
+        IGoalContext pageCtx,
+        bool canToggleNeeded = true,
+        bool canToggleCountMode = false,
+        bool canPaginate = true
+    )
     {
         GoalCtx = pageCtx;
         AllDisplay = MakeAllDisplay();
         CanToggleNeeded = canToggleNeeded;
         CanToggleCountMode = canToggleCountMode;
+        CanPaginate = canPaginate;
 
         if (pageCtx.Fulfillments.Any())
         {
@@ -64,9 +71,12 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     }
 
-    protected virtual int GetItemPerPage()
+    [Notify]
+    private int primaryItemCount;
+
+    private int GetItemPerPage()
     {
-        return ModEntry.config.ItemPerPage;
+        return ModEntry.config.RowPerPage * (PrimaryItemCount <= 0 ? 10 : PrimaryItemCount);
     }
 
     public virtual string SearchText
@@ -101,31 +111,74 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     [Notify]
     private int scrollPage = 1;
+
+    public bool HasPrevPage => ScrollPage > 1;
+
+    [DependsOn(nameof(PrimaryItemCount), nameof(ScrollPage))]
+    private bool HasNextPage => ScrollPage * GetItemPerPage() < FilteredDisplay.Count;
+
+    private float scrollProgress;
     public float ScrollProgress
     {
-        get => field;
+        get => scrollProgress;
         set
         {
-            bool changed = false;
-            if (value <= 0 && scrollPage > 1)
+            if (Game1.options.gamepadControls)
+                return;
+            if (value <= 0 && PaginatePrev())
             {
-                scrollPage--;
-                field = 0.9999f;
-                changed = true;
-            }
-            else if (value >= 1 && (scrollPage * GetItemPerPage() < FilteredDisplay.Count))
-            {
-                scrollPage++;
-                field = 0.0001f;
-                changed = true;
-            }
-            if (changed)
-            {
-                OnPropertyChanged(new(nameof(ScrollPage)));
+                scrollProgress = 0.9999f;
                 OnPropertyChanged(new(nameof(ScrollProgress)));
-                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            }
+            else if (value >= 1 && PaginateNext())
+            {
+                scrollProgress = 0.0001f;
+                OnPropertyChanged(new(nameof(ScrollProgress)));
             }
         }
+    }
+
+    public bool PaginatePrev()
+    {
+        if (HasPrevPage)
+        {
+            ScrollPage--;
+            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            return true;
+        }
+        return false;
+    }
+
+    public bool PaginateNext()
+    {
+        if (HasNextPage)
+        {
+            ScrollPage++;
+            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            return true;
+        }
+        return false;
+    }
+
+    [DependsOn(nameof(HasNextPage))]
+    public bool HasPagination => CanPaginate && (HasPrevPage || HasNextPage);
+    public float PrevPaginateButtonOpacity => HasPrevPage ? 1f : 0.4f;
+
+    [DependsOn(nameof(HasNextPage))]
+    public float NextPaginateButtonOpacity => HasNextPage ? 1f : 0.4f;
+
+    public bool HandleShoulderButtons(SButton button)
+    {
+        switch (button)
+        {
+            case SButton.LeftShoulder:
+                PaginatePrev();
+                return true;
+            case SButton.RightShoulder:
+                PaginateNext();
+                return true;
+        }
+        return false;
     }
 
     public void ClickFulfilment(GoalFulfillment fulfillment)
@@ -160,7 +213,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     protected virtual List<TDisplay> SortAllDisplay(List<TDisplay> displayList) => displayList;
 
     protected List<TDisplay>? filteredDisplay = null;
-    protected List<TDisplay> FilteredDisplay
+    public List<TDisplay> FilteredDisplay
     {
         get
         {
@@ -178,11 +231,12 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 filteredDisplay.Add(display);
             }
             this.filteredDisplay = SortAllDisplay(filteredDisplay);
-
+            OnPropertyChanged(new(nameof(HasNextPage)));
             return this.filteredDisplay;
         }
     }
 
+    [DependsOn(nameof(PrimaryItemCount))]
     public virtual IReadOnlyList<TDisplay> FilteredDisplayPaginated
     {
         get
@@ -200,10 +254,17 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 ScrollPage = 1;
                 startIdx = 0;
             }
-            int nextPageSize = Math.Min(itemPerPage, filtered.Count - startIdx);
-            if (nextPageSize == 0)
-                return [];
-            return filtered.GetRange(startIdx, nextPageSize);
+            int remainingCount = filtered.Count - startIdx;
+            if (itemPerPage <= remainingCount)
+            {
+                return filtered.GetRange(startIdx, itemPerPage);
+            }
+            else
+            {
+                if (remainingCount == 0)
+                    return [];
+                return filtered.GetRange(startIdx, remainingCount);
+            }
         }
     }
 

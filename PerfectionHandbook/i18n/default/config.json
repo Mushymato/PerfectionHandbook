@@ -1,7 +1,7 @@
 {
   "config.label.add-key": "Add Key",
-  "config.name.ItemPerPage": "Item Per Page",
-  "config.desc.ItemPerPage": "Number of rows to display per page on subpages with many items.",
+  "config.name.RowPerPage": "Row Per Page",
+  "config.desc.RowPerPage": "Number of rows to display per page on subpages with many items. If you feel lag in the menu, lower this value and then restart the handbook.",
   "config.name.ShowHandbookKey": "Show Handbook Key",
   "config.desc.ShowHandbookKey": "Press this key to display the perfection handbook.",
   "config.section.Reminders": "Reminders",

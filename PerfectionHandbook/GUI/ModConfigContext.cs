@@ -16,16 +16,16 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         ModEntry.help.WriteConfig(config);
     }
 
-    public IntSpinBoxViewModel ItemPerPageSpinBox = new(
-        () => config.ItemPerPage,
+    public IntSpinBoxViewModel RowPerPageSpinBox = new(
+        () => config.RowPerPage,
         (value) =>
         {
-            config.ItemPerPage = value;
+            config.RowPerPage = value;
             ModEntry.help.WriteConfig(config);
         },
-        50,
+        4,
         int.MaxValue,
-        50
+        1
     );
 
     public KeybindList ShowHandbookKey
@@ -110,7 +110,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
     {
         ModConfig defaultConfig = new();
 
-        ItemPerPageSpinBox.Value = defaultConfig.ItemPerPage;
+        RowPerPageSpinBox.Value = defaultConfig.RowPerPage;
         RemindersMaxCountSpinBox.Value = defaultConfig.RemindersMaxCount;
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;

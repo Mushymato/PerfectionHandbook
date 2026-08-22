@@ -1,7 +1,7 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress} scroll-step="528">
     <grid margin="0,0,16,0" item-layout="count: 5" layout="stretch content">
-      <frame *repeat={FilteredDisplayPaginated}
+      <frame *repeat={FilteredDisplay}
         border={@Mods/StardewUI/Sprites/ShopEntryBorder}
         padding="24" margin="6" focusable="true"
         screen-read={:DisplayName}

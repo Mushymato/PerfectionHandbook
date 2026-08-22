@@ -1,7 +1,9 @@
 <panel *switch={InEventPage} layout="stretch 100%">
   <!-- Scroll -->
   <scrollable *case="false" peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
-    <grid margin="4,0,12,0" item-layout="length: 400+" item-spacing="-4,-4" layout="stretch content">
+    <grid margin="4,0,12,0" item-layout="length: 400+" item-spacing="-4,-4" layout="stretch content"
+        primary-item-count={>PrimaryItemCount}
+        button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={FilteredDisplayPaginated}
         layout="content content"
         padding="12"
@@ -14,6 +16,7 @@
       </frame>
     </grid>
   </scrollable>
+  <!-- Events -->
   <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
     <frame padding="12" focusable="true" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
       <friend-grid-cell />

@@ -24,7 +24,7 @@ public sealed record StardropsFoundDisplay(string FoundFlag) : IPageDisplayEntry
 }
 
 public sealed class GoalStardropsFoundContext(IGoalContext goalCtx)
-    : AbstractPageListContext<StardropsFoundDisplay>(goalCtx)
+    : AbstractPageListContext<StardropsFoundDisplay>(goalCtx, canPaginate: false)
 {
     private static readonly string[] StardropMailflags =
     [

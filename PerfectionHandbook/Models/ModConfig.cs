@@ -5,7 +5,7 @@ namespace PerfectionHandbook.Models;
 
 public sealed class ModConfig
 {
-    public int ItemPerPage { get; set; } = 400;
+    public int RowPerPage { get; set; } = 16;
     public KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("RightShift+H");
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
     public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");

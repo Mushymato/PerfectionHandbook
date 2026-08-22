@@ -1,4 +1,4 @@
-<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle">
+<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content">
   <!-- Sort -->
   <panel margin="8,0,0,0" layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
@@ -8,7 +8,7 @@
   </panel>
   <!-- Search Bar -->
   <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="300px content" />
-  <!-- Search Bar -->
+  <!-- Swtich Modes -->
   <lane orientation="vertical" margin="4,0" layout="content content">
     <two-segment *if={:^CanToggleNeeded}
       binding={<>^NeededIndex}
@@ -38,6 +38,26 @@
       <label text={:DisplayText} shadow-alpha="0.4"/>
     </lane>
   </frame>
+  <!-- paginator -->
+  <panel *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
+    <lane orientation="horizontal" margin="6,0"
+      vertical-content-alignment="Middle"
+      button-press=|^HandleShoulderButtons($Button)|>
+      <image sprite={@Mods/StardewUI/Sprites/LargeLeftArrow}
+        focusable="true"
+        left-click=|^PaginatePrev()|
+        opacity={^PrevPaginateButtonOpacity}
+        screen-read={#ui.prev-page}
+        +hover:scale="1.2"/>
+      <banner text={^ScrollPage} layout="content content"/>
+      <image sprite={@Mods/StardewUI/Sprites/LargeRightArrow}
+        focusable="true"
+        left-click=|^PaginateNext()|
+        opacity={^NextPaginateButtonOpacity}
+        screen-read={#ui.next-page}
+        +hover:scale="1.2"/>
+    </lane>
+  </panel>
 </lane>
 
 <template name="two-segment">

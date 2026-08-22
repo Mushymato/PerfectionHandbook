@@ -27,7 +27,6 @@ SOFTWARE.
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.ItemTypeDefinitions;
 
 namespace PerfectionHandbook.Integration;
 

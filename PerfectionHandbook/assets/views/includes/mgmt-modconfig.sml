@@ -12,8 +12,8 @@
             focusable="true"
             keybind-list={<>ShowHandbookKey} />
       </form-row>
-      <form-row title={#config.name.ItemPerPage} tooltip={#config.desc.ItemPerPage}>
-        <spin-box *context={:ItemPerPageSpinBox} />
+      <form-row title={#config.name.RowPerPage} tooltip={#config.desc.RowPerPage}>
+        <spin-box *context={:RowPerPageSpinBox} />
       </form-row>
 
       <banner margin="4" text={#config.section.Reminders} layout="content content"/>

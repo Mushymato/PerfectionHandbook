@@ -1,7 +1,7 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" progress={<>ScrollProgress}>
-    <grid margin="6,0,12,0" item-layout="count: 2" layout="stretch content" item-spacing="-4,-4" >
-      <frame *repeat={FilteredDisplayPaginated}
+    <grid margin="6,0,12,0" item-layout="count: 2" layout="stretch content" item-spacing="-4,-4">
+      <frame *repeat={FilteredDisplay}
         layout="100% content"
         border-thickness="12"
         border={@Mods/StardewUI/Sprites/ShopEntryBorder}

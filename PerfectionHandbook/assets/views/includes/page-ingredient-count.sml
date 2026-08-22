@@ -5,7 +5,9 @@
     peeking="128"
     scrollbar-margin="-18,0,0,0"
     z-index="2">
-    <grid margin="12,12,16,12" item-layout="length: 96+" item-spacing="12,8" layout="stretch content">
+    <grid margin="12,12,16,12" item-layout="length: 96+" item-spacing="12,8" layout="stretch content"
+        primary-item-count={>PrimaryItemCount}
+        button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={FilteredDisplayPaginated} border={@Mods/StardewUI/Sprites/MenuSlotInset} border-thickness="4">
         <lane 
           orientation="Vertical"

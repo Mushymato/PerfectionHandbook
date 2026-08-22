@@ -1,7 +1,7 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
     <lane orientation="Vertical" >
-      <frame *repeat={FilteredDisplayPaginated}
+      <frame *repeat={FilteredDisplay}
         layout="stretch content"
         padding="12"
         margin="0,0,0,-4"
