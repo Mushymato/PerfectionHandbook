@@ -5,6 +5,7 @@ using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
+using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;

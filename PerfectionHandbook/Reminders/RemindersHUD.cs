@@ -2,7 +2,6 @@ using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using PerfectionHandbook.Integration;
-using PerfectionHandbook.Reminders;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData;
@@ -10,7 +9,7 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Monsters;
 
-namespace PerfectionHandbook;
+namespace PerfectionHandbook.Reminders;
 
 public sealed class RemindersHUD
 {

@@ -1,7 +1,8 @@
+using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 
-namespace PerfectionHandbook.Reminders;
+namespace PerfectionHandbook;
 
 public sealed class PerfectionHandbookAPI(IModInfo mod) : IPerfectionHandbookAPI
 {
