@@ -50,6 +50,9 @@ public interface IReminderEntryDisplay
     /// <summary>Count to display (only when greater than 1)</summary>
     int Count { get; }
 
+    /// <summary>Quality star display</summary>
+    int Quality { get; }
+
     /// <summary>Additional reminders displayed with a caret under the main reminder</summary>
     public IEnumerable<IReminderEntryDisplay>? SubReminders { get; }
 }

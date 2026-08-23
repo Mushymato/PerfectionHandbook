@@ -48,8 +48,8 @@ public sealed record CraftingRecipeWithNeeds(
 
 public sealed record ItemInfo(ParsedItemData Datum)
 {
-    public Item ReprItem = ItemRegistry.Create(Datum.QualifiedItemId);
-    public bool IsPotentialShipped = ItemInfoCache.IsPotentialBasicShipped(Datum);
+    public readonly Item ReprItem = ItemRegistry.Create(Datum.QualifiedItemId);
+    public readonly bool IsPotentialShipped = ItemInfoCache.IsPotentialBasicShipped(Datum);
     public bool IsMuseumDonation = ItemInfoCache.IsMuseumDonation(Datum);
     public bool IsCatchableFish = ItemInfoCache.IsCatchableFish(Datum);
     public string DisplayName => TokenParser.ParseText(Datum.DisplayName) ?? Datum.DisplayName;

@@ -23,7 +23,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
             config.RowPerPage = value;
             ModEntry.help.WriteConfig(config);
         },
-        4,
+        2,
         int.MaxValue,
         1
     );

@@ -467,8 +467,12 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     public override bool TryOpenPage()
     {
-        if (FilteredDisplayPaginated.Count > 0)
-            DoHoveredEnter(FilteredDisplayPaginated[0]);
-        return base.TryOpenPage();
+        bool result = base.TryOpenPage();
+        if (result)
+        {
+            if (FilteredDisplayPaginated.Count > 0)
+                DoHoveredEnter(FilteredDisplayPaginated[0]);
+        }
+        return result;
     }
 }

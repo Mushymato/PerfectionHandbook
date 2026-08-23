@@ -11,7 +11,6 @@ using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.GameData;
 using StardewValley.GameData.Buildings;
-using StardewValley.GameData.Characters;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.TokenizableStrings;
@@ -59,6 +58,7 @@ public sealed partial record ReminderEntryDisplay(
     Texture2D Texture,
     Rectangle SourceRect,
     int Count = 1,
+    int Quality = 0,
     IEnumerable<IReminderEntryDisplay>? SubReminders = null
 ) : IReminderEntryDisplay
 {
@@ -78,6 +78,10 @@ public sealed partial record ReminderEntryDisplay(
     private int displayCount = Count;
 
     public bool HasCount => DisplayCount > 1;
+
+    public SDUISprite? QualityStar = DrawHelper.GetQualityStar(Quality);
+
+    public bool HasQualityStar = Quality > 0;
 
     public IReadOnlyList<ReminderEntryDisplay> CastedSubReminders =
         SubReminders?.Select(subEntry => FromInterface(subEntry, null, true)).ToList() ?? [];
@@ -275,8 +279,8 @@ public static class ReminderEntryFactory
                 : I18n.Reminder_Verb_Craft(itemInfo.Datum.DisplayName),
             itemInfo.Datum.GetTexture(),
             itemInfo.Datum.GetSourceRect(),
-            recipe.numberProducedPerCraft,
-            subReminders
+            Count: recipe.numberProducedPerCraft,
+            SubReminders: subReminders
         );
         return true;
     }
@@ -384,7 +388,8 @@ public static class ReminderEntryFactory
                         ingredient.Info.Datum.DisplayName,
                         ingredient.Info.Datum.GetTexture(),
                         ingredient.Info.Datum.GetSourceRect(),
-                        ingredient.Count
+                        ingredient.Count,
+                        ingredient.Quality
                     )
                 );
             }

@@ -137,7 +137,7 @@ public sealed partial class HandbookContext
         );
     }
 
-    internal void CloseAction()
+    internal bool CloseAction()
     {
         if (SelectedCtx != null)
         {
@@ -145,11 +145,19 @@ public sealed partial class HandbookContext
             {
                 SelectedCtx = null;
             }
+            return false;
         }
         else
         {
+            foreach (GoalContext goal in PerfectionGoals)
+                goal.DisposePageCtx();
+            foreach (GoalContext goal in AchievementGoals)
+                goal.DisposePageCtx();
+            foreach (MiscContext goal in MiscPages)
+                goal.DisposePageCtx();
             Game1.exitActiveMenu();
             Game1.player.forceCanMove();
+            return true;
         }
     }
 }

@@ -15,6 +15,13 @@ public sealed record MiscContext(
 ) : IGoalContext
 {
     private static readonly IReadOnlyList<GoalFulfillment> Empty = [];
-    public IPageContext? PageCtx => GetPageCtx(this);
+    private IPageContext? pageCtx = null;
+    public IPageContext? PageCtx => pageCtx ??= GetPageCtx(this);
     public IReadOnlyList<GoalFulfillment> Fulfillments => Empty;
+
+    public void DisposePageCtx()
+    {
+        (pageCtx as IDisposable)?.Dispose();
+        pageCtx = null;
+    }
 }

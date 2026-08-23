@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
@@ -42,7 +43,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     protected void ReSortFilteredDisplay()
     {
         filteredDisplay = null;
-        OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+        UpdateFilteredDisplayPaginated();
     }
 
     public AbstractPageListContext(
@@ -71,12 +72,26 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     }
 
-    [Notify]
-    private int primaryItemCount;
+    public int PrimaryItemCount
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged(new(nameof(PrimaryItemCount)));
+                OnPropertyChanged(new(nameof(HasNextPage)));
+                UpdateFilteredDisplayPaginated();
+            }
+        }
+    }
+
+    private int rowPerPage = ModEntry.config.RowPerPage;
 
     private int GetItemPerPage()
     {
-        return ModEntry.config.RowPerPage * (PrimaryItemCount <= 0 ? 10 : PrimaryItemCount);
+        return rowPerPage * (PrimaryItemCount <= 0 ? 10 : PrimaryItemCount);
     }
 
     public virtual string SearchText
@@ -89,7 +104,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 field = value;
                 filteredDisplay = null;
                 OnPropertyChanged(new(nameof(SearchText)));
-                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+                UpdateFilteredDisplayPaginated();
             }
         }
     } = string.Empty;
@@ -104,7 +119,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 field = value;
                 filteredDisplay = null;
                 OnPropertyChanged(new(nameof(NeededIndex)));
-                OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+                UpdateFilteredDisplayPaginated();
             }
         }
     } = 0;
@@ -114,7 +129,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public bool HasPrevPage => ScrollPage > 1;
 
-    [DependsOn(nameof(PrimaryItemCount), nameof(ScrollPage))]
+    [DependsOn(nameof(ScrollPage))]
     private bool HasNextPage => ScrollPage * GetItemPerPage() < FilteredDisplay.Count;
 
     private float scrollProgress;
@@ -143,7 +158,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         if (HasPrevPage)
         {
             ScrollPage--;
-            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            UpdateFilteredDisplayPaginated();
             return true;
         }
         return false;
@@ -154,7 +169,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         if (HasNextPage)
         {
             ScrollPage++;
-            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            UpdateFilteredDisplayPaginated();
             return true;
         }
         return false;
@@ -197,7 +212,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             UpdateAllStatus(fulfillment.Who);
             foreach (GoalFulfillment eachful in GoalCtx.Fulfillments)
                 eachful.DisplayTint = eachful == displayingFulfillment ? Color.White : Color.Transparent;
-            OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+            UpdateFilteredDisplayPaginated();
         }
     }
 
@@ -236,39 +251,65 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     }
 
-    [DependsOn(nameof(PrimaryItemCount))]
-    public virtual IReadOnlyList<TDisplay> FilteredDisplayPaginated
+    public readonly ObservableCollection<TDisplay> FilteredDisplayPaginated = [];
+
+    protected void UpdateFilteredDisplayPaginated()
     {
-        get
+        List<TDisplay> filtered = FilteredDisplay;
+        if (filtered.Count == 0)
         {
-            if (MenuHandler.IsPreloading)
-                return FilteredDisplay.GetRange(0, Math.Min(10, FilteredDisplay.Count));
-            List<TDisplay> filtered = FilteredDisplay;
-            if (filtered.Count == 0)
-                return filtered;
-            int actualPage = ScrollPage - 1;
-            int itemPerPage = GetItemPerPage();
-            int startIdx = actualPage * itemPerPage;
-            if (startIdx >= filtered.Count)
-            {
-                ScrollPage = 1;
-                startIdx = 0;
-            }
-            int remainingCount = filtered.Count - startIdx;
-            if (itemPerPage <= remainingCount)
-            {
-                return filtered.GetRange(startIdx, itemPerPage);
-            }
-            else
-            {
-                if (remainingCount == 0)
-                    return [];
-                return filtered.GetRange(startIdx, remainingCount);
-            }
+            FilteredDisplayPaginated.Clear();
+            return;
         }
+
+        if (!CanPaginate)
+        {
+            FilteredDisplayPaginated.Clear();
+            foreach (var display in FilteredDisplay)
+                FilteredDisplayPaginated.Add(display);
+            return;
+        }
+
+        if (MenuHandler.IsPreloading || PrimaryItemCount == 0)
+        {
+            FilteredDisplayPaginated.Clear();
+            foreach (var display in filtered.GetRange(0, Math.Min(10, filtered.Count)))
+                FilteredDisplayPaginated.Add(display);
+            return;
+        }
+
+        int actualPage = ScrollPage - 1;
+        int itemPerPage = GetItemPerPage();
+        int startIdx = actualPage * itemPerPage;
+        if (startIdx >= filtered.Count)
+        {
+            ScrollPage = 1;
+            startIdx = 0;
+        }
+        int remainingCount = filtered.Count - startIdx;
+        HashSet<TDisplay> matched = [];
+        if (itemPerPage <= remainingCount)
+        {
+            matched.AddRange(filtered.GetRange(startIdx, itemPerPage));
+        }
+        else if (remainingCount > 0)
+        {
+            matched.AddRange(filtered.GetRange(startIdx, remainingCount));
+        }
+        FilteredDisplayPaginated.Clear();
+        foreach (var display in matched)
+            FilteredDisplayPaginated.Add(display);
     }
 
-    public virtual bool TryOpenPage() => true;
+    public virtual bool TryOpenPage()
+    {
+        if (rowPerPage != ModEntry.config.RowPerPage)
+        {
+            rowPerPage = ModEntry.config.RowPerPage;
+            UpdateFilteredDisplayPaginated();
+        }
+        return true;
+    }
 
     public virtual bool TryExitPage() => true;
 }

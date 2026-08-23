@@ -3,7 +3,7 @@
     <grid margin="0,0,8,0" item-layout="count: 3" layout="stretch content" item-spacing="-4,-4"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
-      <frame *repeat={FilteredDisplayPaginated}
+      <frame *repeat={:FilteredDisplayPaginated}
         padding="12"
         layout="stretch 64px"
         focusable="true"

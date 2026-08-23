@@ -8,7 +8,7 @@
     <grid margin="12,12,16,12" item-layout="length: 96+" item-spacing="12,8" layout="stretch content"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
-      <frame *repeat={FilteredDisplayPaginated} border={@Mods/StardewUI/Sprites/MenuSlotInset} border-thickness="4">
+      <frame *repeat={:FilteredDisplayPaginated} border={@Mods/StardewUI/Sprites/MenuSlotInset} border-thickness="4">
         <lane 
           orientation="Vertical"
           layout="content content"

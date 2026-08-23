@@ -16,6 +16,8 @@ public enum CountMode
 
 public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int OwnedCount) : IPageDisplayEntry
 {
+    public override int GetHashCode() => Info.Datum.QualifiedItemId.GetHashCode();
+
     public virtual Item ReprItem => Info.ReprItem;
 
     protected CountMode countMode = CountMode.Owned;
@@ -41,7 +43,8 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public Color BorderTint => IsHovered && IsLocked ? Color.White : Color.Transparent;
 
-    public virtual SDUITooltipData? Tooltip => new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
+    protected SDUITooltipData? toolitp = null;
+    public virtual SDUITooltipData? Tooltip => toolitp ??= new(GetTooltipDesc(), Info.Datum.DisplayName, ReprItem);
 
     public abstract ReminderEntry? Reminder { get; }
 
@@ -236,11 +239,6 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         {
             ReSortFilteredDisplay();
         }
-    }
-
-    public override bool TryOpenPage()
-    {
-        return base.TryOpenPage();
     }
 
     public override bool TryExitPage()

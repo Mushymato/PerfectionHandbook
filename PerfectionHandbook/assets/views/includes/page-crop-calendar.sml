@@ -124,7 +124,7 @@
     <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
-      <frame *repeat={FilteredDisplayPaginated}
+      <frame *repeat={:FilteredDisplayPaginated}
         focusable-tag={:ViewName}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
         border-thickness="10"
@@ -135,13 +135,10 @@
         pointer-enter=|^HoveredEnter(this)|
         tooltip={Tooltip}
         hovered-subject={:ReprItem}>
-        <panel
-          horizontal-content-alignment="End"
-          vertical-content-alignment="End">
+        <panel horizontal-content-alignment="End" vertical-content-alignment="End">
           <image sprite={:Info.Datum}
             tint={DisplayTint}
             shadow-alpha={DisplayShadow}
-            scale={DisplayScale}
             layout="64px 64px"
             shadow-offset="-4,4"
             +transition:scale="100ms EaseInSine"

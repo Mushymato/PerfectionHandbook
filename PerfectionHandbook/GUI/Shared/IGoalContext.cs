@@ -14,4 +14,5 @@ public interface IGoalContext
     ParsedItemData DisplayIcon { get; }
     public IPageContext? PageCtx { get; }
     public IReadOnlyList<GoalFulfillment> Fulfillments { get; }
+    public void DisposePageCtx();
 }

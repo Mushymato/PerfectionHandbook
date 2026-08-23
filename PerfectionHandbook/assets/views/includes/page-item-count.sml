@@ -10,7 +10,7 @@
       primary-item-count={>PrimaryItemCount}
       button-press=|HandleShoulderButtons($Button)|
       >
-      <panel *repeat={FilteredDisplayPaginated}
+      <panel *repeat={:FilteredDisplayPaginated}
         layout="64px 64px"
         focusable="true"
         horizontal-content-alignment="End"

@@ -12,6 +12,18 @@ using StardewValley;
 
 namespace PerfectionHandbook;
 
+public sealed class HandbookRefs
+{
+    public WeakReference<IMenuController?> ctrl = new(null);
+    public WeakReference<HandbookContext?> ctx = new(null);
+
+    public void SetTarget(IMenuController? ctrl, HandbookContext? ctx)
+    {
+        this.ctrl.SetTarget(ctrl);
+        this.ctx.SetTarget(ctx);
+    }
+}
+
 public static class MenuHandler
 {
     private static IViewEngine viewEngine = null!;
@@ -25,7 +37,7 @@ public static class MenuHandler
     );
     internal static RemindersHUD Reminders => reminders.Value;
 
-    internal static readonly PerScreen<WeakReference<IMenuController?>> handbookCtrl = new(static () => new(null));
+    internal static readonly PerScreen<HandbookRefs> handbook = new(static () => new());
 
     public static void Setup()
     {
@@ -59,10 +71,23 @@ public static class MenuHandler
             return;
         HandbookContext context = new(Game1.player);
         IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
-        menuCtrl.CloseAction = context.CloseAction;
+        menuCtrl.CloseAction = HandbookCloseAction;
         menuCtrl.EnableCloseButton();
         Game1.activeClickableMenu = menuCtrl.Menu;
-        handbookCtrl.Value.SetTarget(menuCtrl);
+        handbook.Value.SetTarget(menuCtrl, context);
+    }
+
+    private static void HandbookCloseAction()
+    {
+        HandbookRefs hbref = handbook.Value;
+        if (hbref.ctx.TryGetTarget(out HandbookContext? ctx) && ctx != null && ctx.CloseAction())
+        {
+            if (hbref.ctrl.TryGetTarget(out IMenuController? ctrl))
+            {
+                ctrl.Dispose();
+                hbref.SetTarget(null, null);
+            }
+        }
     }
 
     public static bool Handbook_FocusOnTaggedView(string name)
@@ -71,9 +96,9 @@ public static class MenuHandler
         {
             return false;
         }
-        if (handbookCtrl.Value.TryGetTarget(out IMenuController? menuCtrl) && menuCtrl != null)
+        if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
         {
-            return menuCtrl.FocusOnTaggedView(name);
+            return ctrl.FocusOnTaggedView(name);
         }
         return false;
     }

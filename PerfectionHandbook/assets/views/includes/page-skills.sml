@@ -1,7 +1,9 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" progress={<>ScrollProgress}>
-    <grid margin="6,0,12,0" item-layout="count: 2" layout="stretch content" item-spacing="-4,-4">
-      <frame *repeat={FilteredDisplay}
+    <grid margin="6,0,12,0" item-layout="count: 2" layout="stretch content" item-spacing="-4,-4"
+      primary-item-count={>PrimaryItemCount}
+      button-press=|HandleShoulderButtons($Button)|>
+      <frame *repeat={:FilteredDisplayPaginated}
         layout="100% content"
         border-thickness="12"
         border={@Mods/StardewUI/Sprites/ShopEntryBorder}

@@ -114,7 +114,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
                 OnPropertyChanged(new(nameof(SearchText)));
                 if (selected == null)
                 {
-                    OnPropertyChanged(new(nameof(FilteredDisplayPaginated)));
+                    UpdateFilteredDisplayPaginated();
                 }
                 else
                 {

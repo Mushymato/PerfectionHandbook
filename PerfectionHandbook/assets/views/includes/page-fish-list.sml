@@ -55,7 +55,7 @@
     <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
-      <frame *repeat={FilteredDisplayPaginated}
+      <frame *repeat={:FilteredDisplayPaginated}
         focusable-tag={:ViewName}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
         border-thickness="10"
