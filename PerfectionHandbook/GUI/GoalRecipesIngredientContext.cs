@@ -75,7 +75,12 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
 }
 
 public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
-    : AbstractItemCountContext<IngredientDisplay>(goalCtx, canToggleNeeded: false, canToggleCountMode: false)
+    : AbstractItemCountContext<IngredientDisplay>(
+        goalCtx,
+        canToggleNeeded: false,
+        canToggleCountMode: false,
+        itemPerPageModifier: 5.0 / 8.0
+    )
 {
     protected override IReadOnlyList<IngredientDisplay> MakeAllDisplay()
     {

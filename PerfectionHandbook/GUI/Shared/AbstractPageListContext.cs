@@ -50,7 +50,8 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         IGoalContext pageCtx,
         bool canToggleNeeded = true,
         bool canToggleCountMode = false,
-        bool canPaginate = true
+        bool canPaginate = true,
+        double itemPerPageModifier = 1
     )
     {
         GoalCtx = pageCtx;
@@ -58,6 +59,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         CanToggleNeeded = canToggleNeeded;
         CanToggleCountMode = canToggleCountMode;
         CanPaginate = canPaginate;
+        this.itemPerPageModifier = itemPerPageModifier;
 
         if (pageCtx.Fulfillments.Any())
         {
@@ -88,10 +90,11 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     }
 
     private int rowPerPage = ModEntry.config.RowPerPage;
+    protected readonly double itemPerPageModifier = 1;
 
     private int GetItemPerPage()
     {
-        return rowPerPage * (PrimaryItemCount <= 0 ? 10 : PrimaryItemCount);
+        return (int)Math.Ceiling(itemPerPageModifier * rowPerPage * (PrimaryItemCount <= 0 ? 12 : PrimaryItemCount));
     }
 
     public virtual string SearchText
@@ -270,10 +273,10 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             return;
         }
 
-        if (MenuHandler.IsPreloading || PrimaryItemCount == 0)
+        if ((MenuHandler.IsPreloading || PrimaryItemCount == 0) && FilteredDisplayPaginated.Count == 0)
         {
             FilteredDisplayPaginated.Clear();
-            foreach (var display in filtered.GetRange(0, Math.Min(10, filtered.Count)))
+            foreach (var display in filtered.GetRange(0, Math.Min(12, filtered.Count)))
                 FilteredDisplayPaginated.Add(display);
             return;
         }
@@ -303,9 +306,10 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public virtual bool TryOpenPage()
     {
-        if (rowPerPage != ModEntry.config.RowPerPage)
+        int oldRowPerPage = rowPerPage;
+        rowPerPage = ModEntry.config.RowPerPage;
+        if (CanPaginate && oldRowPerPage != rowPerPage)
         {
-            rowPerPage = ModEntry.config.RowPerPage;
             UpdateFilteredDisplayPaginated();
         }
         return true;

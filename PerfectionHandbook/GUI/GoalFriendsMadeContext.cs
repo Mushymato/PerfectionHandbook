@@ -27,6 +27,8 @@ public sealed partial record EventInfoDisplay(EventInfo Info)
 
 public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
 {
+    public override int GetHashCode() => NpcInfo.Name.GetHashCode();
+
     [Notify]
     private Friendship? currentFriendship = null;
     public Color DisplayTint => CurrentFriendship == null ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
@@ -85,7 +87,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 }
 
 public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
-    : AbstractPageListContext<FriendsMadeDisplay>(goalCtx)
+    : AbstractPageListContext<FriendsMadeDisplay>(goalCtx, itemPerPageModifier: 6.0 / 8.0)
 {
     public override bool HasSortModes => true;
     protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];

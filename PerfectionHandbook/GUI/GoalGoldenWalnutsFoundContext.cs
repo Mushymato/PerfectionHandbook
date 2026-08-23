@@ -7,6 +7,8 @@ namespace PerfectionHandbook.GUI;
 
 public sealed record GoldenWalnutsFoundDisplay(string Key, int Count = 1, int MaxCount = 1) : IPageDisplayEntry
 {
+    public override int GetHashCode() => Key.GetHashCode();
+
     public string Name = I18n.GetByKey(string.Concat("GoldenWalnut.Name.", Key));
     public string Hint = I18n.GetByKey(string.Concat("GoldenWalnut.Hint.", Key));
     public string CountText = I18n.Ui_Fulfillment_Dipslay(Count, MaxCount);
@@ -22,7 +24,7 @@ public sealed record GoldenWalnutsFoundDisplay(string Key, int Count = 1, int Ma
 }
 
 public sealed class GoalGoldenWalnutsFoundContext(IGoalContext goalCtx)
-    : AbstractPageListContext<GoldenWalnutsFoundDisplay>(goalCtx)
+    : AbstractPageListContext<GoldenWalnutsFoundDisplay>(goalCtx, itemPerPageModifier: 7.0 / 8.0)
 {
     /*
       Based on:

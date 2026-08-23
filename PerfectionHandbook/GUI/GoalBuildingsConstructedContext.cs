@@ -12,6 +12,8 @@ namespace PerfectionHandbook.GUI;
 
 public sealed record BuildingsConstructedDisplay(string Id, BuildingData Data, int Count) : IPageDisplayEntry
 {
+    public override int GetHashCode() => Id.GetHashCode();
+
     public readonly string DisplayName = TokenParser.ParseText(Data.Name) ?? Id;
     public readonly SDUISprite Sprite = GetBuildingSprite(Data);
 

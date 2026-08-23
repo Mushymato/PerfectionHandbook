@@ -19,6 +19,8 @@ public sealed partial record MonsterSlayerDisplay(
     int RequiredCount
 ) : IPageDisplayEntry
 {
+    public override int GetHashCode() => Id.GetHashCode();
+
     [Notify]
     public int killedCount = 0;
 

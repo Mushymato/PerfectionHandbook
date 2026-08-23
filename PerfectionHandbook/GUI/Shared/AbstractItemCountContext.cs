@@ -98,9 +98,15 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         IGoalContext goalCtx,
         bool canToggleNeeded = true,
         bool canToggleCountMode = true,
-        CountMode defaultCountMode = CountMode.Owned
+        CountMode defaultCountMode = CountMode.Owned,
+        double itemPerPageModifier = 1
     )
-        : base(goalCtx, canToggleNeeded: canToggleNeeded, canToggleCountMode: canToggleCountMode)
+        : base(
+            goalCtx,
+            canToggleNeeded: canToggleNeeded,
+            canToggleCountMode: canToggleCountMode,
+            itemPerPageModifier: itemPerPageModifier
+        )
     {
         PropertyChanged += OnPropertyChanged_CountMode;
         CountMode = defaultCountMode;

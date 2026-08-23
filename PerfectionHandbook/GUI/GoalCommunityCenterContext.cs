@@ -28,6 +28,8 @@ public sealed record CommunityCenterBundleDisplay(
     IReadOnlyList<CommunityCenterBundleIngredient> BundleIngredients
 ) : IPageDisplayEntry
 {
+    public override int GetHashCode() => BundleKey.GetHashCode();
+
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_CommunityCenterBundle, BundleKey);
 

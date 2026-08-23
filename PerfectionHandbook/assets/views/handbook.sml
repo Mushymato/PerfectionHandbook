@@ -101,7 +101,12 @@
 </template>
 
 <template name="infobar-page">
-  <lane *case={&page-name} *context={:SelectedCtx.PageCtx} layout="stretch stretch" orientation="vertical">
+  <lane *case={&page-name} *context={:SelectedCtx.PageCtx}
+      layout="stretch stretch"
+      orientation="vertical"
+      opacity="0"
+      +show:opacity="1"
+      +transition:opacity="200ms EaseOutCubic">
     <include button-press=|HandleShoulderButtons($Button)| name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
     <image button-press=|HandleShoulderButtons($Button)| sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,0,0,0" fit="Stretch"/>
     <include name={&page-include} />
