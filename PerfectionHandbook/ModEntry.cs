@@ -23,6 +23,7 @@ public sealed class ModEntry : Mod
     private static IMonitor mon = null!;
     internal static IModHelper help = null!;
     internal static ModConfig config = new();
+    internal static Integration.IModNameAPI? modNameAPI = null;
 
     public override void Entry(IModHelper helper)
     {
@@ -111,6 +112,7 @@ public sealed class ModEntry : Mod
 
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
+        modNameAPI = help.ModRegistry.GetApi<Integration.IModNameAPI>("mushymato.ModNameTooltip");
         MenuHandler.Setup();
         ItemInfoCache.Setup();
         GoalSkillLeveledContext.Setup();

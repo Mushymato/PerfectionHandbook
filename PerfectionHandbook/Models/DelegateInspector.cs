@@ -26,16 +26,31 @@ public sealed record ArgGetInfo(
         {
             sb.Append(' ');
             sb.Append(args[i]);
-            if (TryMatchFixedIndex(sb, i))
+            if (TryMatchFixedIndex(i, out string? matchedName))
+            {
+                sb.Append('(');
+                sb.Append(matchedName);
+                sb.Append(')');
                 continue;
-            if (TryMatchLoopIndex(sb, i))
+            }
+            if (TryMatchLoopIndex(i, out matchedName, out int seq))
+            {
+                sb.Append('(');
+                sb.Append(matchedName);
+                sb.Append(' ');
+                sb.Append('[');
+                sb.Append(seq);
+                sb.Append(']');
+                sb.Append(')');
                 continue;
+            }
         }
         return sb.ToString();
     }
 
-    private bool TryMatchFixedIndex(StringBuilder sb, int i)
+    private bool TryMatchFixedIndex(int i, [NotNullWhen(true)] out string? matchedName)
     {
+        matchedName = null;
         foreach ((int idx, Type typ, string name) in FixedIndex)
         {
             int delta = i - idx;
@@ -43,17 +58,17 @@ public sealed record ArgGetInfo(
                 continue;
             if (delta == 0 || (typ == typeof(Point) && delta < 2) || (typ == typeof(Rectangle) && delta < 4))
             {
-                sb.Append('(');
-                sb.Append(name);
-                sb.Append(')');
+                matchedName = name;
                 return true;
             }
         }
         return false;
     }
 
-    private bool TryMatchLoopIndex(StringBuilder sb, int i)
+    private bool TryMatchLoopIndex(int i, [NotNullWhen(true)] out string? matchedName, out int seq)
     {
+        matchedName = null;
+        seq = 0;
         foreach ((int start, int step, int offset, Type typ, string name) in LoopIndex)
         {
             int delta = (i - start) % step - offset;
@@ -61,13 +76,8 @@ public sealed record ArgGetInfo(
                 continue;
             if (delta == 0 || (typ == typeof(Point) && delta < 2) || (typ == typeof(Rectangle) && delta < 4))
             {
-                sb.Append('(');
-                sb.Append(name);
-                sb.Append(' ');
-                sb.Append('[');
-                sb.Append((i - start) / step);
-                sb.Append(']');
-                sb.Append(')');
+                matchedName = name;
+                seq = (i - start) / step;
                 return true;
             }
         }

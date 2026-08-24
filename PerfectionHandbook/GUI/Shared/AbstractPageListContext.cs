@@ -94,7 +94,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     private int GetItemPerPage()
     {
-        return (int)Math.Ceiling(itemPerPageModifier * rowPerPage * (PrimaryItemCount <= 0 ? 12 : PrimaryItemCount));
+        return (int)Math.Round(itemPerPageModifier * rowPerPage) * (PrimaryItemCount <= 0 ? 12 : PrimaryItemCount);
     }
 
     public virtual string SearchText

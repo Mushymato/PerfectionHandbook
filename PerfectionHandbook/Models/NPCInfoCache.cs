@@ -17,6 +17,20 @@ public sealed record NPCInfo(string Name, CharacterData Data)
     public NPC? Chara { get; set; } = null;
     public Dictionary<string, EventInfo> Events { get; private set; } = GetEvents(Name, LocationInfoCache.Cache.Values);
 
+    public string BirthdayText =>
+        Data.BirthSeason != null
+            ? Game1.content.LoadString(
+                "Strings\\UI:BirthdayOrder",
+                Data.BirthDay,
+                Utility.getSeasonNameFromNumber((int)Data.BirthSeason)
+            )
+            : string.Empty;
+
+    public IModNameInfo? ModNameInfo { get; private set; } = ModEntry.modNameAPI?.GetModName_FromNpcName(Name);
+    public bool HasModName => ModNameInfo != null;
+    public string ModName => ModNameInfo?.ModName ?? string.Empty;
+    public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
+
     public SDUISprite? GetMugShot()
     {
         if (Chara == null)

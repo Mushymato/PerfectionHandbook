@@ -12,14 +12,61 @@
         screen-read={ScreenRead}
         hovered-subject={:NpcInfo.Chara}
         left-click=|^HandleLeftClick(this)|>
-        <friend-grid-cell />
+          <panel vertical-content-alignment="End">
+            <lane orientation="Horizontal" vertical-content-alignment="Middle">
+              <image layout="64px 80px"
+                fit="Contain"
+                horizontal-alignment="middle"
+                vertical-alignment="end"
+                sprite={:MugShotSprite}
+                tint={:DisplayTint}/>
+              <lane orientation="Vertical" margin="0,0,12,0" >
+                <label margin="8,0,0,0" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+                <frame layout="stretch 24px" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
+                  <panel layout="100% stretch" vertical-content-alignment="End">
+                    <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
+                    <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
+                    <label text={HeartLevel} margin="16,0,0,0" horizontal-alignment="Start" shadow-alpha="0.8" />
+                    <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
+                  </panel>
+                </frame>
+              </lane>
+            </lane>
+            <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="4,0,0,44" />
+          </panel>
       </frame>
     </grid>
   </scrollable>
   <!-- Events -->
   <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
     <frame padding="12" focusable="true" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
-      <friend-grid-cell />
+      <panel vertical-content-alignment="End">
+        <lane orientation="Horizontal" vertical-content-alignment="Middle">
+          <image layout="64px 80px"
+            margin="8,8,0,0"
+            fit="Contain"
+            horizontal-alignment="middle"
+            vertical-alignment="end"
+            sprite={:MugShotSprite}
+            tint={:DisplayTint}/>
+          <lane orientation="Vertical" margin="0,0,12,0" >
+            <label margin="8,0,0,0" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+            <lane vertical-content-alignment="Middle">
+              <label margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
+              <frame layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
+                <panel layout="stretch stretch" vertical-content-alignment="End">
+                  <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
+                  <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
+                  <label text={HeartLevel} margin="16,0,0,0" horizontal-alignment="Start" shadow-alpha="0.8" />
+                  <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
+                </panel>
+              </frame>
+              <label *if={:NpcInfo.HasModName} margin="8,0,0,0" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
+            </lane>
+          </lane>
+        </lane>
+        <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="4,0,0,44" />
+      </panel>
     </frame>
     <scrollable peeking="128" scrollbar-margin="-18,0,0,0" >
       <lane orientation="vertical" layout="stretch content" margin="8">
@@ -27,10 +74,21 @@
           <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
           <spacer *case="false" layout="27px 27px" />
           <expander layout="stretch content" margin="0,0,0,4" is-expanded={<>IsExpanded}>
-            <label *outlet="header" margin="-8,0,8,0" text={:Info.HeaderText} shadow-alpha="0.8"/>
+            <lane *outlet="header" margin="-14,0,8,0">
+              <panel *if={:HasRequiredFriendshipForNPC} margin="0,0,8,0" horizontal-content-alignment="End" vertical-content-alignment="Middle">
+                <image margin="0,0,32,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
+                <digits scale="3" number={RequiredHeartLevelForNPC} />
+              </panel>
+              <label text={:Info.HeaderText} layout="stretch content" shadow-alpha="0.8"/>
+            </lane>
             <frame *if={IsExpanded} background={@Mods/StardewUI/Sprites/MenuSlotTransparent} padding="8" margin="48,0,0,0">
               <lane layout="stretch content" orientation="vertical">
-                <label *repeat={:Info.Preconditions} text={:DisplayText} padding="4" shadow-alpha="0.8" />
+                <label *if={:Info.HasModName} text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8"/>
+                <lane *repeat={:Preconds} *switch={:Status} padding="4">
+                  <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+                  <spacer *case="false" layout="27px 27px" />
+                  <label text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
+                </lane>
               </lane>
             </frame>
           </expander>
@@ -39,28 +97,3 @@
     </scrollable>
   </lane>
 </panel>
-
-<template name="friend-grid-cell">
-  <panel vertical-content-alignment="End">
-    <lane orientation="Horizontal" vertical-content-alignment="Middle">
-      <image layout="64px 80px"
-        fit="Contain"
-        horizontal-alignment="middle"
-        vertical-alignment="end"
-        sprite={:MugShotSprite}
-        tint={:DisplayTint}/>
-      <lane orientation="Vertical" margin="0,0,12,0" >
-        <label layout="stretch content" margin="4,0,0,8" font="small" text={:DisplayName} max-lines="1" shadow-alpha="0.8"/>
-        <frame layout="100% 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
-          <panel layout="100% stretch" vertical-content-alignment="End">
-            <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
-            <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
-            <label text={HeartLevel} margin="16,0,0,0" horizontal-alignment="Start" shadow-alpha="0.8" />
-            <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
-          </panel>
-        </frame>
-      </lane>
-    </lane>
-    <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="4,0,0,44" />
-  </panel>
-</template>

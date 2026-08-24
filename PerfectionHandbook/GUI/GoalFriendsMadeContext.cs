@@ -11,13 +11,42 @@ using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed partial record EventInfoDisplay(EventInfo Info)
+public sealed record EventPreconditionInfoDisplay(EventPreconditionInfo Info, bool Status);
+
+public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC)
 {
     [Notify]
     private bool hasSeen = false;
 
     [Notify]
     private bool isExpanded = false;
+
+    public readonly int RequiredFriendshipForNPC = GetRequiredFriendship(Info, ForNPC);
+    public int RequiredHeartLevelForNPC => RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
+    public bool HasRequiredFriendshipForNPC => RequiredFriendshipForNPC > -1;
+    public readonly IReadOnlyList<EventPreconditionInfoDisplay> Preconds = Info
+        .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info)))
+        .ToList();
+
+    private static readonly System.Reflection.MethodInfo? preconditionFriendship = typeof(Preconditions).GetMethod(
+        nameof(Preconditions.Friendship)
+    );
+
+    private static int GetRequiredFriendship(EventInfo info, string forNPC)
+    {
+        foreach (EventPreconditionInfo precond in info.Preconditions)
+        {
+            if (!precond.Negated && precond.Handler.Method == preconditionFriendship && precond.Args.Length >= 3)
+            {
+                int idx = precond.Args.IndexOf(forNPC);
+                if (idx > 0 && ArgUtility.TryGetInt(precond.Args, idx + 1, out int minPoints, out _))
+                {
+                    return minPoints;
+                }
+            }
+        }
+        return -1;
+    }
 
     internal bool Matches(string searchText)
     {
@@ -47,8 +76,10 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
     public readonly IReadOnlyList<EventInfoDisplay> EventDisplays = NpcInfo
-        .Events.Values.OrderBy(ei => ei.LocationName)
-        .Select(ei => new EventInfoDisplay(ei))
+        .Events.Values.Select(ei => new EventInfoDisplay(ei, NpcInfo.Name))
+        .OrderBy(static eid =>
+            (eid.HasRequiredFriendshipForNPC ? eid.RequiredFriendshipForNPC : int.MaxValue, eid.Info.EventId)
+        )
         .ToList();
 
     public readonly ObservableCollection<EventInfoDisplay> EventDisplaysFiltered = [];

@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Xna.Framework;
+using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Delegates;
@@ -17,6 +19,15 @@ public sealed record EventPreconditionInfo(
 {
     private readonly ArgGetInfo argGetInfo = DelegateInspector.ExtractTryGetPairs(Handler);
     public string DisplayText => $"{(Negated ? '!' : "")}{Handler.Method.Name}:{argGetInfo.FormArgDesc(Negated, Args)}";
+
+    public bool Evaluate(EventInfo eventInfo)
+    {
+        if (LocationInfoCache.Cache.TryGetValue(eventInfo.LocationId, out LocationInfo? locationInfo))
+        {
+            return Handler(locationInfo.Location, eventInfo.EventId, Args) == !Negated;
+        }
+        return false;
+    }
 }
 
 public sealed record EventInfo(
@@ -26,16 +37,22 @@ public sealed record EventInfo(
     string[] Actors,
     string LocationId,
     string LocationName,
-    string EventKey
+    string EventKey,
+    IModNameInfo? ModNameInfo
 )
 {
     public readonly string HeaderText = $"[{EventId}] @ {LocationName}";
+
+    public bool HasModName => ModNameInfo != null;
+    public string ModName => ModNameInfo?.ModName ?? string.Empty;
+    public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
 
     public static bool TryParse(
         string locationId,
         string locationName,
         string key,
         string script,
+        IAssetName assetName,
         [NotNullWhen(true)] out EventInfo? info
     )
     {
@@ -64,16 +81,7 @@ public sealed record EventInfo(
             string[] array = ArgUtility.SplitBySpace(setrawCharacterPositionsupChara);
             for (int i = 0; i < array.Length; i += 4)
             {
-                if (
-                    !ArgUtility.TryGet(
-                        array,
-                        i,
-                        out string actorName,
-                        out var error,
-                        allowBlank: true,
-                        "string actorName"
-                    )
-                )
+                if (!ArgUtility.TryGet(array, i, out string actorName, out _, allowBlank: true, "string actorName"))
                 {
                     continue;
                 }
@@ -81,7 +89,16 @@ public sealed record EventInfo(
             }
         }
 
-        info = new(eventId, preconds, commands, actors.ToArray(), locationId, locationName, key);
+        info = new(
+            eventId,
+            preconds,
+            commands,
+            actors.ToArray(),
+            locationId,
+            locationName,
+            key,
+            ModEntry.modNameAPI?.GetModName_FromAssetAndId(assetName, eventId)
+        );
         return true;
 
         static bool TryNormalizePrecond(
@@ -196,6 +213,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
                         Location.DisplayName ?? LocationId,
                         key,
                         commands,
+                        EventInvalidateTracker.AssetName,
                         out EventInfo? info
                     )
                 )

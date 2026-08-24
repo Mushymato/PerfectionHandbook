@@ -79,7 +79,7 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
         goalCtx,
         canToggleNeeded: false,
         canToggleCountMode: false,
-        itemPerPageModifier: 5.0 / 8.0
+        itemPerPageModifier: 6.0 / 13.0
     )
 {
     protected override IReadOnlyList<IngredientDisplay> MakeAllDisplay()
