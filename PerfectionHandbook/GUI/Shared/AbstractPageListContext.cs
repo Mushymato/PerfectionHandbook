@@ -38,7 +38,20 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         }
     } = SORTMODE_DEFAULT;
     public virtual StringSpinBoxViewModel SortModeCtx =>
-        new(() => SortMode, (value) => SortMode = value, ValidSortModes, "ui.sort-mode.");
+        new(
+            () => SortMode,
+            (value) =>
+            {
+                if (SortMode != value)
+                {
+                    SortMode = value;
+                    return true;
+                }
+                return false;
+            },
+            ValidSortModes,
+            "ui.sort-mode."
+        );
 
     protected void ReSortFilteredDisplay()
     {

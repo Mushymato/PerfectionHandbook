@@ -105,32 +105,27 @@ public sealed partial class HandbookContext
         }
     }
 
-    private static readonly string exportDir = Path.Combine(ModEntry.help.DirectoryPath, "cards");
-
     public void ExportCard()
     {
-        Directory.CreateDirectory(exportDir);
-        string exportFile = $"{who.displayName}-{who.farmName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
-        string exportPath = Path.Combine(exportDir, exportFile);
         try
         {
-            MenuHandler.ExportCard(this, exportPath);
-            ExportMsg = I18n.Ui_ExportPath(exportFile);
+            string exportFile = MenuHandler.ExportCard(this);
+            ExportMsg = I18n.Ui_ExportPath(I18n.Ui_Export(), exportFile);
         }
         catch (Exception ex)
         {
             ModEntry.Log($"Failed to export card:\n{ex}", LogLevel.Warn);
-            ExportMsg = I18n.Ui_ExportError();
+            ExportMsg = I18n.Ui_ExportError(I18n.Ui_Export());
         }
     }
 
     public void OpenCardDir()
     {
-        Directory.CreateDirectory(exportDir);
+        Directory.CreateDirectory(MenuHandler.exportDir);
         Process.Start(
             new ProcessStartInfo
             {
-                FileName = exportDir,
+                FileName = MenuHandler.exportDir,
                 UseShellExecute = true,
                 Verb = "open",
             }

@@ -142,8 +142,15 @@ public sealed class RemindersHUD
 
     internal void Saving(Farmer who)
     {
-        ModEntry.Log($"Saving {ctx.ReminderEntries.Count} reminders");
-        who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.ReminderEntries);
+        if (ctx.ReminderEntries.Count > 0)
+        {
+            ModEntry.Log($"Saving {ctx.ReminderEntries.Count} reminders");
+            who.modData[ModDataReminders] = JsonConvert.SerializeObject(ctx.ReminderEntries);
+        }
+        else
+        {
+            who.modData.Remove(ModDataReminders);
+        }
     }
 
     // shipped

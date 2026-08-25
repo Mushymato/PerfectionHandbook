@@ -41,7 +41,7 @@ public sealed record EventInfo(
     IModNameInfo? ModNameInfo
 )
 {
-    public readonly string HeaderText = $"[{EventId}] @ {LocationName}";
+    public readonly string HeaderText = $"{EventId} @ {LocationName}";
 
     public bool HasModName => ModNameInfo != null;
     public string ModName => ModNameInfo?.ModName ?? string.Empty;

@@ -20,8 +20,13 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         () => config.RowPerPage,
         (value) =>
         {
-            config.RowPerPage = value;
-            ModEntry.help.WriteConfig(config);
+            if (config.RowPerPage != value)
+            {
+                config.RowPerPage = value;
+                ModEntry.help.WriteConfig(config);
+                return true;
+            }
+            return false;
         },
         2,
         int.MaxValue,
@@ -40,6 +45,23 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
             }
         }
     }
+
+    public IntSpinBoxViewModel AutoExportPeriodSpinBox = new(
+        () => config.AutoExportCardPeriod,
+        (value) =>
+        {
+            if (config.AutoExportCardPeriod != value)
+            {
+                config.AutoExportCardPeriod = value;
+                ModEntry.help.WriteConfig(config);
+                return true;
+            }
+            return false;
+        },
+        0,
+        112,
+        7
+    );
 
     public KeybindList RemindersToggleKey
     {
@@ -70,8 +92,13 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         () => config.RemindersMaxCount,
         (value) =>
         {
-            config.RemindersMaxCount = value;
-            ModEntry.help.WriteConfig(config);
+            if (config.RemindersMaxCount != value)
+            {
+                config.RemindersMaxCount = value;
+                ModEntry.help.WriteConfig(config);
+                return false;
+            }
+            return true;
         },
         1,
         int.MaxValue,
@@ -112,6 +139,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
 
         RowPerPageSpinBox.Value = defaultConfig.RowPerPage;
         RemindersMaxCountSpinBox.Value = defaultConfig.RemindersMaxCount;
+        AutoExportPeriodSpinBox.Value = defaultConfig.AutoExportCardPeriod;
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;
         RemindersToggleKey = defaultConfig.RemindersToggleKey;

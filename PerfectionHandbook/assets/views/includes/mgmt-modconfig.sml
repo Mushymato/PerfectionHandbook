@@ -15,6 +15,10 @@
       <form-row title={#config.name.RowPerPage} tooltip={#config.desc.RowPerPage}>
         <spin-box *context={:RowPerPageSpinBox} />
       </form-row>
+      <form-row title={#config.name.AutoExportPeriod} tooltip={#config.desc.AutoExportPeriod}>
+        <spin-box *context={:AutoExportPeriodSpinBox} />
+      </form-row>
+      <spacer/>
 
       <banner margin="4" text={#config.section.Reminders} layout="content content"/>
       <spacer/>
@@ -70,7 +74,7 @@
         vertical-content-alignment="middle"
         margin="16"
         tooltip={&tooltip}>
-    <label layout="320px content"
+    <label layout="360px content"
             font="dialogue"
             text={&title}
             shadow-alpha="0.8"
@@ -89,7 +93,7 @@
     <label wheel=|Wheel($Direction)|
       text={Value}
       font="dialogue"
-      layout="content[128..] content"
+      layout="content[80..] content"
       padding="2,0,2,0"
       focusable="true"
       horizontal-alignment="middle"

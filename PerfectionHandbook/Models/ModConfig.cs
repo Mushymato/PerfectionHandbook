@@ -8,6 +8,7 @@ public sealed class ModConfig
 {
     public int RowPerPage { get; set; } = 16;
     public KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("RightShift+H");
+    public int AutoExportCardPeriod { get; set; } = 7;
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
     public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");
     public int RemindersMaxCount { get; set; } = 12;

@@ -1,5 +1,6 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
@@ -77,7 +78,7 @@ public sealed class ModEntry : Mod
             {
                 if (!Context.IsWorldReady)
                     return;
-                MenuHandler.ExportCard(new(Game1.player), Path.Combine(help.DirectoryPath, "testcard.png"));
+                MenuHandler.ExportCard(new(Game1.player));
             }
         );
 #if DEBUG
@@ -166,7 +167,24 @@ public sealed class ModEntry : Mod
 
     private void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
+        ModEntry.Log($"Game1.Date.TotalDays: {Game1.Date.TotalDays}");
         NPCInfoCache.RecheckNPCInstances();
+        if (config.AutoExportCardPeriod > 0 && (Game1.Date.TotalDays + 1) % config.AutoExportCardPeriod == 0)
+        {
+            try
+            {
+                string exportFile = MenuHandler.ExportCard(new(Game1.player));
+                Log($"Auto-exported card '{exportFile}'", LogLevel.Info);
+                Game1.addHUDMessage(new(I18n.Ui_Export_Auto(exportFile), HUDMessage.screenshot_type));
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to auto-export card, disabling:\n{ex}", LogLevel.Warn);
+                Game1.addHUDMessage(new(I18n.Ui_ExportError(I18n.Ui_Export())));
+                config.AutoExportCardPeriod = 0;
+                help.WriteConfig(config);
+            }
+        }
     }
 
     /// <summary>SMAPI static monitor Log wrapper</summary>

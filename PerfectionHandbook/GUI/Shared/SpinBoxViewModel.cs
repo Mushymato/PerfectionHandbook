@@ -3,14 +3,14 @@ using PerfectionHandbook.Integration;
 
 namespace PerfectionHandbook.GUI.Shared;
 
-public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<T> backingSetter)
+public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Func<T, bool> backingSetter)
     : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private void RaisePropertyChanged(string propName)
+    private void OnPropertyChanged(PropertyChangedEventArgs args)
     {
-        PropertyChanged?.Invoke(this, new(propName));
+        PropertyChanged?.Invoke(this, args);
     }
 
     public T Value
@@ -18,22 +18,26 @@ public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<
         get => ValueGetter();
         set => ValueSetter(value);
     }
+    private static readonly PropertyChangedEventArgs ValuePCEA = new(nameof(Value));
     public string ValueLabel => ValueLabelGetter();
+    private static readonly PropertyChangedEventArgs ValueLabelPCEA = new(nameof(ValueLabel));
 
     public virtual T ValueGetter() => backingGetter();
 
     public virtual void ValueSetter(T newValue)
     {
-        backingSetter(newValue);
-        RaisePropertyChanged(nameof(Value));
-        RaisePropertyChanged(nameof(ValueLabel));
+        if (backingSetter(newValue))
+        {
+            OnPropertyChanged(ValuePCEA);
+            OnPropertyChanged(ValueLabelPCEA);
+        }
     }
 
     public virtual string ValueLabelGetter() => Value?.ToString() ?? string.Empty;
 
-    public abstract void Decrease();
+    public abstract bool Decrease();
 
-    public abstract void Increase();
+    public abstract bool Increase();
 
     public bool Wheel(SDUIDirection direction)
     {
@@ -52,7 +56,7 @@ public abstract class AbstractSpinBoxViewModel<T>(Func<T> backingGetter, Action<
 
 public sealed class IntSpinBoxViewModel(
     Func<int> backingGetter,
-    Action<int> backingSetter,
+    Func<int, bool> backingSetter,
     int minimum,
     int maximum,
     int step
@@ -65,14 +69,22 @@ public sealed class IntSpinBoxViewModel(
         base.ValueSetter(newValue);
     }
 
-    public override void Decrease() => Value -= step;
+    public override bool Decrease()
+    {
+        Value -= step;
+        return true;
+    }
 
-    public override void Increase() => Value += step;
+    public override bool Increase()
+    {
+        Value += step;
+        return true;
+    }
 }
 
 public sealed class StringSpinBoxViewModel(
     Func<string> backingGetter,
-    Action<string> backingSetter,
+    Func<string, bool> backingSetter,
     string[] validValues,
     string i18nPrefix
 ) : AbstractSpinBoxViewModel<string>(backingGetter, backingSetter)
@@ -86,7 +98,7 @@ public sealed class StringSpinBoxViewModel(
         base.ValueSetter(newValue);
     }
 
-    private void ChangeIndex(int change)
+    private bool ChangeIndex(int change)
     {
         int idx = ValidValues.IndexOf(Value);
         idx += change;
@@ -95,11 +107,12 @@ public sealed class StringSpinBoxViewModel(
         else if (idx >= ValidValues.Length)
             idx = 0;
         Value = ValidValues[idx];
+        return true;
     }
 
-    public override void Decrease() => ChangeIndex(-1);
+    public override bool Decrease() => ChangeIndex(-1);
 
-    public override void Increase() => ChangeIndex(1);
+    public override bool Increase() => ChangeIndex(1);
 
     public override string ValueLabelGetter() => I18n.GetByKey(string.Concat(i18nPrefix, Value));
 }

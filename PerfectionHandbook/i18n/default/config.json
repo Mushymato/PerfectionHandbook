@@ -4,6 +4,8 @@
   "config.desc.RowPerPage": "Number of rows to display per page on subpages with many items. If you feel lag in the menu, lower this value and then restart the handbook.",
   "config.name.ShowHandbookKey": "Show Handbook Key",
   "config.desc.ShowHandbookKey": "Press this key to display the perfection handbook.",
+  "config.name.AutoExportPeriod": "Auto-export Period",
+  "config.desc.AutoExportPeriod": "Auto-export a new perfection card periodically, set to 0 to disable.",
   "config.section.Reminders": "Reminders",
   "config.name.RemindersToggleKey": "Toggle Key",
   "config.desc.RemindersToggleKey": "Press this key to toggle the reminders HUD",

@@ -31,16 +31,21 @@ public static class MenuHandler
     internal const string VIEW_ASSET_HANDBOOK = $"{VIEW_ASSET_PREFIX}/handbook";
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
     internal const string VIEW_ASSET_CARD = $"{VIEW_ASSET_PREFIX}/card";
+    internal static readonly string exportDir = Path.Combine(
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"),
+        ".smapi",
+        ModEntry.ModId
+    );
 
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
         new(static (ctx) => viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_REMINDERS, ctx))
     );
     internal static RemindersHUD Reminders => reminders.Value;
-
     internal static readonly PerScreen<HandbookRefs> handbook = new(static () => new());
 
     public static void Setup()
     {
+        Directory.CreateDirectory(exportDir);
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
         viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");
@@ -103,8 +108,12 @@ public static class MenuHandler
         return false;
     }
 
-    public static void ExportCard(HandbookContext context, string exportPath)
+    public static string ExportCard(HandbookContext context)
     {
+        string exportFile =
+            $"{context.who.displayName}-{context.who.farmName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
+        exportFile = string.Join("_", exportFile.Split(Path.GetInvalidFileNameChars()));
+        string exportPath = Path.Combine(exportDir, exportFile);
         IViewDrawable? drawable = viewEngine.CreateDrawableFromAsset(VIEW_ASSET_CARD);
         drawable.Context = context;
         drawable.MaxSize = new Vector2(1280, 4096);
@@ -112,6 +121,7 @@ public static class MenuHandler
         using Stream stream = File.Create(exportPath);
         exportRT.SaveAsPng(stream, exportRT.Width, exportRT.Height);
         exportRT.Dispose();
+        return exportFile;
     }
 
     public static bool IsPreloading { get; private set; } = false;
