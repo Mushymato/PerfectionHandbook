@@ -227,7 +227,9 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             displayingFulfillment = fulfillment;
             UpdateAllStatus(fulfillment.Who);
             foreach (GoalFulfillment eachful in GoalCtx.Fulfillments)
-                eachful.DisplayTint = eachful == displayingFulfillment ? Color.White : Color.Transparent;
+            {
+                eachful.Selected = eachful == displayingFulfillment;
+            }
             UpdateFilteredDisplayPaginated();
         }
     }

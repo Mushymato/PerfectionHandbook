@@ -32,7 +32,8 @@ public sealed partial record GoalFulfillment(Farmer? Who, int Count, int Total) 
     public bool HasMiniIcon => Who != null && MiniIcon != null;
 
     [Notify]
-    private Color displayTint;
+    private bool selected = false;
+    public Color DisplayTint => Selected ? Color.White : Color.Transparent;
 
     // default reverse compare
     public int CompareTo(GoalFulfillment? other)

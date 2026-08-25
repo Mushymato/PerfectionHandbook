@@ -20,27 +20,25 @@
       option2={:^CompleteCountToggleText} />
   </lane>
   <!-- Farmer Pick -->
-  <grid item-layout="length: 128+" layout="stretch content">
-    <frame *repeat={:Fulfillments}
-      left-click=|^^ClickFulfilment(this)|
-      border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
-      border-tint={DisplayTint}
-      tooltip={:TooltipText}
-      +hover:border-tint="#00000040"
-      +transition:border-tint="100ms EaseInSine"
-      focusable="true"
-      layout="stretch content"
-      padding="4,0,12,4"
-      vertical-content-alignment="middle">
-      <lane *switch={:HasMiniIcon} vertical-content-alignment="middle">
-        <image *case="true" layout="48px 48px" fit="Contain" vertical-alignment="end" sprite={:MiniIcon}/>
-        <image *case="false" layout="48px 48px" fit="Contain" vertical-alignment="end" sprite={:~HandbookContext.FarmIcon}/>
-        <label text={:DisplayText} shadow-alpha="0.4" max-lines="-1"/>
-      </lane>
-    </frame>
-  </grid>
+  <frame *repeat={:Fulfillments}
+    left-click=|^^ClickFulfilment(this)|
+    border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
+    border-tint={DisplayTint}
+    tooltip={:TooltipText}
+    +hover:border-tint="#00000040"
+    +transition:border-tint="100ms EaseInSine"
+    focusable="true"
+    layout="content content"
+    padding="4,0,4,4"
+    vertical-content-alignment="middle">
+    <lane *switch={:HasMiniIcon} vertical-content-alignment="middle">
+      <image *case="true" layout="48px 48px" fit="Contain" vertical-alignment="end" sprite={:MiniIcon}/>
+      <image *case="false" layout="48px 48px" fit="Contain" vertical-alignment="end" sprite={:~HandbookContext.FarmIcon}/>
+      <label *if={Selected} margin="0,0,8,0" text={:DisplayText} shadow-alpha="0.4" max-lines="-1"/>
+    </lane>
+  </frame>
   <!-- paginator -->
-  <panel *if={^HasPagination} layout="content content" horizontal-content-alignment="Start">
+  <panel *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
     <lane orientation="horizontal" margin="0,0"
       vertical-content-alignment="Middle"
       button-press=|^HandleShoulderButtons($Button)|>
