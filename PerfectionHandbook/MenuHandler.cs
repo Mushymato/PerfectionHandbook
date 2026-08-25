@@ -110,8 +110,26 @@ public static class MenuHandler
 
     public static string ExportCard(HandbookContext context)
     {
-        string exportFile =
-            $"{context.who.displayName}-{context.who.farmName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
+        Farmer who = context.who;
+        string exportFile;
+        if (Context.IsMultiplayer)
+        {
+            int idx = 0;
+            foreach ((int i, long uid) in who.team.cellarAssignments.Pairs)
+            {
+                if (who.UniqueMultiplayerID == uid)
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            exportFile =
+                $"{who.farmName}-{idx}-{who.displayName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
+        }
+        else
+        {
+            exportFile = $"{who.farmName}-{who.displayName}-{Game1.CurrentSeasonDisplayName}-{Game1.dayOfMonth}.png";
+        }
         exportFile = string.Join("_", exportFile.Split(Path.GetInvalidFileNameChars()));
         string exportPath = Path.Combine(exportDir, exportFile);
         IViewDrawable? drawable = viewEngine.CreateDrawableFromAsset(VIEW_ASSET_CARD);

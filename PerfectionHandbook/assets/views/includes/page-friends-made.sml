@@ -21,7 +21,7 @@
                 sprite={:MugShotSprite}
                 tint={:DisplayTint}/>
               <lane orientation="Vertical" margin="0,0,12,0" >
-                <label margin="8,0,0,0" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+                <label margin="8,0,0,8" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
                 <frame layout="stretch 24px" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                   <panel layout="100% stretch" vertical-content-alignment="End">
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
@@ -50,7 +50,7 @@
             sprite={:MugShotSprite}
             tint={:DisplayTint}/>
           <lane orientation="Vertical" margin="0,0,12,0" >
-            <label margin="8,0,0,0" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+            <label margin="8,0,0,8" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
             <lane vertical-content-alignment="Middle">
               <label margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
               <frame layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
