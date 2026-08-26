@@ -6,6 +6,7 @@ using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
+using StardewValley.Delegates;
 using StardewValley.Extensions;
 using StardewValley.TokenizableStrings;
 
@@ -28,15 +29,14 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC)
         .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info)))
         .ToList();
 
-    private static readonly System.Reflection.MethodInfo? preconditionFriendship = typeof(Preconditions).GetMethod(
-        nameof(Preconditions.Friendship)
-    );
+    private static EventPreconditionDelegate? PreconditionFriendship =>
+        field ??= EventPreconditionInfo.GetPrecondition("Friendship");
 
     private static int GetRequiredFriendship(EventInfo info, string forNPC)
     {
         foreach (EventPreconditionInfo precond in info.Preconditions)
         {
-            if (!precond.Negated && precond.Handler.Method == preconditionFriendship && precond.Args.Length >= 3)
+            if (!precond.Negated && precond.Handler == PreconditionFriendship && precond.Args.Length >= 3)
             {
                 int idx = precond.Args.IndexOf(forNPC);
                 if (idx > 0 && ArgUtility.TryGetInt(precond.Args, idx + 1, out int minPoints, out _))

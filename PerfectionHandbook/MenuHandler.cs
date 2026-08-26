@@ -78,6 +78,8 @@ public static class MenuHandler
         IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
         menuCtrl.CloseAction = HandbookCloseAction;
         menuCtrl.EnableCloseButton();
+        menuCtrl.CloseButtonOffset = new(-52, 0);
+        menuCtrl.CloseSound = string.Empty;
         Game1.activeClickableMenu = menuCtrl.Menu;
         handbook.Value.SetTarget(menuCtrl, context);
     }
@@ -157,6 +159,7 @@ public static class MenuHandler
             IMenuController? menuCtrl = viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_HANDBOOK, context);
             menuCtrl.HideHUD = false;
             menuCtrl.OpenSound = string.Empty;
+            menuCtrl.CloseSound = string.Empty;
             GameTime gameTime = new();
             TimeSpan oneTick = TimeSpan.FromTicks(1);
             menuCtrl.Menu.update(gameTime);

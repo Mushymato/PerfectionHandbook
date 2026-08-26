@@ -16,6 +16,8 @@ public enum CountMode
 
 public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int OwnedCount) : IPageDisplayEntry
 {
+    public virtual string FocusableTag { get; } = string.Empty;
+
     public override int GetHashCode() => Info.Datum.QualifiedItemId.GetHashCode();
 
     public virtual Item ReprItem => Info.ReprItem;
@@ -206,12 +208,21 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     {
         Hoverable = false;
         display.IsLocked = true;
+        Game1.playSound("dwop");
+        MenuHandler.Handbook_FocusOnTaggedView("side-panel-title");
     }
 
     public virtual void UnlockHoverable(TDisplay display)
     {
+        DoUnlockHoverable(display);
+        Game1.playSound("dwoop");
+    }
+
+    private void DoUnlockHoverable(TDisplay display)
+    {
         Hoverable = true;
         display.IsLocked = false;
+        MenuHandler.Handbook_FocusOnTaggedView(display.FocusableTag);
     }
 
     public virtual string CompleteCountToggleText => string.Empty;
@@ -252,7 +263,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         if (Hovered != null)
         {
             bool locked = Hovered.IsLocked;
-            UnlockHoverable(Hovered);
+            DoUnlockHoverable(Hovered);
             Hovered.IsHovered = false;
             Hoverable = true;
             Hovered = null;

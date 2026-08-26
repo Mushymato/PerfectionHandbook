@@ -1,55 +1,54 @@
-<panel layout="stretch stretch" horizontal-content-alignment="End">
+<panel layout="stretch stretch">
+  <banner background={@Mods/StardewUI/Sprites/BannerBackground}
+    background-border-thickness="48,12"
+    margin="12,-80,0,0" text={#ui.misc.mod-config} layout="content content" item-span="-1"/>
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
-    <grid item-layout="count: 2" layout="stretch content" margin="24,12">
-      <banner margin="4" text={#ui.misc.mod-config} layout="content content"/>
-      <spacer/>
+    <grid item-layout="count: 10" layout="stretch content" margin="24,12">
+      <!-- general -->
+      <banner margin="4" text={#config.section.General} layout="content content" item-span="-1"/>
+      <form-label text={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey} />
+      <form-cell>
+        <keybind keybind-list={<>ShowHandbookKey} />
+      </form-cell>
 
-      <form-row title={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey}>
-        <keybind-editor button-height="64"
-            sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
-            editable-type="MultipleKeybinds"
-            add-button-text={#config.label.add-key}
-            focusable="true"
-            keybind-list={<>ShowHandbookKey} />
-      </form-row>
-      <form-row title={#config.name.RowPerPage} tooltip={#config.desc.RowPerPage}>
+      <form-label text={#config.name.RowPerPage} tooltip={#config.desc.RowPerPage} />
+      <form-cell>
         <spin-box *context={:RowPerPageSpinBox} />
-      </form-row>
-      <form-row title={#config.name.AutoExportPeriod} tooltip={#config.desc.AutoExportPeriod}>
+      </form-cell>
+
+      <form-label text={#config.name.AutoExportPeriod} tooltip={#config.desc.AutoExportPeriod} />
+      <form-cell>
         <spin-box *context={:AutoExportPeriodSpinBox} />
-      </form-row>
-      <spacer/>
+      </form-cell>
 
-      <banner margin="4" text={#config.section.Reminders} layout="content content"/>
-      <spacer/>
+      <spacer item-span="-1"/>
 
-      <form-row title={#config.name.RemindersToggleKey} tooltip={#config.desc.RemindersToggleKey}>
-        <keybind-editor button-height="64"
-            sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
-            editable-type="MultipleKeybinds"
-            add-button-text={#config.label.add-key}
-            focusable="true"
-            keybind-list={<>RemindersToggleKey} />
-      </form-row>
-      <form-row title={#config.name.RemindersEditModifierKey} tooltip={#config.desc.RemindersEditModifierKey}>
-        <keybind-editor button-height="64"
-            sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
-            editable-type="MultipleKeybinds"
-            add-button-text={#config.label.add-key}
-            focusable="true"
-            keybind-list={<>RemindersEditModifierKey} />
-      </form-row>
-      <form-row title={#config.name.RemindersMaxCount} tooltip={#config.desc.RemindersMaxCount}>
+      <!-- reminders -->
+      <banner margin="4,16,0,4" text={#config.section.Reminders} layout="content content" item-span="-1"/>
+
+      <form-label text={#config.name.RemindersToggleKey} tooltip={#config.desc.RemindersToggleKey} />
+      <form-cell>
+        <keybind keybind-list={<>RemindersToggleKey} />
+      </form-cell>
+
+      <form-label text={#config.name.RemindersEditModifierKey} tooltip={#config.desc.RemindersEditModifierKey} />
+      <form-cell>
+        <keybind keybind-list={<>RemindersEditModifierKey} />
+      </form-cell>
+
+      <form-label text={#config.name.RemindersMaxCount} tooltip={#config.desc.RemindersMaxCount} />
+      <form-cell>
         <spin-box *context={:RemindersMaxCountSpinBox} />
-      </form-row>
-      <form-row title={#config.name.RemindersDefaultExpanded} tooltip={#config.desc.RemindersDefaultExpanded}>
-        <checkbox margin="4"
-          tooltip={#config.desc.RemindersDefaultExpanded}
-          is-checked={<>RemindersDefaultExpanded}
-          label-text={#config.checkbox.RemindersDefaultExpanded}/>
-      </form-row>
-      <form-row title={#config.name.RemindersHUDPosition} tooltip={#config.desc.RemindersHUDPosition}>
-        <nine-grid-editor layout="80px"
+      </form-cell>
+
+      <form-label text={#config.name.RemindersDefaultExpanded} tooltip={#config.desc.RemindersDefaultExpanded} />
+      <form-cell>
+        <checkbox margin="4" is-checked={<>RemindersDefaultExpanded}/>
+      </form-cell>
+
+      <form-label text={#config.name.RemindersHUDPosition} tooltip={#config.desc.RemindersHUDPosition} />
+      <form-cell>
+        <nine-grid-editor layout="48px"
           hover-tint-color="orange"
           button-sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:dark-light}
           direction-sprite-map={@Mods/StardewUI/SpriteMaps/Directions}
@@ -57,35 +56,61 @@
           focusable="true">
           <include *context={:RemindersHUDCtx} name="mushymato.PerfectionHandbook/views/reminder-hud" />
         </nine-grid-editor>
-      </form-row>
+      </form-cell>
 
+      <spacer item-span="-1"/>
+
+      <panel layout="stretch content" item-span="-1" horizontal-content-alignment="End">
+        <button 
+          hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+          font="dialogue"
+          margin="0,8,16,0"
+          text={#ui.reset}
+          left-click=|ResetConfigsToDefault()|
+        />
+      </panel>
     </grid>
   </scrollable>
-  <button hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-    font="dialogue"
-    margin="0,8,16,0"
-    text={#ui.reset}
-    left-click=|ResetConfigsToDefault()|
-  />
 </panel>
 
-<template name="form-row">
-  <lane layout="content content"
-        vertical-content-alignment="middle"
-        margin="16"
-        tooltip={&tooltip}>
-    <label layout="360px content"
-            font="dialogue"
-            text={&title}
-            shadow-alpha="0.8"
-            shadow-color="#4448"
-            shadow-offset="-2, 2" />
-    <outlet />
-  </lane>
+<template name="form-label">
+  <panel item-span="3"
+    layout="stretch 88px"
+    margin="0,0,12,0"
+    horizontal-content-alignment="End"
+    vertical-content-alignment="Middle"
+    focusable="true"
+    tooltip={&tooltip}>
+    <label layout="content content"
+      font="dialogue"
+      text={&text}
+      shadow-alpha="0.8"
+      shadow-offset="-2, 2"/>
+  </panel>
+</template>
+
+<template name="form-cell">
+  <panel item-span="2"
+    layout="stretch 88px"
+    margin="4,0,0,0"
+    horizontal-content-alignment="Start"
+    vertical-content-alignment="Middle">
+    <outlet/>
+  </panel>
+</template>
+
+<template name="keybind">
+  <keybind-editor
+    button-height="64"
+    sprite-map={@Mods/StardewUI/SpriteMaps/Buttons:default-default-0.5}
+    editable-type="MultipleKeybinds"
+    add-button-text={#config.label.add-key}
+    focusable="true"
+    keybind-list={&keybind-list} />
 </template>
 
 <template name="spin-box">
-  <lane orientation="horizontal" vertical-content-alignment="middle" margin="4,0">
+  <lane layout="content 60px" orientation="horizontal" vertical-content-alignment="Middle" margin="4,0">
     <image sprite={@Mods/StardewUI/Sprites/CaretLeft} focusable="true"
       left-click=|Decrease()|
       +hover:scale="1.2"

@@ -1,15 +1,15 @@
-<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content">
+<lane margin="8,2,0,0" orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content" z-index="3">
   <!-- Sort -->
-  <panel margin="8,0,0,0" layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
+  <panel layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
     </panel>
   </panel>
   <!-- Search Bar -->
-  <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="260px content" />
+  <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="260px content" border-thickness="16,18"/>
   <!-- Swtich Modes -->
-  <lane orientation="vertical" margin="4,0" layout="content content">
+  <lane orientation="horizontal" margin="4,0" layout="content content">
     <two-segment *if={:^CanToggleNeeded}
       binding={<>^NeededIndex}
       option1={#ui.showing-need}
@@ -39,7 +39,7 @@
   </frame>
   <!-- paginator -->
   <panel *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
-    <lane orientation="horizontal" margin="0,0"
+    <lane orientation="horizontal" margin="0,0,8,0"
       vertical-content-alignment="Middle"
       button-press=|^HandleShoulderButtons($Button)|>
       <image sprite={@Mods/StardewUI/Sprites/LargeLeftArrow}
@@ -60,15 +60,15 @@
 </lane>
 
 <template name="two-segment">
-  <frame margin="0,-2" border={@Mods/StardewUI/Sprites/ScrollBarTrack}>
+  <frame margin="2,0" border={@Mods/StardewUI/Sprites/ScrollBarTrack}>
     <segments balanced="true"
         highlight={@Mods/StardewUI/Sprites/ButtonDark}
         highlight-transition="150ms EaseOutQuart"
         selected-index={&binding}>
-      <panel layout="112px content" horizontal-content-alignment="middle">
+      <panel layout="112px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
         <label margin="4,8" text={&option1} />
       </panel>
-      <panel layout="112px content" horizontal-content-alignment="middle">
+      <panel layout="112px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
         <label margin="4,8" text={&option2}/>
       </panel>
     </segments>

@@ -96,7 +96,7 @@ public sealed class ModEntry : Mod
                 {
                     ArgGetInfo argGetInfo = DelegateInspector.ExtractTryGetPairs(handler);
                     argGetInfo.LogRepr();
-                    Log(argGetInfo.FormArgDesc(false, ["", "44", "55"]));
+                    Log(argGetInfo.FormArgDesc(false, "Tile", ["", "44", "55"]));
                 }
             }
         );

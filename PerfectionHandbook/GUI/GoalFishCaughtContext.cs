@@ -221,7 +221,7 @@ public sealed record CatchInDisplay(
 
 public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : AbstractItemCountDisplay(Info, OwnedCount)
 {
-    public string ViewName => $"fish-{Info.Datum.QualifiedItemId}";
+    public override string FocusableTag { get; } = $"fish-{Info.Datum.QualifiedItemId}";
 
     public override bool Needed => Count < 0;
     private int biggestCatch = 0;
@@ -284,7 +284,8 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
         goalCtx,
         canToggleNeeded: true,
         canToggleCountMode: true,
-        defaultCountMode: CountMode.Completed
+        defaultCountMode: CountMode.Completed,
+        itemPerPageModifier: 6.0 / 8.0
     )
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingFished();
@@ -375,18 +376,6 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
         if (display.ToggleReminder())
             return;
         HoveredClick(display);
-    }
-
-    public override void LockHoverable(FishCaughtDisplay display)
-    {
-        base.LockHoverable(display);
-        MenuHandler.Handbook_FocusOnTaggedView("side-panel-title");
-    }
-
-    public override void UnlockHoverable(FishCaughtDisplay display)
-    {
-        base.UnlockHoverable(display);
-        MenuHandler.Handbook_FocusOnTaggedView(display.ViewName);
     }
 
     public override bool TryOpenPage()

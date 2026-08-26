@@ -362,7 +362,7 @@ public sealed partial record CropDisplay(
     CropDetailDisplaySettings CropCalendarSettings
 ) : ItemShippedDisplay(Info, OwnedCount, NeededCount)
 {
-    public string ViewName => $"crop-{Info.Datum.QualifiedItemId}";
+    public override string FocusableTag { get; } = $"crop-{Info.Datum.QualifiedItemId}";
 
     public override bool Needed => completedCount <= NeededCount;
 
@@ -393,7 +393,8 @@ public enum CropListKind
 public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKind kind)
     : AbstractItemCountContext<CropDisplay>(
         goalCtx,
-        defaultCountMode: kind == CropListKind.Any ? CountMode.Owned : CountMode.Completed
+        defaultCountMode: kind == CropListKind.Any ? CountMode.Owned : CountMode.Completed,
+        itemPerPageModifier: 6.0 / 8.0
     )
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();
@@ -453,16 +454,10 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
         HoveredClick(display);
     }
 
-    public override void LockHoverable(CropDisplay display)
-    {
-        base.LockHoverable(display);
-        MenuHandler.Handbook_FocusOnTaggedView("side-panel-title");
-    }
-
     public override void UnlockHoverable(CropDisplay display)
     {
         base.UnlockHoverable(display);
-        MenuHandler.Handbook_FocusOnTaggedView(display.ViewName);
+        MenuHandler.Handbook_FocusOnTaggedView(display.FocusableTag);
     }
 
     public override bool TryOpenPage()

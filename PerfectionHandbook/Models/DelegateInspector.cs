@@ -12,38 +12,34 @@ namespace PerfectionHandbook.Models;
 public sealed record ArgGetInfo(
     IReadOnlyList<(int, Type, string)> FixedIndex,
     IReadOnlyList<(int, int, int, Type, string)> LoopIndex,
-    bool Invert = false
+    bool Invert = false,
+    string? InvertOf = null
 )
 {
-    public string FormArgDesc(bool negated, string[] args)
+    public string FormArgDesc(bool negated, string methodName, string[] args)
     {
         if (Invert)
+        {
             negated = !negated;
+            methodName = InvertOf ?? methodName;
+        }
         StringBuilder sb = new();
         if (negated)
-            sb.Append(" NOT");
+            sb.Append("NOT ");
+        sb.Append(methodName);
+        if (args.Length == 1)
+            return sb.ToString();
+        sb.Append(':');
         for (int i = 1; i < args.Length; i++)
         {
             sb.Append(' ');
-            sb.Append(args[i]);
-            if (TryMatchFixedIndex(i, out string? matchedName))
+            if (TryMatchFixedIndex(i, out string? matchedName) || TryMatchLoopIndex(i, out matchedName, out _))
             {
-                sb.Append('(');
-                sb.Append(matchedName);
-                sb.Append(')');
-                continue;
-            }
-            if (TryMatchLoopIndex(i, out matchedName, out int seq))
-            {
-                sb.Append('(');
-                sb.Append(matchedName);
-                sb.Append(' ');
                 sb.Append('[');
-                sb.Append(seq);
+                sb.Append(matchedName);
                 sb.Append(']');
-                sb.Append(')');
-                continue;
             }
+            sb.Append(args[i]);
         }
         return sb.ToString();
     }
@@ -154,7 +150,12 @@ public static class DelegateInspector
             if (Event.TryGetPreconditionHandler(notless, out EventPreconditionDelegate handler))
             {
                 ArgGetInfo notlessArgGet = ExtractTryGetPairs(handler);
-                return new(notlessArgGet.FixedIndex, notlessArgGet.LoopIndex, true);
+                return new(
+                    notlessArgGet.FixedIndex,
+                    notlessArgGet.LoopIndex,
+                    Invert: true,
+                    InvertOf: handler.Method.Name
+                );
             }
         }
 
@@ -209,11 +210,19 @@ public static class DelegateInspector
                     continue;
                 if (hasLoop && loopIndexOffset.HasValue)
                 {
-                    loopIndex.Add((start!.Value, step!.Value, loopIndexOffset.Value, type, (string)previous.operand));
+                    loopIndex.Add(
+                        (
+                            start!.Value,
+                            step!.Value,
+                            loopIndexOffset.Value,
+                            type,
+                            ((string)previous.operand).Split(' ', 2).Last()
+                        )
+                    );
                 }
                 else if (indexValue.HasValue)
                 {
-                    fixedIndex.Add((indexValue.Value, type, (string)previous.operand));
+                    fixedIndex.Add((indexValue.Value, type, ((string)previous.operand).Split(' ', 2).Last()));
                 }
                 indexValue = null;
             }
@@ -271,7 +280,7 @@ public static class DelegateInspector
                     }
                 }
             }
-            finish:
+        finish:
             if (stloc == null)
             {
                 return false;

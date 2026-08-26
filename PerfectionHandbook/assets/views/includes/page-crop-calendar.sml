@@ -125,9 +125,9 @@
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={:FilteredDisplayPaginated}
-        focusable-tag={:ViewName}
+        focusable-tag={:FocusableTag}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
-        border-thickness="10"
+        border-thickness="8"
         layout="64px 64px"
         border-tint={BorderTint}
         focusable="true"

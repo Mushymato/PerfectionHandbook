@@ -39,7 +39,7 @@
   </scrollable>
   <!-- Events -->
   <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
-    <frame padding="12" focusable="true" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
+    <frame padding="12" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
       <panel vertical-content-alignment="End">
         <lane orientation="Horizontal" vertical-content-alignment="Middle">
           <image layout="64px 80px"
@@ -50,9 +50,9 @@
             sprite={:MugShotSprite}
             tint={:DisplayTint}/>
           <lane orientation="Vertical" margin="0,0,12,0" >
-            <label margin="8,0,0,8" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+            <label focusable="true"  margin="8,0,0,8" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
             <lane vertical-content-alignment="Middle">
-              <label margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
+              <label focusable="true" margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
               <frame layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                 <panel layout="stretch stretch" vertical-content-alignment="End">
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
@@ -61,7 +61,7 @@
                   <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
                 </panel>
               </frame>
-              <label *if={:NpcInfo.HasModName} margin="8,0,0,0" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
+              <label *if={:NpcInfo.HasModName} focusable="true" margin="8,0,0,0" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
             </lane>
           </lane>
         </lane>
@@ -83,11 +83,11 @@
             </lane>
             <frame *if={IsExpanded} background={@Mods/StardewUI/Sprites/MenuSlotTransparent} padding="8" margin="48,0,0,0">
               <lane layout="stretch content" orientation="vertical">
-                <label *if={:Info.HasModName} text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8"/>
+                <label *if={:Info.HasModName} focusable="true" text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8"/>
                 <lane *repeat={:Preconds} *switch={:Status} padding="4">
                   <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
                   <spacer *case="false" layout="27px 27px" />
-                  <label text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
+                  <label focusable="true" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
                 </lane>
               </lane>
             </frame>

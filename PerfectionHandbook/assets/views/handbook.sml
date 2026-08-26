@@ -6,7 +6,7 @@
   <!-- Main -->
   <lane *case="Main" margin="6,0,0,0" layout="stretch content" orientation="Vertical">
     <!-- Misc -->
-    <lane margin="6,4,16,4" orientation="Horizontal" layout="stretch content">
+    <lane margin="6,4,12,4" orientation="Horizontal" layout="stretch content">
       <panel layout="stretch content">
         <banner margin="4,12,0,0" text={:PerfectionTitle} />
       </panel>
@@ -78,7 +78,7 @@
 </frame>
 
 <template name="goal-grid">
- <grid margin="6,0,16,0" item-layout="count: 5" layout="stretch content">
+ <grid margin="6,0,12,0" item-layout="count: 5" layout="stretch content">
     <button *repeat={&goals}
       default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
       hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
@@ -106,7 +106,7 @@
       orientation="vertical"
       opacity="0"
       +show:opacity="1"
-      +transition:opacity="200ms EaseOutCubic">
+      +transition:opacity="150ms EaseOutSine">
     <include button-press=|HandleShoulderButtons($Button)| name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
     <image button-press=|HandleShoulderButtons($Button)| sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,0,0,0" fit="Stretch"/>
     <include name={&page-include} />

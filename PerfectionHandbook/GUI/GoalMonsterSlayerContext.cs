@@ -89,26 +89,12 @@ public sealed class GoalMonsterSlayerContext(IGoalContext goalCtx)
             (string slayerId, MonsterSlayerQuestData slayerQuestData) in DataLoader.MonsterSlayerQuests(Game1.content)
         )
         {
-            List<string> targets = [];
-            foreach (string targetMonster in slayerQuestData.Targets)
-            {
-                if (monsterData.TryGetValue(targetMonster, out string? monsterDataStr))
-                {
-                    string[] parts = monsterDataStr.Split('/');
-                    if (parts.Length > 14)
-                    {
-                        targets.Add(parts[14]);
-                        continue;
-                    }
-                }
-                targets.Add(targetMonster);
-            }
             slayerDisplay.Add(
                 new(
                     slayerId,
                     TokenParser.ParseText(slayerQuestData.DisplayName) ?? slayerId,
                     GetMonsterDisplaySprite(slayerQuestData),
-                    targets,
+                    slayerQuestData.Targets,
                     slayerQuestData.Count
                 )
             );

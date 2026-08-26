@@ -96,9 +96,9 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
             {
                 config.RemindersMaxCount = value;
                 ModEntry.help.WriteConfig(config);
-                return false;
+                return true;
             }
-            return true;
+            return false;
         },
         1,
         int.MaxValue,

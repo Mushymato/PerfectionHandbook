@@ -100,6 +100,7 @@ public sealed partial class HandbookContext
     {
         if (ctx.PageCtx?.TryOpenPage() ?? false)
         {
+            Game1.playSound("shwip");
             SelectedCtx?.PageCtx?.TryExitPage();
             SelectedCtx = ctx;
         }
@@ -138,12 +139,14 @@ public sealed partial class HandbookContext
         {
             if (SelectedCtx.PageCtx is IPageContext ctx && ctx.TryExitPage())
             {
+                Game1.playSound("shwip");
                 SelectedCtx = null;
             }
             return false;
         }
         else
         {
+            Game1.playSound("bigDeSelect");
             foreach (GoalContext goal in PerfectionGoals)
                 goal.DisposePageCtx();
             foreach (GoalContext goal in AchievementGoals)

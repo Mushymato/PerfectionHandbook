@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewModdingAPI;
@@ -203,9 +202,11 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         switch (button)
         {
             case SButton.LeftShoulder:
+                Game1.playSound("dwoop");
                 PaginatePrev();
                 return true;
             case SButton.RightShoulder:
+                Game1.playSound("dwoop");
                 PaginateNext();
                 return true;
         }
@@ -217,18 +218,19 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         UpdateDisplayingFulfillment(fulfillment);
     }
 
+    [Notify]
     private GoalFulfillment? displayingFulfillment = null;
 
     protected virtual void UpdateDisplayingFulfillment(GoalFulfillment fulfillment)
     {
-        if (displayingFulfillment != fulfillment)
+        if (DisplayingFulfillment != fulfillment)
         {
             filteredDisplay = null;
-            displayingFulfillment = fulfillment;
+            DisplayingFulfillment = fulfillment;
             UpdateAllStatus(fulfillment.Who);
             foreach (GoalFulfillment eachful in GoalCtx.Fulfillments)
             {
-                eachful.Selected = eachful == displayingFulfillment;
+                eachful.Selected = eachful == DisplayingFulfillment;
             }
             UpdateFilteredDisplayPaginated();
         }
