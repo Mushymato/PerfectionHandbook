@@ -11,11 +11,15 @@ public sealed record EventPreconditionInfo(
     string Precond,
     bool Negated,
     string[] Args,
-    EventPreconditionDelegate Handler
+    EventPreconditionDelegate Handler,
+    ArgGetInfo ArgInfo
 )
 {
-    internal readonly ArgGetInfo ArgGetInfo = DelegateInspector.ExtractTryGetPairs(Handler);
-    public string DisplayText => ArgGetInfo.FormArgDesc(Negated, Handler.Method.Name, Args);
+    public readonly bool IsEventLink =
+        Handler == EventInfo.Precondition_SawEvent || Handler == EventInfo.Precondition_NotSawEvent;
+    public readonly string DisplayText = ArgInfo.FormArgDesc(Negated, Handler.Method.Name, Args);
+    public readonly string PrecondText = ArgInfo.FormPrecondName(Negated, Handler.Method.Name);
+    public readonly string[] EventLinks = Args.Skip(1).ToArray();
 
     public bool Evaluate(EventInfo eventInfo)
     {
@@ -26,7 +30,7 @@ public sealed record EventPreconditionInfo(
         return false;
     }
 
-    internal static EventPreconditionDelegate? GetPrecondition(string precond)
+    internal static EventPreconditionDelegate? Make(string precond)
     {
         if (Event.TryGetPreconditionHandler(precond, out EventPreconditionDelegate handler))
         {
@@ -62,12 +66,11 @@ public sealed record EventInfo(
     }
 
     #region static setup
-    private static EventPreconditionDelegate? Precondition_Friendship =>
-        field ??= EventPreconditionInfo.GetPrecondition("Friendship");
-    private static EventPreconditionDelegate? Precondition_SawEvent =>
-        field ??= EventPreconditionInfo.GetPrecondition("SawEvent");
-    private static EventPreconditionDelegate? Precondition_NotSawEvent =>
-        field ??= EventPreconditionInfo.GetPrecondition("k");
+    internal static EventPreconditionDelegate? Precondition_Friendship =>
+        field ??= EventPreconditionInfo.Make("Friendship");
+    internal static EventPreconditionDelegate? Precondition_SawEvent =>
+        field ??= EventPreconditionInfo.Make("SawEvent");
+    internal static EventPreconditionDelegate? Precondition_NotSawEvent => field ??= EventPreconditionInfo.Make("k");
 
     private static void ExtractPrecondInfo(
         EventPreconditionInfo[] preconditions,
@@ -170,7 +173,9 @@ public sealed record EventInfo(
                 {
                     return false;
                 }
-                normalizedList.Add(new(realPrecond, negated, parts, handler));
+                normalizedList.Add(
+                    new(realPrecond, negated, parts, handler, DelegateInspector.ExtractTryGetPairs(handler))
+                );
             }
             normalized = normalizedList.ToArray();
             return true;

@@ -72,7 +72,12 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             }
         }
         Fishes = fishes;
+        hasNewEvent = ReloadEvents();
+    }
 
+    public bool ReloadEvents()
+    {
+        bool hasNewEvent = false;
         // events
         if (
             (EventInvalidateTracker == null || EventInvalidateTracker.CheckChanged())
@@ -95,11 +100,13 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
                 )
                 {
                     eventsInfo[info.EventId] = info;
+                    LocationInfoCache.EventsCache[info.EventId] = info;
                 }
             }
             Events = eventsInfo;
             hasNewEvent = true;
         }
+        return hasNewEvent;
     }
 }
 
@@ -127,6 +134,7 @@ public static class LocationInfoCache
     }
 
     private static Dictionary<string, LocationInfo>? cache = null;
+    public static readonly Dictionary<string, EventInfo> EventsCache = [];
     public static IReadOnlyDictionary<string, LocationInfo> Cache => GetLocationInfo();
 
     private static IReadOnlyDictionary<string, LocationInfo> GetLocationInfo()
@@ -143,7 +151,13 @@ public static class LocationInfoCache
             stopwatch = Stopwatch.StartNew();
             cacheRet = cache = RefreshCache();
             lastUpdatedTick = Game1.ticks;
-            NPCInfoCache.RefreshEvents(cacheRet.Values);
+            bool hasNewEvent = false;
+            foreach (LocationInfo locationInfo in cacheRet.Values)
+            {
+                hasNewEvent = locationInfo.ReloadEvents() || hasNewEvent;
+            }
+            if (hasNewEvent)
+                NPCInfoCache.RefreshEvents(cacheRet.Values);
         }
         else
         {

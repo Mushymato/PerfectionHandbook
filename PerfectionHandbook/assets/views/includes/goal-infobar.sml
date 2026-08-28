@@ -1,4 +1,4 @@
-<lane margin="8,2,0,0" orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content" z-index="3">
+<lane margin="8,2,0,0" orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content">
   <!-- Sort -->
   <panel layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
@@ -40,8 +40,7 @@
   <!-- paginator -->
   <panel *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
     <lane orientation="horizontal" margin="0,0,8,0"
-      vertical-content-alignment="Middle"
-      button-press=|^HandleShoulderButtons($Button)|>
+      vertical-content-alignment="Middle">
       <image sprite={@Mods/StardewUI/Sprites/LargeLeftArrow}
         focusable="true"
         left-click=|^PaginatePrev()|

@@ -7,9 +7,7 @@
     z-index="2">
     <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content"
       focusable-tag="main-item-grid"
-      primary-item-count={>PrimaryItemCount}
-      button-press=|HandleShoulderButtons($Button)|
-      >
+      primary-item-count={>PrimaryItemCount}>
       <panel *repeat={:FilteredDisplayPaginated}
         layout="64px 64px"
         focusable="true"

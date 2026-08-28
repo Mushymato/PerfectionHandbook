@@ -1,8 +1,7 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
     <grid margin="0,0,8,0" item-layout="length: 500+" layout="stretch content"
-        primary-item-count={>PrimaryItemCount}
-        button-press=|HandleShoulderButtons($Button)|>
+        primary-item-count={>PrimaryItemCount}>
       <lane *repeat={:FilteredDisplayPaginated} margin="4" vertical-content-alignment="Start">
         <panel focusable="true" tooltip={:BundleName} horizontal-content-alignment="Middle" vertical-content-alignment="End"
           left-click=|ToggleReminder()|>

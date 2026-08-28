@@ -44,6 +44,16 @@ public sealed record ArgGetInfo(
         return sb.ToString();
     }
 
+    public string FormPrecondName(bool negated, string methodName)
+    {
+        if (Invert)
+        {
+            negated = !negated;
+            methodName = InvertOf ?? methodName;
+        }
+        return negated ? $"NOT {methodName}" : methodName;
+    }
+
     private bool TryMatchFixedIndex(int i, [NotNullWhen(true)] out string? matchedName)
     {
         matchedName = null;

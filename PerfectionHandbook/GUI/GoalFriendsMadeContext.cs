@@ -44,6 +44,12 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 
     [Notify]
     private Friendship? currentFriendship = null;
+
+    [Notify]
+    private EventInfoDisplay? currentEventInfo = null;
+    private readonly Stack<EventInfoDisplay> eventInfoStack = [];
+    public bool HasCurrentEventInfo => CurrentEventInfo != null;
+
     public Color DisplayTint => CurrentFriendship == null ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
     public bool Needed => CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints;
     public float FriendshipFill =>
@@ -89,6 +95,11 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 
     internal void SearchEvents(string searchText)
     {
+        if (CurrentEventInfo != null)
+        {
+            CurrentEventInfo = null;
+            eventInfoStack.Clear();
+        }
         EventDisplaysFiltered.Clear();
         bool empty = string.IsNullOrEmpty(searchText);
         foreach (EventInfoDisplay eventInfo in EventDisplays)
@@ -98,6 +109,36 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
                 EventDisplaysFiltered.Add(eventInfo);
             }
         }
+    }
+
+    public bool ShowEventById(string eventId)
+    {
+        if (LocationInfoCache.EventsCache.TryGetValue(eventId, out EventInfo? eventInfo))
+        {
+            ShowEvent(EventInfoDisplay.Make(eventInfo, NpcInfo.Name));
+        }
+        return true;
+    }
+
+    public bool ShowEvent(EventInfoDisplay eventInfo)
+    {
+        if (CurrentEventInfo != null)
+            eventInfoStack.Push(CurrentEventInfo);
+        CurrentEventInfo = eventInfo;
+        return true;
+    }
+
+    public bool LeaveEvent()
+    {
+        if (CurrentEventInfo != null)
+        {
+            if (eventInfoStack.TryPop(out EventInfoDisplay? prevEvent))
+                CurrentEventInfo = prevEvent;
+            else
+                CurrentEventInfo = null;
+            return true;
+        }
+        return false;
     }
 }
 
@@ -185,6 +226,8 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         if (Selected != null)
         {
+            if (Selected.LeaveEvent())
+                return false;
             Selected = null;
             SearchText = previousSearchText;
             return false;

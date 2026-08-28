@@ -2,8 +2,7 @@
   <!-- Scroll -->
   <scrollable *case="false" peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
     <grid margin="4,0,12,0" item-layout="length: 400+" item-spacing="-4,-4" layout="stretch content"
-        primary-item-count={>PrimaryItemCount}
-        button-press=|HandleShoulderButtons($Button)|>
+        primary-item-count={>PrimaryItemCount}>
       <frame *repeat={:FilteredDisplayPaginated}
         layout="content content"
         padding="12"
@@ -37,8 +36,9 @@
       </frame>
     </grid>
   </scrollable>
-  <!-- Events -->
+  <!-- Friend Detail + Events -->
   <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
+    <!-- Friend Detail -->
     <frame padding="12" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
       <panel vertical-content-alignment="End">
         <lane orientation="Horizontal" vertical-content-alignment="Middle">
@@ -68,32 +68,61 @@
         <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="4,0,0,44" />
       </panel>
     </frame>
-    <scrollable peeking="128" scrollbar-margin="-18,0,0,0" >
-      <lane orientation="vertical" layout="stretch content" margin="8">
-        <lane *repeat={:EventDisplaysFiltered} *switch={HasSeen} orientation="horizontal">
-          <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
-          <spacer *case="false" layout="27px 27px" />
-          <expander layout="stretch content" margin="0,0,0,4" is-expanded={<>IsExpanded}>
-            <lane *outlet="header" margin="-14,0,8,0">
-              <panel *if={:HasRequiredFriendshipForNPC} margin="0,0,8,0" horizontal-content-alignment="End" vertical-content-alignment="Middle">
-                <image margin="0,0,32,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
-                <digits scale="3" number={RequiredHeartLevelForNPC} />
-              </panel>
-              <label text={:Info.HeaderText} layout="stretch content" shadow-alpha="0.8"/>
-            </lane>
-            <frame *if={IsExpanded} background={@Mods/StardewUI/Sprites/MenuSlotTransparent} padding="8" margin="48,0,0,0">
-              <lane layout="stretch content" orientation="vertical">
-                <label *if={:Info.HasModName} focusable="true" text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8"/>
-                <lane *repeat={:Preconds} *switch={:Status} padding="4">
-                  <image *case="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
-                  <spacer *case="false" layout="27px 27px" />
-                  <label focusable="true" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
-                </lane>
-              </lane>
-            </frame>
-          </expander>
+    <!-- Event List -->
+    <scrollable *!if={HasCurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
+      <lane orientation="vertical" layout="stretch content" margin="8"  focusable="true">
+        <frame *repeat={:EventDisplaysFiltered}
+          border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
+          border-tint="Transparent"
+          +hover:border-tint="White"
+          focusable="true"
+          margin="4,0,12,0"
+          padding="8"
+          left-click=|^ShowEvent(this)|
+          >
+          <event-header />
+        </frame>
+      </lane>
+    </scrollable>
+    <scrollable *if={HasCurrentEventInfo} *context={CurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
+    <!-- Event Detail -->
+      <lane layout="stretch content" orientation="vertical" margin="48,8,16,12">
+        <frame margin="-36,0,0,4" padding="8" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} focusable="true" focusable-tag={:Info.EventId}>
+          <event-header />
+        </frame>
+        <lane *repeat={:Preconds} *switch={:Info.IsEventLink} padding="4" >
+          <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+          <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
+          <label *case="false" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
+          <lane *case="true" margin="8,0,0,0">
+            <label text={:Info.PrecondText} shadow-alpha="0.8" />
+            <label *repeat={:Info.EventLinks}
+              focusable="true"
+              margin="8,0,0,0"
+              color="Blue"
+              +hover:color="CornflowerBlue"
+              shadow-alpha="0.8"
+              text={:this}
+              left-click=|~FriendsMadeDisplay.ShowEventById(this)| />
+          </lane>
         </lane>
       </lane>
     </scrollable>
   </lane>
 </panel>
+
+<template name="event-header">
+  <lane orientation="horizontal" vertical-content-alignment="Middle" layout="stretch content">
+    <image *case={HasSeen} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+    <spacer *case={HasSeen} layout="27px 27px" />
+    <panel *if={:HasRequiredFriendshipForNPC} margin="8,0" horizontal-content-alignment="End" vertical-content-alignment="Middle">
+      <image margin="0,0,32,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
+      <digits scale="3" number={:RequiredHeartLevelForNPC} />
+    </panel>
+    <lane *if={:Info.HasModName} orientation="vertical" >
+      <label text={:Info.HeaderText} shadow-alpha="0.8"/>
+      <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
+    </lane>
+    <label *!if={:Info.HasModName} text={:Info.HeaderText} shadow-alpha="0.8"/>
+  </lane>
+</template>

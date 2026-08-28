@@ -128,7 +128,6 @@ public sealed class ModEntry : Mod
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         // preload the cache
-        // DelayedAction.functionAfterDelay(() => ItemInfoCache.GetItemInfo(), 0);
         MenuHandler.PreloadHandbook();
         MenuHandler.Reminders.SaveLoaded(Game1.player);
     }
