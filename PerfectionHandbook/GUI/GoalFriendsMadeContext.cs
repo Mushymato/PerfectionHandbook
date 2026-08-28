@@ -6,7 +6,6 @@ using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
-using StardewValley.Delegates;
 using StardewValley.Extensions;
 using StardewValley.TokenizableStrings;
 
@@ -14,7 +13,7 @@ namespace PerfectionHandbook.GUI;
 
 public sealed record EventPreconditionInfoDisplay(EventPreconditionInfo Info, bool Status);
 
-public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC)
+public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int RequiredFriendshipForNPC)
 {
     [Notify]
     private bool hasSeen = false;
@@ -22,35 +21,20 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC)
     [Notify]
     private bool isExpanded = false;
 
-    public readonly int RequiredFriendshipForNPC = GetRequiredFriendship(Info, ForNPC);
-    public int RequiredHeartLevelForNPC => RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
-    public bool HasRequiredFriendshipForNPC => RequiredFriendshipForNPC > -1;
+    public readonly int RequiredHeartLevelForNPC = RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
+    public readonly bool HasRequiredFriendshipForNPC = RequiredFriendshipForNPC > -1;
     public readonly IReadOnlyList<EventPreconditionInfoDisplay> Preconds = Info
         .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info)))
         .ToList();
 
-    private static EventPreconditionDelegate? PreconditionFriendship =>
-        field ??= EventPreconditionInfo.GetPrecondition("Friendship");
-
-    private static int GetRequiredFriendship(EventInfo info, string forNPC)
-    {
-        foreach (EventPreconditionInfo precond in info.Preconditions)
-        {
-            if (!precond.Negated && precond.Handler == PreconditionFriendship && precond.Args.Length >= 3)
-            {
-                int idx = precond.Args.IndexOf(forNPC);
-                if (idx > 0 && ArgUtility.TryGetInt(precond.Args, idx + 1, out int minPoints, out _))
-                {
-                    return minPoints;
-                }
-            }
-        }
-        return -1;
-    }
-
     internal bool Matches(string searchText)
     {
         return Info.HeaderText.ContainsIgnoreCase(searchText);
+    }
+
+    internal static EventInfoDisplay Make(EventInfo Info, string ForNPC)
+    {
+        return new(Info, ForNPC, Info.GetRequiredFriendship(ForNPC));
     }
 }
 
@@ -76,7 +60,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
 
     public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
     public readonly IReadOnlyList<EventInfoDisplay> EventDisplays = NpcInfo
-        .Events.Values.Select(ei => new EventInfoDisplay(ei, NpcInfo.Name))
+        .Events.Values.Select(ei => EventInfoDisplay.Make(ei, NpcInfo.Name))
         .OrderBy(static eid =>
             (eid.HasRequiredFriendshipForNPC ? eid.RequiredFriendshipForNPC : int.MaxValue, eid.Info.EventId)
         )

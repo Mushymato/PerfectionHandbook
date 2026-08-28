@@ -112,6 +112,7 @@ public sealed partial class HandbookContext
         {
             string exportFile = MenuHandler.ExportCard(this);
             ExportMsg = I18n.Ui_ExportPath(I18n.Ui_Export(), exportFile);
+            Game1.playSound("cameraNoise");
         }
         catch (Exception ex)
         {
