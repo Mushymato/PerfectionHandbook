@@ -1,6 +1,6 @@
 <lane layout="stretch 100%">
   <!-- Crop Calendar -->
-  <lane *context={Hovered.CropDetail} padding="30,0,16,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
+  <lane *context={Hovered.CropDetail} padding="8,0,8,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
     <lane orientation="Vertical" layout="100% content">
       <lane focusable-tag="side-panel-title" vertical-content-alignment="Middle" focusable="true">
         <image sprite={:Seed}
@@ -57,7 +57,7 @@
         margin="12,8,0,0"
         layout="content content"
         item-layout="count: 7"
-        item-spacing="0,0"
+        item-spacing="-8,0"
         button-press=|ChangeMonth($Button)|
         wheel=|ScrollMonth($Direction)|>
         <frame *repeat={HarvestCells}
@@ -116,32 +116,35 @@
   <!-- Divider -->
   <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} layout="content stretch" fit="Stretch"/>
   <!-- Scroll -->
-  <scrollable progress={<>ScrollProgress} 
+  <scrollable progress={<>ScrollProgress}
     layout="stretch 100%"
     peeking="128"
     scrollbar-margin="-18,0,0,0"
     z-index="2">
-    <grid margin="0,0,4,0" item-layout="length: 72" layout="stretch content"
+    <grid margin="2" padding="12,4,8,4" item-layout="length: 80" layout="stretch content"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={:FilteredDisplayPaginated}
         focusable-tag={:FocusableTag}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
-        border-thickness="8"
-        layout="64px 64px"
         border-tint={BorderTint}
         focusable="true"
-        left-click=|^ToggleHoverable(this)|
-        pointer-enter=|^HoveredEnter(this)|
         tooltip={Tooltip}
         hovered-subject={:ReprItem}>
-        <panel horizontal-content-alignment="End" vertical-content-alignment="End">
+        <panel padding="6"
+          layout="64px 64px"
+          horizontal-content-alignment="End"
+          vertical-content-alignment="End"
+          left-click=|^ToggleHoverable(this)|
+          pointer-enter=|^HoveredEnter(this)|>
           <image sprite={:Info.Datum}
             tint={DisplayTint}
             shadow-alpha={DisplayShadow}
+            scale={DisplayScale}
             layout="64px 64px"
             shadow-offset="-4,4"
             +transition:scale="100ms EaseInSine"
+            horizontal-alignment="Middle"
           />
           <digits *if={HasCount} scale="3" number={Count} />
           <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="0,0,52,32" />

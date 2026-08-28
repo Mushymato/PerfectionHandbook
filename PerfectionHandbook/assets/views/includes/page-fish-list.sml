@@ -52,23 +52,22 @@
     peeking="128"
     scrollbar-margin="-18,0,0,0"
     z-index="2">
-    <grid margin="2" padding="12,4,8,4" item-layout="length: 72+" item-spacing="4,4" layout="stretch content"
+    <grid margin="2" padding="12,4,8,4" item-layout="length: 80" layout="stretch content"
         primary-item-count={>PrimaryItemCount}
         button-press=|HandleShoulderButtons($Button)|>
       <frame *repeat={:FilteredDisplayPaginated}
         focusable-tag={:FocusableTag}
         border={@Mods/StardewUI/Sprites/MenuSlotOutset}
-        border-thickness="8"
-        layout="64px 64px"
         border-tint={BorderTint}
         focusable="true"
-        left-click=|^ToggleHoverable(this)|
-        pointer-enter=|^HoveredEnter(this)|
         tooltip={Tooltip}
         hovered-subject={:ReprItem}>
-        <panel layout="64px 64px"
+        <panel padding="6"
+          layout="64px 64px"
           horizontal-content-alignment="End"
-          vertical-content-alignment="End">
+          vertical-content-alignment="End"
+          left-click=|^ToggleHoverable(this)|
+          pointer-enter=|^HoveredEnter(this)|>
           <image sprite={:Info.Datum}
             tint={DisplayTint}
             shadow-alpha={DisplayShadow}

@@ -285,7 +285,7 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
         canToggleNeeded: true,
         canToggleCountMode: true,
         defaultCountMode: CountMode.Completed,
-        itemPerPageModifier: 6.0 / 8.0
+        itemPerPageModifier: 7.0 / 8.0
     )
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingFished();

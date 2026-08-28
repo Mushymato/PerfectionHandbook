@@ -41,7 +41,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
     [Notify]
     private bool isLocked = false;
 
-    public float DisplayScale => IsHovered ? 1.1f : 1f;
+    public float DisplayScale => IsHovered ? 1.125f : 1f;
 
     public Color BorderTint => IsHovered && IsLocked ? Color.White : Color.Transparent;
 

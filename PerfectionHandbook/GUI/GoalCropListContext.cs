@@ -394,7 +394,7 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
     : AbstractItemCountContext<CropDisplay>(
         goalCtx,
         defaultCountMode: kind == CropListKind.Any ? CountMode.Owned : CountMode.Completed,
-        itemPerPageModifier: 6.0 / 8.0
+        itemPerPageModifier: 7.0 / 8.0
     )
 {
     public override string CompleteCountToggleText => I18n.Ui_CountingShipped();

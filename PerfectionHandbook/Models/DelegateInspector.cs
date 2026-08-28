@@ -280,7 +280,7 @@ public static class DelegateInspector
                     }
                 }
             }
-        finish:
+            finish:
             if (stloc == null)
             {
                 return false;
