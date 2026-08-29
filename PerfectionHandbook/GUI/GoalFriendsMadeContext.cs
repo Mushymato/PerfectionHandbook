@@ -60,7 +60,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     public string FriendshipPointDisplay =>
         I18n.Ui_Fulfillment_Dipslay(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints);
 
-    public readonly string DisplayName = NpcInfo.Chara?.displayName ?? TokenParser.ParseText(NpcInfo.Data.DisplayName);
+    public readonly string DisplayName = NpcInfo.DisplayName;
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
     public ReminderEntry? Reminder { get; } = new ReminderEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 

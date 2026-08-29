@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
 using StardewModdingAPI;
@@ -12,14 +13,13 @@ public sealed record EventPreconditionInfo(
     bool Negated,
     string[] Args,
     EventPreconditionDelegate Handler,
-    ArgGetInfo ArgInfo
+    ArgGetInfo ArgInfo,
+    (string, string)[]? EventLinks
 )
 {
-    public readonly bool IsEventLink =
-        Handler == EventInfo.Precondition_SawEvent || Handler == EventInfo.Precondition_NotSawEvent;
+    public readonly bool HasEventLinks = EventLinks != null && EventLinks.Length > 0;
     public readonly string DisplayText = ArgInfo.FormArgDesc(Negated, Handler.Method.Name, Args);
     public readonly string PrecondText = ArgInfo.FormPrecondName(Negated, Handler.Method.Name);
-    public readonly string[] EventLinks = Args.Skip(1).ToArray();
 
     public bool Evaluate(EventInfo eventInfo)
     {
@@ -71,13 +71,17 @@ public sealed record EventInfo(
     internal static EventPreconditionDelegate? Precondition_SawEvent =>
         field ??= EventPreconditionInfo.Make("SawEvent");
     internal static EventPreconditionDelegate? Precondition_NotSawEvent => field ??= EventPreconditionInfo.Make("k");
+    internal static EventPreconditionDelegate? Precondition_ActiveDialogueEvent =>
+        field ??= EventPreconditionInfo.Make("ActiveDialogueEvent");
+    internal static EventPreconditionDelegate? Precondition_NotActiveDialogueEvent =>
+        field ??= EventPreconditionInfo.Make("A");
+    internal static Regex EventCTPattern = new(
+        @"eventSeen_(.+)(?:_memory_oneday|_memory_oneweek|_memory_twoweeks|_memory_fourweeks|_memory_eightweeks|_memory_oneyear)?"
+    );
 
-    private static void ExtractPrecondInfo(
-        EventPreconditionInfo[] preconditions,
-        out Dictionary<string, int>? friendshipReqs
-    )
+    private static Dictionary<string, int>? GetFriendshipReqs(EventPreconditionInfo[] preconditions)
     {
-        friendshipReqs = [];
+        Dictionary<string, int>? friendshipReqs = [];
         foreach (EventPreconditionInfo precond in preconditions)
         {
             if (!precond.Negated && precond.Handler == Precondition_Friendship && precond.Args.Length >= 3)
@@ -92,7 +96,7 @@ public sealed record EventInfo(
                 }
             }
         }
-        friendshipReqs = friendshipReqs.Any() ? friendshipReqs : null;
+        return friendshipReqs.Any() ? friendshipReqs : null;
     }
 
     public static bool TryParse(
@@ -137,8 +141,6 @@ public sealed record EventInfo(
             }
         }
 
-        ExtractPrecondInfo(preconds, out Dictionary<string, int>? friendshipReqs);
-
         info = new(
             eventId,
             preconds,
@@ -148,7 +150,7 @@ public sealed record EventInfo(
             locationName,
             key,
             ModEntry.modNameAPI?.GetModName_FromAssetAndId(assetName, eventId),
-            friendshipReqs
+            GetFriendshipReqs(preconds)
         );
         return true;
 
@@ -174,12 +176,42 @@ public sealed record EventInfo(
                     return false;
                 }
                 normalizedList.Add(
-                    new(realPrecond, negated, parts, handler, DelegateInspector.ExtractTryGetPairs(handler))
+                    new(
+                        realPrecond,
+                        negated,
+                        parts,
+                        handler,
+                        DelegateInspector.ExtractTryGetPairs(handler),
+                        GetEventLinks(parts, handler)
+                    )
                 );
             }
             normalized = normalizedList.ToArray();
             return true;
         }
+    }
+
+    private static (string, string)[]? GetEventLinks(string[] parts, EventPreconditionDelegate handler)
+    {
+        if (handler == Precondition_SawEvent || handler == Precondition_NotSawEvent)
+        {
+            return parts.Skip(1).Where(LocationInfoCache.EventsCache.ContainsKey).Select(id => (id, id)).ToArray();
+        }
+        else if (handler == Precondition_ActiveDialogueEvent || handler == Precondition_NotActiveDialogueEvent)
+        {
+            List<(string, string)> eventLinksList = [];
+            foreach (string ctId in parts.Skip(1))
+            {
+                if (EventCTPattern.Match(ctId) is Match match && match.Success)
+                {
+                    string eventId = match.Groups[1].Value;
+                    if (LocationInfoCache.EventsCache.ContainsKey(eventId))
+                        eventLinksList.Add((ctId, match.Groups[1].Value));
+                }
+            }
+            return eventLinksList.ToArray();
+        }
+        return null;
     }
     #endregion
 }

@@ -6,6 +6,7 @@ using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Characters;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.Models;
 
@@ -30,6 +31,7 @@ public sealed record NPCInfo(string Name, CharacterData Data)
     public bool HasModName => ModNameInfo != null;
     public string ModName => ModNameInfo?.ModName ?? string.Empty;
     public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
+    public string DisplayName => Chara?.displayName ?? TokenParser.ParseText(Data.DisplayName);
 
     public SDUISprite? GetMugShot()
     {

@@ -93,20 +93,22 @@
           focusable="true" focusable-tag="default-focus">
           <event-header />
         </frame>
-        <lane *repeat={:Preconds} *switch={:Info.IsEventLink} padding="4" >
+        <lane *repeat={:Preconds} *switch={:Info.HasEventLinks} padding="4" >
           <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
           <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
           <label *case="false" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
           <lane *case="true" margin="8,0,0,0">
             <label text={:Info.PrecondText} shadow-alpha="0.8" />
-            <label *repeat={:Info.EventLinks}
-              focusable="true"
-              margin="8,0,0,0"
-              color="Blue"
-              +hover:color="CornflowerBlue"
-              shadow-alpha="0.8"
-              text={:this}
-              left-click=|~FriendsMadeDisplay.ShowEventById(this)| />
+            <lane orientation="Vertical">
+              <label *repeat={:Info.EventLinks}
+                focusable="true"
+                margin="8,0,0,0"
+                color="Blue"
+                +hover:color="CornflowerBlue"
+                shadow-alpha="0.8"
+                text={:Item1}
+                left-click=|~FriendsMadeDisplay.ShowEventById(Item2)| />
+            </lane>
           </lane>
         </lane>
       </lane>
