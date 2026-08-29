@@ -1,6 +1,5 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
@@ -119,12 +118,6 @@ public sealed class ModEntry : Mod
         GoalSkillLeveledContext.Setup();
     }
 
-    // private static void OneSecondUpdateTicked_PreloadHandbook(object? sender, OneSecondUpdateTickedEventArgs e)
-    // {
-    //     help.Events.GameLoop.OneSecondUpdateTicked -= OneSecondUpdateTicked_PreloadHandbook;
-    //     MenuHandler.PreloadHandbook();
-    // }
-
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         // preload the cache
@@ -166,7 +159,6 @@ public sealed class ModEntry : Mod
 
     private void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        ModEntry.Log($"Game1.Date.TotalDays: {Game1.Date.TotalDays}");
         NPCInfoCache.RecheckNPCInstances();
         if (config.AutoExportCardPeriod > 0 && (Game1.Date.TotalDays + 1) % config.AutoExportCardPeriod == 0)
         {

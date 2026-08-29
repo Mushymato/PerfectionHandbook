@@ -97,8 +97,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     {
         if (CurrentEventInfo != null)
         {
-            CurrentEventInfo = null;
-            eventInfoStack.Clear();
+            ClearEvents();
         }
         EventDisplaysFiltered.Clear();
         bool empty = string.IsNullOrEmpty(searchText);
@@ -139,6 +138,12 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
             return true;
         }
         return false;
+    }
+
+    internal void ClearEvents()
+    {
+        CurrentEventInfo = null;
+        eventInfoStack.Clear();
     }
 }
 
@@ -215,11 +220,18 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         if (display.ToggleReminder())
             return;
+        Selected?.ClearEvents();
         Selected = display;
         previousSearchText = SearchText;
         if (string.IsNullOrEmpty(previousSearchText))
             display.SearchEvents(string.Empty);
         SearchText = string.Empty;
+    }
+
+    public override bool TryOpenPage()
+    {
+        MenuHandler.Handbook_SetDefaultFocusableTag(true);
+        return base.TryOpenPage();
     }
 
     public override bool TryExitPage()
@@ -232,6 +244,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
             SearchText = previousSearchText;
             return false;
         }
+        MenuHandler.Handbook_SetDefaultFocusableTag(false);
         return base.TryExitPage();
     }
 }

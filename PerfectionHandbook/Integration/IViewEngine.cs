@@ -372,6 +372,15 @@ public interface IMenuController : IDisposable
     Func<Point>? PositionSelector { get; set; }
 
     /// <summary>
+    /// Gets or sets the default focusable tag.
+    /// <c>(unofficial-mushymato)</c>
+    /// </summary>
+    /// <remarks>
+    /// When is lost for any reason, refocus to this focusable tag instead of the default.
+    /// </remarks>
+    string? DefaultFocusableTag { get; set; }
+
+    /// <summary>
     /// Immediately trigger repositioning of this menu according to it's current size,
     /// <see cref="PositionSelector"/> and gutters.
     /// </summary>

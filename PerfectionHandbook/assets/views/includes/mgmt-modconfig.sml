@@ -60,15 +60,13 @@
 
       <spacer item-span="-1"/>
 
-      <panel layout="stretch content" item-span="-1" horizontal-content-alignment="End">
-        <button 
-          hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-          font="dialogue"
-          margin="0,8,16,0"
-          text={#ui.reset}
-          left-click=|ResetConfigsToDefault()|
-        />
-      </panel>
+      <button item-span="-1"
+        hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+        font="dialogue"
+        margin="0,8,16,0"
+        text={#ui.reset}
+        left-click=|ResetConfigsToDefault()|
+      />
     </grid>
   </scrollable>
 </panel>

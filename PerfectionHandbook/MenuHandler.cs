@@ -31,6 +31,7 @@ public static class MenuHandler
     internal const string VIEW_ASSET_HANDBOOK = $"{VIEW_ASSET_PREFIX}/handbook";
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
     internal const string VIEW_ASSET_CARD = $"{VIEW_ASSET_PREFIX}/card";
+    internal const string DEFAULT_FOCUS = "default-focus";
     internal static readonly string exportDir = Path.Combine(
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"),
         ".smapi",
@@ -97,17 +98,27 @@ public static class MenuHandler
         }
     }
 
-    public static bool Handbook_FocusOnTaggedView(string name)
+    public static bool Handbook_FocusOnTaggedView(string tag)
     {
-        if (!Game1.options.gamepadControls)
+        if (Game1.options.gamepadControls)
         {
-            return false;
-        }
-        if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
-        {
-            return ctrl.FocusOnTaggedView(name);
+            if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
+            {
+                return ctrl.FocusOnTaggedView(tag);
+            }
         }
         return false;
+    }
+
+    public static void Handbook_SetDefaultFocusableTag(bool setOrUnset)
+    {
+        if (Game1.options.gamepadControls)
+        {
+            if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
+            {
+                ctrl.DefaultFocusableTag = setOrUnset ? DEFAULT_FOCUS : null;
+            }
+        }
     }
 
     public static string ExportCard(HandbookContext context)
@@ -144,9 +155,9 @@ public static class MenuHandler
         return exportFile;
     }
 
-    public static bool IsPreloading { get; private set; } = false;
+    internal static bool IsPreloading { get; private set; } = false;
 
-    public static void PreloadHandbook()
+    internal static void PreloadHandbook()
     {
         if (Context.IsSplitScreen && !Context.IsMainPlayer)
             return;

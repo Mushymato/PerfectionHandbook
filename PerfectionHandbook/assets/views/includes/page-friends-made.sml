@@ -70,24 +70,27 @@
     </frame>
     <!-- Event List -->
     <scrollable *!if={HasCurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
-      <lane orientation="vertical" layout="stretch content" margin="8"  focusable="true">
+      <grid item-layout="count:2" layout="stretch content" margin="8">
         <frame *repeat={:EventDisplaysFiltered}
           border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
           border-tint="Transparent"
           +hover:border-tint="White"
           focusable="true"
+          focusable-tag="default-focus"
           margin="4,0,12,0"
           padding="8"
           left-click=|^ShowEvent(this)|
           >
           <event-header />
         </frame>
-      </lane>
+      </grid>
     </scrollable>
     <scrollable *if={HasCurrentEventInfo} *context={CurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
     <!-- Event Detail -->
       <lane layout="stretch content" orientation="vertical" margin="48,8,16,12">
-        <frame margin="-36,0,0,4" padding="8" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} focusable="true" focusable-tag={:Info.EventId}>
+        <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
+          margin="-36,0,0,4" padding="8"
+          focusable="true" focusable-tag="default-focus">
           <event-header />
         </frame>
         <lane *repeat={:Preconds} *switch={:Info.IsEventLink} padding="4" >
@@ -113,14 +116,12 @@
 
 <template name="event-header">
   <lane orientation="horizontal" vertical-content-alignment="Middle" layout="stretch content">
-    <image *case={HasSeen} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
-    <spacer *case={HasSeen} layout="27px 27px" />
-    <panel *if={:HasRequiredFriendshipForNPC} margin="8,0" horizontal-content-alignment="End" vertical-content-alignment="Middle">
-      <image margin="0,0,32,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
-      <digits scale="3" number={:RequiredHeartLevelForNPC} />
-    </panel>
-    <lane *if={:Info.HasModName} orientation="vertical" >
-      <label text={:Info.HeaderText} shadow-alpha="0.8"/>
+    <image *if={:HasSeen} margin="4,0" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+    <spacer *!if={:HasSeen} margin="4,0" layout="27px 27px" />
+    <digits *if={:HasRequiredFriendshipForNPC} margin="0,0,4,0" scale="3" number={:RequiredHeartLevelForNPC} />
+    <image *if={:HasRequiredFriendshipForNPC} sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
+    <lane *if={:Info.HasModName} margin="8,0,0,0" orientation="vertical" >
+      <label text={:Info.HeaderText} shadow-alpha="0.8" max-lines="1"/>
       <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
     </lane>
     <label *!if={:Info.HasModName} text={:Info.HeaderText} shadow-alpha="0.8"/>

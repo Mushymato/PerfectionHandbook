@@ -44,7 +44,7 @@ public sealed record CommunityCenterBundleDisplay(
 }
 
 public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)
-    : AbstractPageListContext<CommunityCenterBundleDisplay>(goalCtx)
+    : AbstractPageListContext<CommunityCenterBundleDisplay>(goalCtx, itemPerPageModifier: 3.0 / 8.0)
 {
     protected override IReadOnlyList<CommunityCenterBundleDisplay> MakeAllDisplay()
     {
