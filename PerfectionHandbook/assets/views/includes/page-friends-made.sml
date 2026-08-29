@@ -42,7 +42,7 @@
     <frame padding="12" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
       <panel vertical-content-alignment="End">
         <lane orientation="Horizontal" vertical-content-alignment="Middle">
-          <image layout="64px 80px"
+          <image layout="content content"
             margin="8,8,0,0"
             fit="Contain"
             horizontal-alignment="middle"
@@ -75,40 +75,59 @@
           border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
           border-tint="Transparent"
           +hover:border-tint="White"
-          focusable="true"
-          focusable-tag="default-focus"
           margin="4,0,12,0"
           padding="8"
-          left-click=|^ShowEvent(this)|
+          left-click=|~GoalFriendsMadeContext.ShowEvent(this)|
           >
           <event-header />
         </frame>
       </grid>
     </scrollable>
-    <scrollable *if={HasCurrentEventInfo} *context={CurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
-    <!-- Event Detail -->
-      <lane layout="stretch content" orientation="vertical" margin="48,8,16,12">
+  <!-- Event Detail -->
+    <scrollable *if={HasCurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
+      <lane *context={CurrentEventInfo} layout="stretch content" orientation="vertical" margin="48,8,16,12">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
-          margin="-36,0,0,4" padding="8"
-          focusable="true" focusable-tag="default-focus">
-          <event-header />
+          margin="-36,0,0,4" padding="8,8,8,8">
+          <lane layout="stretch content" orientation="vertical">
+            <event-header>
+              <spacer layout="stretch content"/>
+              <image *repeat={:ActorLinks}
+                margin="0,0,0,-16"
+                layout="content content"
+                fit="Contain"
+                focusable="true"
+                sprite={:MugShotSprite}
+                tooltip={:Label}
+                left-click=|~GoalFriendsMadeContext.ShowFriendById(Link)|
+              />
+            </event-header>
+          </lane>
         </frame>
-        <lane *repeat={:Preconds} *switch={:Info.HasEventLinks} padding="4" >
+        <lane *repeat={:Preconds} *switch={:LinkKind} padding="4" >
           <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
           <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
-          <label *case="false" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
-          <lane *case="true" margin="8,0,0,0">
+          <label *case="None" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
+          <lane *case="Event" margin="8,0,0,0">
             <label text={:Info.PrecondText} shadow-alpha="0.8" />
-            <lane orientation="Vertical">
-              <label *repeat={:Info.EventLinks}
-                focusable="true"
-                margin="8,0,0,0"
-                color="Blue"
-                +hover:color="CornflowerBlue"
-                shadow-alpha="0.8"
-                text={:Item1}
-                left-click=|~FriendsMadeDisplay.ShowEventById(Item2)| />
-            </lane>
+            <label *repeat={:Links}
+              focusable="true"
+              margin="8,0,0,0"
+              color={:TextColor}
+              +hover:color={:TextHoverColor}
+              shadow-alpha="0.8"
+              text={:Label}
+              left-click=|~GoalFriendsMadeContext.ShowEventById(Link)| />
+          </lane>
+          <lane *case="Friend" margin="8,0,0,0">
+            <label text={:Info.PrecondText} shadow-alpha="0.8" />
+            <label *repeat={:Links}
+              focusable="true"
+              margin="8,0,0,0"
+              color={:TextColor}
+              +hover:color={:TextHoverColor}
+              shadow-alpha="0.8"
+              text={:Label}
+              left-click=|~GoalFriendsMadeContext.ShowFriendById(Link)| />
           </lane>
         </lane>
       </lane>
@@ -117,15 +136,26 @@
 </panel>
 
 <template name="event-header">
-  <lane orientation="horizontal" vertical-content-alignment="Middle" layout="stretch content">
+  <lane orientation="horizontal"
+    vertical-content-alignment="Middle"
+    layout="stretch content"
+    screen-read={:Info.HeaderText}>
     <image *if={:HasSeen} margin="4,0" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
     <spacer *!if={:HasSeen} margin="4,0" layout="27px 27px" />
     <digits *if={:HasRequiredFriendshipForNPC} margin="0,0,4,0" scale="3" number={:RequiredHeartLevelForNPC} />
     <image *if={:HasRequiredFriendshipForNPC} sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
-    <lane *if={:Info.HasModName} margin="8,0,0,0" orientation="vertical" >
+    <lane *if={:Info.HasModName} 
+      focusable="true"
+      focusable-tag="default-focus"
+      margin="8,0,0,0"
+      orientation="vertical">
       <label text={:Info.HeaderText} shadow-alpha="0.8" max-lines="1"/>
       <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
     </lane>
-    <label *!if={:Info.HasModName} text={:Info.HeaderText} shadow-alpha="0.8"/>
+    <label *!if={:Info.HasModName} text={:Info.HeaderText}
+      focusable="true"
+      focusable-tag="default-focus"
+      shadow-alpha="0.8"/>
+    <outlet/>
   </lane>
 </template>

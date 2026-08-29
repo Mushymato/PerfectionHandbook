@@ -7,14 +7,26 @@ using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
-using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record EventPreconditionInfoDisplay(EventPreconditionInfo Info, bool Status);
+public sealed record EventPreconditionInfoDisplay(EventPreconditionInfo Info, bool Status, string ForNPC)
+{
+    public readonly EventLinkKind LinkKind = Info.LinkKind;
+    public readonly EventLink[]? Links = Info
+        .Links?.Select(link => new EventLink(
+            link.Label,
+            Info.LinkKind == EventLinkKind.Friend && ForNPC == link.Link ? null : link.Link
+        ))
+        .ToArray();
+}
+
+public sealed record EventActorLink(SDUISprite MugShotSprite, string Label, string? Link);
 
 public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int RequiredFriendshipForNPC)
 {
+    public override int GetHashCode() => HashCode.Combine(Info.EventId, ForNPC);
+
     [Notify]
     private bool hasSeen = false;
 
@@ -23,9 +35,28 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int
 
     public readonly int RequiredHeartLevelForNPC = RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
     public readonly bool HasRequiredFriendshipForNPC = RequiredFriendshipForNPC > -1;
-    public readonly IReadOnlyList<EventPreconditionInfoDisplay> Preconds = Info
-        .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info)))
-        .ToList();
+    public readonly EventPreconditionInfoDisplay[] Preconds = Info
+        .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info), ForNPC))
+        .ToArray();
+    public readonly EventActorLink[] ActorLinks = GetActorLinks(Info, ForNPC);
+
+    private static EventActorLink[] GetActorLinks(EventInfo info, string forNPC)
+    {
+        List<EventActorLink> actorLinks = [];
+        foreach (string actorNameRaw in info.Actors)
+        {
+            string actorName = actorNameRaw.Trim('?');
+            if (
+                NPCInfoCache.Cache.TryGetValue(actorName, out NPCInfo? npcInfo)
+                && npcInfo.CanEventuallySocialize
+                && npcInfo.GetMugShot(2f) is SDUISprite mugshot
+            )
+            {
+                actorLinks.Add(new(mugshot, npcInfo.DisplayName, actorName != forNPC ? actorName : null));
+            }
+        }
+        return actorLinks.ToArray();
+    }
 
     internal bool Matches(string searchText)
     {
@@ -73,6 +104,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
         .ToList();
 
     public readonly ObservableCollection<EventInfoDisplay> EventDisplaysFiltered = [];
+    public List<EventInfoDisplay> TheCurrentEventInfo => CurrentEventInfo != null ? [CurrentEventInfo] : [];
 
     public bool SearchMatch(string txt)
     {
@@ -110,19 +142,12 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
         }
     }
 
-    public bool ShowEventById(string eventId)
-    {
-        if (LocationInfoCache.EventsCache.TryGetValue(eventId, out EventInfo? eventInfo))
-        {
-            ShowEvent(EventInfoDisplay.Make(eventInfo, NpcInfo.Name));
-        }
-        return true;
-    }
-
-    public bool ShowEvent(EventInfoDisplay eventInfo)
+    internal bool ShowEventImpl(EventInfoDisplay eventInfo)
     {
         if (CurrentEventInfo != null)
+        {
             eventInfoStack.Push(CurrentEventInfo);
+        }
         CurrentEventInfo = eventInfo;
         return true;
     }
@@ -132,9 +157,13 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
         if (CurrentEventInfo != null)
         {
             if (eventInfoStack.TryPop(out EventInfoDisplay? prevEvent))
+            {
                 CurrentEventInfo = prevEvent;
+            }
             else
+            {
                 CurrentEventInfo = null;
+            }
             return true;
         }
         return false;
@@ -176,13 +205,9 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
                 filteredDisplay = null;
                 OnPropertyChanged(new(nameof(SearchText)));
                 if (selected == null)
-                {
                     UpdateFilteredDisplayPaginated();
-                }
                 else
-                {
                     selected.SearchEvents(field);
-                }
             }
         }
     } = string.Empty;
@@ -192,11 +217,13 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         List<FriendsMadeDisplay> friendDisplay = [];
         foreach (NPCInfo npcInfo in NPCInfoCache.Cache.Values)
         {
-            if (!npcInfo.CountForPerfection)
+            if (!npcInfo.CanEventuallySocialize)
                 continue;
             FriendsMadeDisplay display = new(npcInfo);
             if (display.MugShotSprite != null)
+            {
                 friendDisplay.Add(display);
+            }
         }
         return friendDisplay;
     }
@@ -215,16 +242,58 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     private FriendsMadeDisplay? selected = null;
     private string previousSearchText = string.Empty;
     public bool InEventPage => Selected != null;
+    private readonly Stack<FriendsMadeDisplay> friendStack = [];
 
     public void HandleLeftClick(FriendsMadeDisplay display)
     {
         if (display.ToggleReminder())
             return;
-        Selected?.ClearEvents();
-        Selected = display;
         previousSearchText = SearchText;
-        if (string.IsNullOrEmpty(previousSearchText))
-            display.SearchEvents(string.Empty);
+        Selected?.ClearEvents();
+        ShowFriend(display);
+    }
+
+    public bool ShowFriendById(string? npcId)
+    {
+        if (npcId == null)
+            return false;
+        if (Selected?.NpcInfo.Name == npcId)
+            return false;
+        FriendsMadeDisplay? display = AllDisplay.FirstOrDefault(disp => disp.NpcInfo.Name == npcId);
+        if (display != null)
+        {
+            if (Selected != null && friendStack.All(friend => friend != Selected))
+            {
+                friendStack.Push(Selected);
+            }
+            display.ClearEvents();
+            ShowFriend(display);
+        }
+        return false;
+    }
+
+    public bool ShowEvent(EventInfoDisplay eventInfo)
+    {
+        return Selected?.ShowEventImpl(eventInfo) ?? false;
+    }
+
+    public bool ShowEventById(string? eventId)
+    {
+        if (eventId == null || Selected == null)
+            return false;
+        if (LocationInfoCache.EventsCache.TryGetValue(eventId, out EventInfo? eventInfo))
+        {
+            Selected.ShowEventImpl(EventInfoDisplay.Make(eventInfo, Selected.NpcInfo.Name));
+        }
+        return true;
+    }
+
+    private void ShowFriend(FriendsMadeDisplay display)
+    {
+        Selected = display;
+        // needed to make sure events get their first pass populate
+        if (string.IsNullOrEmpty(SearchText))
+            Selected.SearchEvents(string.Empty);
         SearchText = string.Empty;
     }
 
@@ -240,6 +309,11 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         {
             if (Selected.LeaveEvent())
                 return false;
+            if (friendStack.TryPop(out FriendsMadeDisplay? display))
+            {
+                ShowFriend(display);
+                return false;
+            }
             Selected = null;
             SearchText = previousSearchText;
             return false;

@@ -100,24 +100,18 @@ public static class MenuHandler
 
     public static bool Handbook_FocusOnTaggedView(string tag)
     {
-        if (Game1.options.gamepadControls)
+        if (Game1.options.gamepadControls && handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
         {
-            if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
-            {
-                return ctrl.FocusOnTaggedView(tag);
-            }
+            return ctrl.FocusOnTaggedView(tag);
         }
         return false;
     }
 
     public static void Handbook_SetDefaultFocusableTag(bool setOrUnset)
     {
-        if (Game1.options.gamepadControls)
+        if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
         {
-            if (handbook.Value.ctrl.TryGetTarget(out IMenuController? ctrl))
-            {
-                ctrl.DefaultFocusableTag = setOrUnset ? DEFAULT_FOCUS : null;
-            }
+            ctrl.DefaultFocusableTag = setOrUnset ? DEFAULT_FOCUS : null;
         }
     }
 

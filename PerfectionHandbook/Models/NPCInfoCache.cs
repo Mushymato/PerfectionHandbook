@@ -14,6 +14,7 @@ public sealed record NPCInfo(string Name, CharacterData Data)
 {
     public readonly bool CountForPerfection =
         Data.PerfectionScore && !GameStateQuery.IsImmutablyFalse(Data.CanSocialize);
+    public readonly bool CanEventuallySocialize = CheckCanEventuallySocialize(Data);
     public readonly int MaxPoints = (Data.CanBeRomanced ? 8 : 10) * 250;
     public NPC? Chara { get; set; } = null;
     public Dictionary<string, EventInfo> Events { get; private set; } = GetEvents(Name, LocationInfoCache.Cache.Values);
@@ -33,21 +34,30 @@ public sealed record NPCInfo(string Name, CharacterData Data)
     public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
     public string DisplayName => Chara?.displayName ?? TokenParser.ParseText(Data.DisplayName);
 
-    public SDUISprite? GetMugShot()
+    public SDUISprite? GetMugShot(float scale = 4f) => GetMugShot(Name, Data, Chara, scale);
+
+    public static SDUISprite? GetMugShot(string name, CharacterData data, NPC? chara, float scale)
     {
-        if (Chara == null)
+        if (chara == null)
         {
-            string textureName = "Characters\\" + NPC.getTextureNameForCharacter(Name);
+            string textureName = "Characters\\" + NPC.getTextureNameForCharacter(name);
             if (Game1.content.DoesAssetExist<Texture2D>(textureName))
             {
                 return new(
                     DrawHelper.SafeLoad(textureName),
-                    Data.MugShotSourceRect ?? new Rectangle(0, (Data.Age == NpcAge.Child) ? 4 : 0, 16, 24)
+                    data.MugShotSourceRect ?? new Rectangle(0, (data.Age == NpcAge.Child) ? 4 : 0, 16, 24),
+                    FixedEdges: SDUIEdges.NONE,
+                    SliceSettings: new(Scale: scale)
                 );
             }
             return null;
         }
-        return new(Chara.Sprite.Texture, Chara.getMugShotSourceRect());
+        return new(
+            chara.Sprite.Texture,
+            chara.getMugShotSourceRect(),
+            FixedEdges: SDUIEdges.NONE,
+            SliceSettings: new(Scale: scale)
+        );
     }
 
     private static Dictionary<string, EventInfo> GetEvents(string name, IEnumerable<LocationInfo> locationInfos)
@@ -72,6 +82,9 @@ public sealed record NPCInfo(string Name, CharacterData Data)
     {
         Events = GetEvents(Name, refreshedLocationInfo);
     }
+
+    public static bool CheckCanEventuallySocialize(CharacterData data) =>
+        !GameStateQuery.IsImmutablyFalse(data.CanSocialize);
 }
 
 public static class NPCInfoCache

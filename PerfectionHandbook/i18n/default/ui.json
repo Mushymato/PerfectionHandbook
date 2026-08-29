@@ -43,5 +43,5 @@
   "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}.",
   "ui.mines.floor": "Mines F{{floor}}",
   "ui.prev-page": "Prev Page",
-  "ui.next-page": "Next Page",
+  "ui.next-page": "Next Page"
 }

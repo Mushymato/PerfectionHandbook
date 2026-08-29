@@ -5,8 +5,23 @@ using PerfectionHandbook.Integration;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Delegates;
+using StardewValley.GameData.Characters;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.Models;
+
+public enum EventLinkKind
+{
+    None,
+    Event,
+    Friend,
+}
+
+public sealed record EventLink(string Label, string? Link)
+{
+    public readonly Color TextColor = Link != null ? Color.Blue : Game1.textColor;
+    public readonly Color TextHoverColor = Link != null ? Color.CornflowerBlue : Game1.textColor;
+}
 
 public sealed record EventPreconditionInfo(
     string Precond,
@@ -14,10 +29,10 @@ public sealed record EventPreconditionInfo(
     string[] Args,
     EventPreconditionDelegate Handler,
     ArgGetInfo ArgInfo,
-    (string, string)[]? EventLinks
+    EventLinkKind LinkKind,
+    EventLink[]? Links
 )
 {
-    public readonly bool HasEventLinks = EventLinks != null && EventLinks.Length > 0;
     public readonly string DisplayText = ArgInfo.FormArgDesc(Negated, Handler.Method.Name, Args);
     public readonly string PrecondText = ArgInfo.FormPrecondName(Negated, Handler.Method.Name);
 
@@ -48,8 +63,8 @@ public sealed record EventInfo(
     string LocationId,
     string LocationName,
     string EventKey,
-    IModNameInfo? ModNameInfo,
-    IReadOnlyDictionary<string, int>? FriendshipReqs
+    IReadOnlyDictionary<string, int>? FriendshipReqs,
+    IModNameInfo? ModNameInfo
 )
 {
     public readonly string HeaderText = $"{EventId} @ {LocationName}";
@@ -133,11 +148,10 @@ public sealed record EventInfo(
             string[] array = ArgUtility.SplitBySpace(setrawCharacterPositionsupChara);
             for (int i = 0; i < array.Length; i += 4)
             {
-                if (!ArgUtility.TryGet(array, i, out string actorName, out _, allowBlank: true, "string actorName"))
+                if (ArgUtility.TryGet(array, i, out string actorName, out _, allowBlank: true, "string actorName"))
                 {
-                    continue;
+                    actors.Add(actorName);
                 }
-                actors.Add(actorName);
             }
         }
 
@@ -149,8 +163,8 @@ public sealed record EventInfo(
             locationId,
             locationName,
             key,
-            ModEntry.modNameAPI?.GetModName_FromAssetAndId(assetName, eventId),
-            GetFriendshipReqs(preconds)
+            GetFriendshipReqs(preconds),
+            ModEntry.modNameAPI?.GetModName_FromAssetAndId(assetName, eventId)
         );
         return true;
 
@@ -175,6 +189,7 @@ public sealed record EventInfo(
                 {
                     return false;
                 }
+                (EventLinkKind, EventLink[])? links = GetLinks(parts, handler);
                 normalizedList.Add(
                     new(
                         realPrecond,
@@ -182,7 +197,8 @@ public sealed record EventInfo(
                         parts,
                         handler,
                         DelegateInspector.ExtractTryGetPairs(handler),
-                        GetEventLinks(parts, handler)
+                        links?.Item1 ?? EventLinkKind.None,
+                        links?.Item2
                     )
                 );
             }
@@ -191,25 +207,61 @@ public sealed record EventInfo(
         }
     }
 
-    private static (string, string)[]? GetEventLinks(string[] parts, EventPreconditionDelegate handler)
+    private static (EventLinkKind, EventLink[])? GetLinks(string[] parts, EventPreconditionDelegate handler)
     {
         if (handler == Precondition_SawEvent || handler == Precondition_NotSawEvent)
         {
-            return parts.Skip(1).Where(LocationInfoCache.EventsCache.ContainsKey).Select(id => (id, id)).ToArray();
+            return (
+                EventLinkKind.Event,
+                parts
+                    .Skip(1)
+                    .Where(LocationInfoCache.EventsCache.ContainsKey)
+                    .Select(id => new EventLink(id, id))
+                    .ToArray()
+            );
         }
         else if (handler == Precondition_ActiveDialogueEvent || handler == Precondition_NotActiveDialogueEvent)
         {
-            List<(string, string)> eventLinksList = [];
+            List<EventLink> eventLinksList = [];
             foreach (string ctId in parts.Skip(1))
             {
-                if (EventCTPattern.Match(ctId) is Match match && match.Success)
+                if (
+                    EventCTPattern.Match(ctId) is Match match
+                    && match.Success
+                    && match.Groups[1].Value is string eventId
+                    && LocationInfoCache.EventsCache.ContainsKey(eventId)
+                )
                 {
-                    string eventId = match.Groups[1].Value;
-                    if (LocationInfoCache.EventsCache.ContainsKey(eventId))
-                        eventLinksList.Add((ctId, match.Groups[1].Value));
+                    eventLinksList.Add(new(ctId, match.Groups[1].Value));
+                }
+                else
+                {
+                    eventLinksList.Add(new(ctId, null));
                 }
             }
-            return eventLinksList.ToArray();
+            return (EventLinkKind.Event, eventLinksList.ToArray());
+        }
+        else if (handler == Precondition_Friendship)
+        {
+            List<EventLink> friendLinkList = [];
+            for (int i = 2; i < parts.Length; ++i)
+            {
+                string npcName = parts[i - 1];
+                if (
+                    Game1.characterData.TryGetValue(npcName, out CharacterData? chara)
+                    && NPCInfo.CheckCanEventuallySocialize(chara)
+                )
+                {
+                    friendLinkList.Add(
+                        new($"{TokenParser.ParseText(chara.DisplayName) ?? npcName} {parts[i]}", npcName)
+                    );
+                }
+                else
+                {
+                    friendLinkList.Add(new($"{npcName} {parts[i]}", null));
+                }
+            }
+            return (EventLinkKind.Friend, friendLinkList.ToArray());
         }
         return null;
     }
