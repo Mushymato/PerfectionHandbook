@@ -3,6 +3,9 @@
   "Sprites": {
     "checkmark": {
       "SourceRect": "297,228,9,9"
+    },
+    "speechBubble": {
+      "SourceRect": "297,237,14,12"
     }
   }
 }

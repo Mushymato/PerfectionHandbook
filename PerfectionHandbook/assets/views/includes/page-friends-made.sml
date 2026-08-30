@@ -101,7 +101,10 @@
             />
           </lane>
         </frame>
-        <label *if={:HasEventDescription} margin="0,12" text={:EventDescription} shadow-alpha="0.8" />
+        <lane *if={:HasEventDescription} margin="-32,12,0,12" vertical-content-alignment="Middle">
+          <image layout="28px 24px" margin="8,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:speechBubble} />
+          <label text={:EventDescription} shadow-alpha="0.8" />
+        </lane>
         <lane *repeat={:Preconds} *switch={:LinkKind} padding="4" >
           <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
           <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
