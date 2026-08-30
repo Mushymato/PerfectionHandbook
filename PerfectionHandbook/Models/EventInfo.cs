@@ -215,8 +215,7 @@ public sealed record EventInfo(
                 EventLinkKind.Event,
                 parts
                     .Skip(1)
-                    .Where(LocationInfoCache.EventsCache.ContainsKey)
-                    .Select(id => new EventLink(id, id))
+                    .Select(id => new EventLink(id, LocationInfoCache.EventsCache.ContainsKey(id) ? id : null))
                     .ToArray()
             );
         }
@@ -266,4 +265,11 @@ public sealed record EventInfo(
         return null;
     }
     #endregion
+}
+
+public sealed class EventDescriptionData
+{
+    public string? DisplayName { get; set; }
+    public string? DescriptionNormal { get; set; }
+    public string? DescriptionSpoiler { get; set; }
 }

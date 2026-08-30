@@ -21,7 +21,7 @@
                 tint={:DisplayTint}/>
               <lane orientation="Vertical" margin="0,0,12,0" >
                 <label margin="8,0,0,8" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
-                <frame layout="stretch 24px" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
+                <frame *if={:NpcInfo.CanEventuallySocialize} layout="stretch 24px" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                   <panel layout="100% stretch" vertical-content-alignment="End">
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
@@ -39,7 +39,7 @@
   <!-- Friend Detail + Events -->
   <lane *case="true" *context={Selected} margin="4,0,4,0" orientation="vertical">
     <!-- Friend Detail -->
-    <frame padding="12" background={@Mods/StardewUI/Sprites/ShopEntryBorder}>
+    <frame padding="12" background={@Mods/StardewUI/Sprites/ShopEntryBorder} layout="stretch content">
       <panel vertical-content-alignment="End">
         <lane orientation="Horizontal" vertical-content-alignment="Middle">
           <image layout="content content"
@@ -53,7 +53,7 @@
             <label focusable="true"  margin="8,0,0,8" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
             <lane vertical-content-alignment="Middle">
               <label focusable="true" margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
-              <frame layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
+              <frame *if={:NpcInfo.CanEventuallySocialize} layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                 <panel layout="stretch stretch" vertical-content-alignment="End">
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} margin="-14,0,0,0" layout="28px 24px"/>
@@ -69,7 +69,7 @@
       </panel>
     </frame>
     <!-- Event List -->
-    <scrollable *!if={HasCurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
+    <scrollable *!if={HasCurrentEventInfo} peeking="128" layout="stretch" scrollbar-margin="-18,0,0,0" >
       <grid item-layout="count:2" layout="stretch content" margin="8">
         <frame *repeat={:EventDisplaysFiltered}
           border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
@@ -84,23 +84,21 @@
       </grid>
     </scrollable>
   <!-- Event Detail -->
-    <scrollable *if={HasCurrentEventInfo} peeking="128" scrollbar-margin="-18,0,0,0" >
+    <scrollable *if={HasCurrentEventInfo} peeking="128" layout="stretch" scrollbar-margin="-18,0,0,0" >
       <lane *context={CurrentEventInfo} layout="stretch content" orientation="vertical" margin="48,8,16,12">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
-          margin="-36,0,0,4" padding="8,8,8,8">
-          <lane layout="stretch content" orientation="vertical">
-            <event-header>
-              <spacer layout="stretch content"/>
-              <image *repeat={:ActorLinks}
-                margin="0,0,0,-16"
-                layout="content content"
-                fit="Contain"
-                focusable="true"
-                sprite={:MugShotSprite}
-                tooltip={:Label}
-                left-click=|~GoalFriendsMadeContext.ShowFriendById(Link)|
-              />
-            </event-header>
+          margin="-36,0,0,0" padding="8">
+          <lane layout="stretch content" orientation="horizontal" vertical-content-alignment="End">
+            <event-header/>
+            <image *repeat={:ActorLinks}
+              padding="4,0,0,-4"
+              fit="Contain"
+              focusable="true"
+              vertical-alignment="End"
+              sprite={:MugShotSprite}
+              tooltip={:Label}
+              left-click=|~GoalFriendsMadeContext.ShowFriendById(Link)|
+            />
           </lane>
         </frame>
         <lane *repeat={:Preconds} *switch={:LinkKind} padding="4" >
@@ -147,7 +145,7 @@
     <lane *if={:Info.HasModName} 
       focusable="true"
       focusable-tag="default-focus"
-      margin="8,0,0,0"
+      margin="8,0"
       orientation="vertical">
       <label text={:Info.HeaderText} shadow-alpha="0.8" max-lines="1"/>
       <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
@@ -156,6 +154,5 @@
       focusable="true"
       focusable-tag="default-focus"
       shadow-alpha="0.8"/>
-    <outlet/>
   </lane>
 </template>

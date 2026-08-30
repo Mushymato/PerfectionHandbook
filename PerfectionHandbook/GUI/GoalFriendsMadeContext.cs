@@ -69,7 +69,7 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int
     }
 }
 
-public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayEntry
+public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugShotSprite) : IPageDisplayEntry
 {
     public override int GetHashCode() => NpcInfo.Name.GetHashCode();
 
@@ -82,7 +82,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     public bool HasCurrentEventInfo => CurrentEventInfo != null;
 
     public Color DisplayTint => CurrentFriendship == null ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
-    public bool Needed => CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints;
+    public bool Needed =>
+        NpcInfo.CountForPerfection && (CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints);
     public float FriendshipFill =>
         100f * MathF.Min(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints) / NpcInfo.MaxPoints;
     public string FriendshipFillLayout => $"{FriendshipFill}% stretch";
@@ -95,7 +96,6 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo) : IPageDisplayE
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
     public ReminderEntry? Reminder { get; } = new ReminderEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
-    public SDUISprite? MugShotSprite = NpcInfo.GetMugShot();
     public readonly IReadOnlyList<EventInfoDisplay> EventDisplays = NpcInfo
         .Events.Values.Select(ei => EventInfoDisplay.Make(ei, NpcInfo.Name))
         .OrderBy(static eid =>
@@ -217,9 +217,11 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         List<FriendsMadeDisplay> friendDisplay = [];
         foreach (NPCInfo npcInfo in NPCInfoCache.Cache.Values)
         {
-            if (!npcInfo.CanEventuallySocialize)
+            if (!npcInfo.CountForPerfection && !npcInfo.Events.Any())
                 continue;
-            FriendsMadeDisplay display = new(npcInfo);
+            if (npcInfo.GetMugShot() is not SDUISprite mugshotSprite)
+                continue;
+            FriendsMadeDisplay display = new(npcInfo, mugshotSprite);
             if (display.MugShotSprite != null)
             {
                 friendDisplay.Add(display);
