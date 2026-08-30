@@ -71,5 +71,16 @@ public sealed class InvalidateTracker(IAssetName assetName) : IChangeTracker
         }
     }
 
+    internal static void OnLocaleChanged()
+    {
+        foreach (List<InvalidateTracker> trackerList in invalidateTrackers.Values)
+        {
+            foreach (InvalidateTracker tracker in trackerList)
+            {
+                tracker.isValid = false;
+            }
+        }
+    }
+
     public void Reset() => isValid = false;
 }

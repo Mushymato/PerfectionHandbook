@@ -7,6 +7,7 @@ using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
+using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
@@ -23,7 +24,12 @@ public sealed record EventPreconditionInfoDisplay(EventPreconditionInfo Info, bo
 
 public sealed record EventActorLink(SDUISprite MugShotSprite, string Label, string? Link);
 
-public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int RequiredFriendshipForNPC)
+public sealed partial record EventInfoDisplay(
+    EventInfo Info,
+    EventDescriptionData? Desc,
+    string ForNPC,
+    int RequiredFriendshipForNPC
+)
 {
     public override int GetHashCode() => HashCode.Combine(Info.EventId, ForNPC);
 
@@ -35,6 +41,10 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int
 
     public readonly int RequiredHeartLevelForNPC = RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
     public readonly bool HasRequiredFriendshipForNPC = RequiredFriendshipForNPC > -1;
+    public readonly bool HasDesc = Desc != null;
+    public readonly string EventHeaderText = Desc?.GetHeaderText(Info) ?? Info.HeaderText;
+    public readonly string? EventDescription = Desc?.GetDescription(Info);
+    public bool HasEventDescription => EventDescription != null;
     public readonly EventPreconditionInfoDisplay[] Preconds = Info
         .Preconditions.Select(precond => new EventPreconditionInfoDisplay(precond, precond.Evaluate(Info), ForNPC))
         .ToArray();
@@ -65,7 +75,7 @@ public sealed partial record EventInfoDisplay(EventInfo Info, string ForNPC, int
 
     internal static EventInfoDisplay Make(EventInfo Info, string ForNPC)
     {
-        return new(Info, ForNPC, Info.GetRequiredFriendship(ForNPC));
+        return new(Info, AssetManager.GetEventDesc(Info.EventId), ForNPC, Info.GetRequiredFriendship(ForNPC));
     }
 }
 
@@ -234,7 +244,9 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         return SortMode switch
         {
-            SORTMODE_NAME => displayList.OrderBy(static disp => disp.DisplayName).ToList(),
+            SORTMODE_NAME => displayList
+                .OrderBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
+                .ToList(),
             SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.FriendshipFill).ToList(),
             _ => base.SortAllDisplay(displayList),
         };
@@ -283,7 +295,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         if (eventId == null || Selected == null)
             return false;
-        if (LocationInfoCache.EventsCache.TryGetValue(eventId, out EventInfo? eventInfo))
+        if (LocationInfoCache.EventsLUT.TryGetValue(eventId, out EventInfo? eventInfo))
         {
             Selected.ShowEventImpl(EventInfoDisplay.Make(eventInfo, Selected.NpcInfo.Name));
         }

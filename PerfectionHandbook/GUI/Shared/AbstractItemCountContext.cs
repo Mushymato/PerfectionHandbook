@@ -154,7 +154,9 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
             SORTMODE_DEFAULT => displayList
                 .OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId))
                 .ToList(),
-            SORTMODE_NAME => displayList.OrderBy(static disp => disp.Info.Datum.DisplayName).ToList(),
+            SORTMODE_NAME => displayList
+                .OrderBy(static disp => disp.Info.Datum.DisplayName, ModEntry.displayStringComparer)
+                .ToList(),
             SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.Count).ToList(),
             _ => base.SortAllDisplay(displayList),
         };

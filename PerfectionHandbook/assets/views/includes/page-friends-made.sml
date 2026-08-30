@@ -101,6 +101,7 @@
             />
           </lane>
         </frame>
+        <label *if={:HasEventDescription} margin="0,12" text={:EventDescription} shadow-alpha="0.8" />
         <lane *repeat={:Preconds} *switch={:LinkKind} padding="4" >
           <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
           <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
@@ -147,10 +148,10 @@
       focusable-tag="default-focus"
       margin="8,0"
       orientation="vertical">
-      <label text={:Info.HeaderText} shadow-alpha="0.8" max-lines="1"/>
+      <label text={:EventHeaderText} shadow-alpha="0.8" max-lines="1"/>
       <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
     </lane>
-    <label *!if={:Info.HasModName} text={:Info.HeaderText}
+    <label *!if={:Info.HasModName} text={:EventHeaderText}
       focusable="true"
       focusable-tag="default-focus"
       shadow-alpha="0.8"/>

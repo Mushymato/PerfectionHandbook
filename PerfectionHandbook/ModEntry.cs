@@ -24,6 +24,7 @@ public sealed class ModEntry : Mod
     internal static IModHelper help = null!;
     internal static ModConfig config = new();
     internal static Integration.IModNameAPI? modNameAPI = null;
+    internal static StringComparer displayStringComparer = StringComparer.CurrentCulture;
 
     public override void Entry(IModHelper helper)
     {
@@ -42,16 +43,20 @@ public sealed class ModEntry : Mod
         }
 
         ReminderEntryFactory.Setup();
-        AssetManager.Setup();
 
         help.Events.GameLoop.GameLaunched += OnGameLaunched;
         help.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         help.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         help.Events.GameLoop.DayStarted += OnDayStarted;
         help.Events.GameLoop.Saving += OnSaving;
-        help.Events.Content.AssetsInvalidated += OnAssetInvalidated;
         help.Events.Content.LocaleChanged += OnLocaleChanged;
         help.Events.Input.ButtonsChanged += OnButtonsChanged;
+        help.Events.Content.AssetRequested += OnAssetRequested;
+        help.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
+        displayStringComparer = StringComparer.Create(
+            new(string.IsNullOrEmpty(help.Translation.Locale) ? "en-US" : help.Translation.Locale),
+            false
+        );
 
         // help.Events.GameLoop.OneSecondUpdateTicked += OneSecondUpdateTicked_PreloadHandbook;
 
@@ -105,9 +110,15 @@ public sealed class ModEntry : Mod
     /// <inheritdoc/>
     public override object? GetApi(IModInfo mod) => new PerfectionHandbookAPI(mod);
 
-    private static void OnAssetInvalidated(object? sender, AssetsInvalidatedEventArgs e)
+    private void OnAssetsInvalidated(object? sender, AssetsInvalidatedEventArgs e)
     {
         InvalidateTracker.OnAssetInvalidated(e);
+        AssetManager.OnAssetsInvalidated(e);
+    }
+
+    private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
+    {
+        AssetManager.OnAssetRequested(e);
     }
 
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -138,11 +149,18 @@ public sealed class ModEntry : Mod
         }
         DrawHelper.DisposeCache();
         ItemInfoCache.ClearLocationCache();
+        LocationInfoCache.ClearCache();
+        NPCInfoCache.ClearCache();
     }
 
     private static void OnLocaleChanged(object? sender, LocaleChangedEventArgs e)
     {
         DrawHelper.DisposeCache();
+        InvalidateTracker.OnLocaleChanged();
+        displayStringComparer = StringComparer.Create(
+            new(string.IsNullOrEmpty(help.Translation.Locale) ? "en-US" : help.Translation.Locale),
+            false
+        );
     }
 
     private static void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)

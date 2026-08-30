@@ -1,0 +1,20 @@
+{
+  "Name": "PerfectionHandbook.EventDesc",
+  "Author": "mushymato",
+  "Version": "0.1.0",
+  "Description": "Vanilla event descriptions for Perfection Handbook",
+  "UniqueID": "mushymato.PerfectionHandbook.EventDesc",
+  "MinimumApiVersion": "4.4.0",
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "UpdateKeys": [
+    "Nexus:-1"
+  ],
+  "Dependencies": [
+    {
+      "UniqueID": "mushymato.PerfectionHandbook",
+      "IsRequired": true
+    }
+  ]
+}

@@ -215,7 +215,7 @@ public sealed record EventInfo(
                 EventLinkKind.Event,
                 parts
                     .Skip(1)
-                    .Select(id => new EventLink(id, LocationInfoCache.EventsCache.ContainsKey(id) ? id : null))
+                    .Select(id => new EventLink(id, LocationInfoCache.EventsLUT.ContainsKey(id) ? id : null))
                     .ToArray()
             );
         }
@@ -228,7 +228,7 @@ public sealed record EventInfo(
                     EventCTPattern.Match(ctId) is Match match
                     && match.Success
                     && match.Groups[1].Value is string eventId
-                    && LocationInfoCache.EventsCache.ContainsKey(eventId)
+                    && LocationInfoCache.EventsLUT.ContainsKey(eventId)
                 )
                 {
                     eventLinksList.Add(new(ctId, match.Groups[1].Value));
@@ -270,6 +270,21 @@ public sealed record EventInfo(
 public sealed class EventDescriptionData
 {
     public string? DisplayName { get; set; }
-    public string? DescriptionNormal { get; set; }
+    public string? Description { get; set; }
     public string? DescriptionSpoiler { get; set; }
+
+    internal string? GetHeaderText(EventInfo info)
+    {
+        if (string.IsNullOrEmpty(DisplayName))
+            return null;
+        return $"{TokenParser.ParseText(DisplayName)} @ {info.HeaderText}";
+    }
+
+    internal string? GetDescription(EventInfo info)
+    {
+        // always use the local player
+        if ((Game1.player.eventsSeen.Contains(info.EventId) ? DescriptionSpoiler : Description) is not string desc)
+            return null;
+        return TokenParser.ParseText(desc);
+    }
 }

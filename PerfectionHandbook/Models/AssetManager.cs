@@ -14,13 +14,14 @@ public static class AssetManager
     public static Dictionary<string, EventDescriptionData> EventDesc =>
         _eventDesc ??= Game1.content.Load<Dictionary<string, EventDescriptionData>>(AssetName_EventDesc);
 
-    public static void Setup()
+    public static EventDescriptionData? GetEventDesc(string eventId)
     {
-        ModEntry.help.Events.Content.AssetRequested += OnAssetRequested;
-        ModEntry.help.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
+        if (EventDesc.TryGetValue(eventId, out EventDescriptionData? desc))
+            return desc;
+        return null;
     }
 
-    private static void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
+    internal static void OnAssetRequested(AssetRequestedEventArgs e)
     {
         // add location names to Data/Locations
         if (e.NameWithoutLocale.IsEquivalentTo("Data/Locations"))
@@ -54,7 +55,7 @@ public static class AssetManager
         }
     }
 
-    private static void OnAssetsInvalidated(object? sender, AssetsInvalidatedEventArgs e)
+    internal static void OnAssetsInvalidated(AssetsInvalidatedEventArgs e)
     {
         if (e.NamesWithoutLocale.Any(name => name.IsEquivalentTo(AssetName_EventDesc)))
         {

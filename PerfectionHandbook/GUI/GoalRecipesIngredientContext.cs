@@ -102,7 +102,9 @@ public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
                     (disp.Key.StartsWith($"{ModEntry.ModId}/") ? -1024 : disp.Info.Datum.Category, disp.Key)
                 )
                 .ToList(),
-            SORTMODE_NAME => displayList.OrderBy(static disp => disp.NeededFor.CraftingDesc).ToList(),
+            SORTMODE_NAME => displayList
+                .OrderBy(static disp => disp.NeededFor.CraftingDesc, ModEntry.displayStringComparer)
+                .ToList(),
             SORTMODE_COUNT => displayList
                 .OrderByDescending(static disp => (disp.NeededCount <= disp.OwnedCount ? 1 : 0, disp.OwnedCount))
                 .ToList(),

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "2.9.0",
+  "Changes": [
+    // https://stardewmodding.wiki.gg/wiki/List_of_Vanilla_Event_IDs
+    {
+      "Action": "EditData",
+      "Target": "mushymato.PerfectionHandbook/EventDesc",
+      "Entries": {
+        "1": {
+          "DisplayName": "{{i18n:1.name}}",
+          "Description": "{{i18n:1.desc}}",
+          "DescriptionSpoiler": "{{i18n:1.spoiler}}"
+        }
+      }
+    }
+  ]
+}

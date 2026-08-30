@@ -157,4 +157,9 @@ public static class NPCInfoCache
             npcInfo.RefreshEvents(refreshedLocationInfo);
         }
     }
+
+    public static void ClearCache()
+    {
+        cache = null;
+    }
 }

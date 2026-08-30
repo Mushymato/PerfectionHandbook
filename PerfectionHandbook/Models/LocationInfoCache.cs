@@ -88,6 +88,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             Dictionary<string, EventInfo>? eventsInfo = [];
             foreach ((string key, string commands) in events)
             {
+                ModEntry.Log($"Location.DisplayName: {Location.DisplayName}");
                 if (
                     EventInfo.TryParse(
                         LocationId,
@@ -100,7 +101,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
                 )
                 {
                     eventsInfo[info.EventId] = info;
-                    LocationInfoCache.EventsCache[info.EventId] = info;
+                    LocationInfoCache.EventsLUT[info.EventId] = info;
                 }
             }
             Events = eventsInfo;
@@ -134,7 +135,7 @@ public static class LocationInfoCache
     }
 
     private static Dictionary<string, LocationInfo>? cache = null;
-    public static readonly Dictionary<string, EventInfo> EventsCache = [];
+    public static readonly Dictionary<string, EventInfo> EventsLUT = [];
     public static IReadOnlyDictionary<string, LocationInfo> Cache => GetLocationInfo();
 
     private static IReadOnlyDictionary<string, LocationInfo> GetLocationInfo()
@@ -198,5 +199,11 @@ public static class LocationInfoCache
             locInfo.ReloadLocationData(out _);
         }
         return newCache;
+    }
+
+    internal static void ClearCache()
+    {
+        cache = null;
+        EventsLUT.Clear();
     }
 }
