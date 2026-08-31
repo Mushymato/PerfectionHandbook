@@ -121,12 +121,13 @@ public sealed class ModEntry : Mod
         AssetManager.OnAssetRequested(e);
     }
 
-    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         modNameAPI = help.ModRegistry.GetApi<Integration.IModNameAPI>("mushymato.ModNameTooltip");
         MenuHandler.Setup();
         ItemInfoCache.Setup();
         GoalSkillLeveledContext.Setup();
+        config.Register(ModManifest);
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

@@ -17,5 +17,6 @@
   "config.name.RemindersDefaultExpanded": "Expand by Default",
   "config.desc.RemindersDefaultExpanded": "Change whether sub-reminders (such as crafting recipe ingredients) will be displayed by default",
   "config.name.RemindersHUDPosition": "HUD Position",
-  "config.desc.RemindersHUDPosition": "Change where the remidners HUD goes on screen."
+  "config.desc.RemindersHUDPosition": "Change where the remidners HUD goes on screen.",
+  "config.gmcm.more-configs": "There are more config options in Perfection Handbook's own config menu."
 }
