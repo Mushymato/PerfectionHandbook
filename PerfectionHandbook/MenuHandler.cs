@@ -32,11 +32,7 @@ public static class MenuHandler
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
     internal const string VIEW_ASSET_CARD = $"{VIEW_ASSET_PREFIX}/card";
     internal const string DEFAULT_FOCUS = "default-focus";
-    internal static readonly string exportDir = Path.Combine(
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"),
-        ".smapi",
-        ModEntry.ModId
-    );
+    internal static string exportDir = null!;
 
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
         new(static (ctx) => viewEngine.CreateMenuControllerFromAsset(VIEW_ASSET_REMINDERS, ctx))
@@ -46,7 +42,23 @@ public static class MenuHandler
 
     public static void Setup()
     {
+        // TODO: remove this for 1.0.0
+        string oldExportDir = Path.Combine(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley"),
+            ".smapi",
+            ModEntry.ModId
+        );
+        exportDir = Path.Combine(ModEntry.help.DirectoryPath, "cards");
         Directory.CreateDirectory(exportDir);
+        if (Directory.Exists(oldExportDir))
+        {
+            foreach (string file in Directory.EnumerateFiles(oldExportDir))
+            {
+                File.Move(file, Path.Combine(exportDir, Path.GetFileName(file)));
+            }
+            Directory.Delete(oldExportDir);
+        }
+
         viewEngine = ModEntry.help.ModRegistry.GetApi<IViewEngine>("focustense.StardewUI")!;
         viewEngine.RegisterSprites($"{ModEntry.ModId}/sprites", "assets/sprites");
         viewEngine.RegisterViews(VIEW_ASSET_PREFIX, "assets/views");

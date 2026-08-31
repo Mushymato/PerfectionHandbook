@@ -43,7 +43,8 @@ public sealed record NeededForInfoGroup(
 
 public sealed record CraftingRecipeWithNeeds(
     CraftingRecipe Recipe,
-    IReadOnlyList<(NeededForInfoGroup, NeededForInfo)> Needs
+    IReadOnlyList<(NeededForInfoGroup, NeededForInfo)> Needs,
+    bool Excluded
 );
 
 public sealed record ItemInfo(ParsedItemData Datum)
@@ -98,14 +99,47 @@ public static class ItemInfoCache
     internal static Func<string, bool, CraftingRecipe> MakeCraftingRecipe = Vanilla_MakeCraftingRecipe;
     #endregion
 
+    #region PerfectionExclusions
+    private static Delegate? getPerfectionExclusionsRecipes = null;
+
+    public static HashSet<string>? GetPerfectionExclusionsRecipes(bool isCooking)
+    {
+        if (getPerfectionExclusionsRecipes == null)
+            return null;
+        dynamic? recipes = getPerfectionExclusionsRecipes.DynamicInvoke();
+        if (recipes == null)
+            return null;
+        HashSet<string> recipesList = [];
+        foreach (dynamic values in recipes.Values)
+        {
+            if (isCooking)
+            {
+                if (values.CookingRecipes != null)
+                {
+                    recipesList.AddRange((List<string>)values.CookingRecipes);
+                }
+            }
+            else
+            {
+                if (values.CookingRecipes != null)
+                {
+                    recipesList.AddRange((List<string>)values.CraftingRecipes);
+                }
+            }
+        }
+        return recipesList;
+    }
+    #endregion
+
+
     public static void Setup()
     {
         if (
-            ModEntry.help.ModRegistry.Get("spacechase0.SpaceCore") is IModInfo modInfo
-            && modInfo.GetType()?.GetProperty("Mod")?.GetValue(modInfo) is IMod mod
+            ModEntry.help.ModRegistry.Get("spacechase0.SpaceCore") is IModInfo modInfo1
+            && modInfo1.GetType()?.GetProperty("Mod")?.GetValue(modInfo1) is IMod mod1
         )
         {
-            Assembly assembly = mod.GetType().Assembly;
+            Assembly assembly = mod1.GetType().Assembly;
             if (
                 assembly
                     .GetType("SpaceCore.Patches.CraftingRecipePatcher")
@@ -122,6 +156,25 @@ public static class ItemInfoCache
         else
         {
             ModEntry.Log($"Create recipes with: vanilla");
+        }
+
+        if (
+            ModEntry.help.ModRegistry.Get("rokugin.perfectionexclusions") is IModInfo modInfo2
+            && modInfo2.GetType()?.GetProperty("Mod")?.GetValue(modInfo2) is IMod mod2
+        )
+        {
+            Assembly assembly = mod2.GetType().Assembly;
+            if (
+                assembly
+                    .GetType("PerfectionExclusions.Framework.AssetManager")
+                    ?.GetProperty("Recipes", BindingFlags.Static | BindingFlags.Public)
+                    ?.GetGetMethod()
+                is MethodInfo getRecipes
+            )
+            {
+                ModEntry.Log($"Applying rokugin.perfectionexclusions rules");
+                getPerfectionExclusionsRecipes = getRecipes.CreateDelegate<Func<dynamic>>();
+            }
         }
     }
 
@@ -220,6 +273,7 @@ public static class ItemInfoCache
         PopulateRecipes(cacheRet, false);
         static void PopulateRecipes(Dictionary<string, ItemInfo> newCache, bool isCooking)
         {
+            HashSet<string>? perfectionExcluded = ItemInfoCache.GetPerfectionExclusionsRecipes(isCooking);
             dynamic? spacecoreVAE = null;
             if (isSpacecore)
             {
@@ -329,7 +383,7 @@ public static class ItemInfoCache
                     needs.Add((neededForGroup, neededFor));
                 }
 
-                itemInfo.FromRecipe.Add(new(recipe, needs));
+                itemInfo.FromRecipe.Add(new(recipe, needs, perfectionExcluded?.Contains(recipe.name) ?? false));
             }
 
             static bool TryMakeNeededFor_WildSeeds(

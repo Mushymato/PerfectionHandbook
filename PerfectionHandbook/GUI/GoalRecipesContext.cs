@@ -7,8 +7,13 @@ using StardewValley;
 
 namespace PerfectionHandbook.GUI;
 
-public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe Recipe, PlayerOwned OwnedInfo)
-    : AbstractItemCountDisplay(Info, OwnedCount)
+public sealed record RecipeDisplay(
+    ItemInfo Info,
+    int OwnedCount,
+    CraftingRecipe Recipe,
+    bool Excluded,
+    PlayerOwned OwnedInfo
+) : AbstractItemCountDisplay(Info, OwnedCount)
 {
     public override Color DisplayTint
     {
@@ -28,7 +33,7 @@ public sealed record RecipeDisplay(ItemInfo Info, int OwnedCount, CraftingRecipe
             }
         }
     }
-    public override bool Needed => completedCount == 0;
+    public override bool Needed => completedCount == 0 && !Excluded;
     public override SDUITooltipData Tooltip =>
         new(
             " ",
@@ -81,7 +86,7 @@ public sealed class GoalRecipesContext(GoalContext goalCtx, bool isCooking)
                         )
                     )
                         ownedCount = group.CountRepr.ReprStack;
-                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe.Recipe, GoalCtx.OwnedInfo));
+                    recipeDisplayList.Add(new(itemInfo, ownedCount, recipe.Recipe, recipe.Excluded, GoalCtx.OwnedInfo));
                 }
             }
         }

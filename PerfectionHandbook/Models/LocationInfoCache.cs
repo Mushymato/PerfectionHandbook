@@ -88,7 +88,6 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             Dictionary<string, EventInfo>? eventsInfo = [];
             foreach ((string key, string commands) in events)
             {
-                ModEntry.Log($"Location.DisplayName: {Location.DisplayName}");
                 if (
                     EventInfo.TryParse(
                         LocationId,

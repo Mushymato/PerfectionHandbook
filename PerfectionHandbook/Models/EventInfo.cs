@@ -277,7 +277,7 @@ public sealed class EventDescriptionData
     {
         if (string.IsNullOrEmpty(DisplayName))
             return null;
-        return $"{TokenParser.ParseText(DisplayName)} @ {info.HeaderText}";
+        return $"{TokenParser.ParseText(DisplayName)} @ {info.LocationName}";
     }
 
     internal string? GetDescription(EventInfo info)

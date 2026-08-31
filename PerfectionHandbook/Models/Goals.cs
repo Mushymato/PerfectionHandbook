@@ -215,11 +215,14 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
+            HashSet<string>? perfectionExcluded = ItemInfoCache.GetPerfectionExclusionsRecipes(true);
             Dictionary<string, string> cookingRecipes = CraftingRecipe.cookingRecipes;
             foreach (KeyValuePair<string, string> item in cookingRecipes)
             {
                 total++;
                 string key = item.Key;
+                if (perfectionExcluded?.Contains(key) ?? false)
+                    continue;
                 if (who.cookingRecipes.ContainsKey(key))
                 {
                     string key2 = ArgUtility.SplitBySpaceAndGet(ArgUtility.Get(item.Value.Split('/'), 2), 0);
@@ -247,9 +250,12 @@ public static class Goals
         {
             int count = 0;
             int total = 0;
+            HashSet<string>? perfectionExcluded = ItemInfoCache.GetPerfectionExclusionsRecipes(false);
             foreach (string key in CraftingRecipe.craftingRecipes.Keys)
             {
                 if (key == "Wedding Ring")
+                    continue;
+                if (perfectionExcluded?.Contains(key) ?? false)
                     continue;
                 total++;
                 if (who.craftingRecipes.TryGetValue(key, out var craftedNum) && craftedNum > 0)
