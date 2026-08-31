@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Name>PerfectionHandbook</Name>
+    <Name>Perfection Handbook</Name>
     <Authors>mushymato</Authors>
     <Description>UI for tracking perfection and achievements, plus getting more info about everything.</Description>
     <UniqueId>mushymato.PerfectionHandbook</UniqueId>
@@ -43,5 +43,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <ContentPacks Include="PerfectionHandbook.EventDesc" Version="$(Version)" />
   </ItemGroup>
 </Project>
