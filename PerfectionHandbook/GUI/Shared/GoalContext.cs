@@ -1,6 +1,4 @@
-using System.Collections.ObjectModel;
 using PerfectionHandbook.Models;
-using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.ItemTypeDefinitions;
 
@@ -14,16 +12,6 @@ public sealed partial record GoalContext(
     string SummaryText
 ) : IGoalContext
 {
-    [Notify]
-    private bool selectingFulfillments = false;
-    public readonly bool HasFulfillments = Fulfillments.Any();
-
-    public bool ToggleVisibleFulfillments()
-    {
-        SelectingFulfillments = !SelectingFulfillments;
-        return true;
-    }
-
     public static GoalContext Make(Farmer who, IGoal goal, PlayerOwned ownedInfo)
     {
         GoalFulfillment myFulfillment = goal.GetFulfillment(who);

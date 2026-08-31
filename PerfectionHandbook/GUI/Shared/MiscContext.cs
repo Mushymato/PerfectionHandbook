@@ -18,7 +18,6 @@ public sealed record MiscContext(
     private IPageContext? pageCtx = null;
     public IPageContext? PageCtx => pageCtx ??= GetPageCtx(this);
     public IReadOnlyList<GoalFulfillment> Fulfillments => Empty;
-    public readonly bool HasFulfillments = false;
 
     public void DisposePageCtx()
     {

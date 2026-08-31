@@ -109,7 +109,7 @@
       +transition:opacity="150ms EaseOutSine"
       button-press=|HandleShoulderButtons($Button)|>
       <include name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
-      <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" margin="0,0,0,0" fit="Stretch"/>
+      <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" fit="Stretch"/>
       <include name={&page-include} />
     </lane>
   </panel>

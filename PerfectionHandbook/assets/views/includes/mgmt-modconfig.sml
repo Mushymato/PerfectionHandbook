@@ -3,7 +3,7 @@
     background-border-thickness="48,12"
     margin="12,-80,0,0" text={#ui.misc.mod-config} layout="content content" item-span="-1"/>
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
-    <grid item-layout="count: 10" layout="stretch content" margin="24,12">
+    <grid item-layout="count: 9" layout="stretch content" margin="24,12">
       <!-- general -->
       <banner margin="4" text={#config.section.General} layout="content content" item-span="-1"/>
       <form-label text={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey} />
@@ -59,20 +59,19 @@
       </form-cell>
 
       <spacer item-span="-1"/>
-
-      <button item-span="-1"
-        hover-background={@Mods/StardewUI/Sprites/ButtonLight}
-        font="dialogue"
-        margin="0,8,16,0"
-        text={#ui.reset}
-        left-click=|ResetConfigsToDefault()|
-      />
     </grid>
   </scrollable>
+  <button *float="Below" item-span="-1"
+    hover-background={@Mods/StardewUI/Sprites/ButtonLight}
+    font="dialogue"
+    margin="10,-72,16,0"
+    text={#ui.reset}
+    left-click=|ResetConfigsToDefault()|
+  />
 </panel>
 
 <template name="form-label">
-  <panel item-span="3"
+  <panel item-span="2"
     layout="stretch 88px"
     margin="0,0,12,0"
     horizontal-content-alignment="End"
@@ -80,7 +79,6 @@
     focusable="true"
     tooltip={&tooltip}>
     <label layout="content content"
-      font="dialogue"
       text={&text}
       shadow-alpha="0.8"
       shadow-offset="-2, 2"/>
@@ -88,7 +86,7 @@
 </template>
 
 <template name="form-cell">
-  <panel item-span="2"
+  <panel item-span="1"
     layout="stretch 88px"
     margin="4,0,0,0"
     horizontal-content-alignment="Start"

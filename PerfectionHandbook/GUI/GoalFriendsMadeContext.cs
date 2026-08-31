@@ -190,7 +190,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     : AbstractPageListContext<FriendsMadeDisplay>(goalCtx, itemPerPageModifier: 6.0 / 8.0)
 {
     public override bool HasSortModes => true;
-    protected override string[] ValidSortModes => [SORTMODE_NAME, SORTMODE_COUNT];
+    protected override string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
     public override string SortMode
     {
         get => field;
@@ -246,8 +246,12 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         {
             SORTMODE_NAME => displayList
                 .OrderBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
+                .ThenBy(static disp => disp.NpcInfo.CanEventuallySocialize ? 0 : 1)
                 .ToList(),
-            SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.FriendshipFill).ToList(),
+            SORTMODE_COUNT => displayList
+                .OrderByDescending(static disp => (disp.FriendshipFill, disp.NpcInfo.CanEventuallySocialize ? 1 : 0))
+                .ToList(),
+            SORTMODE_DEFAULT => displayList.OrderBy(static disp => disp.NpcInfo.Name).ToList(),
             _ => base.SortAllDisplay(displayList),
         };
     }
