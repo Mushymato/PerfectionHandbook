@@ -1,5 +1,6 @@
 global using SObject = StardewValley.Object;
 using System.Diagnostics;
+using System.Text;
 using PerfectionHandbook.GUI;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
@@ -83,6 +84,21 @@ public sealed class ModEntry : Mod
                 if (!Context.IsWorldReady)
                     return;
                 MenuHandler.ExportCard(new(Game1.player));
+            }
+        );
+        help.ConsoleCommands.Add(
+            "ph-listevents",
+            "List all events ids from the cache",
+            static (cmd, args) =>
+            {
+                if (!Context.IsWorldReady)
+                    return;
+                StringBuilder sb = new("\n");
+                foreach (string eventid in LocationInfoCache.EventsLUT.Keys.OrderBy(kv => kv))
+                {
+                    sb.AppendLine(eventid);
+                }
+                Log(sb.ToString());
             }
         );
 #if DEBUG

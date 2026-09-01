@@ -154,6 +154,10 @@ public sealed record EventInfo(
                 }
             }
         }
+        if (eventId == "PlayerKilled")
+        {
+            eventId = $"{locationId}.PlayerKilled";
+        }
 
         info = new(
             eventId,
