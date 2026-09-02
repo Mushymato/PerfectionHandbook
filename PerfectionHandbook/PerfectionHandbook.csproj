@@ -43,6 +43,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <ContentPacks Include="PerfectionHandbook.EventDesc" Version="$(Version)" />
   </ItemGroup>
 </Project>

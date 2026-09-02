@@ -7,7 +7,6 @@ using PerfectionHandbook.Reminders;
 using PropertyChanged.SourceGenerator;
 using StardewValley;
 using StardewValley.Extensions;
-using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.GUI;
 
@@ -91,7 +90,10 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
     private readonly Stack<EventInfoDisplay> eventInfoStack = [];
     public bool HasCurrentEventInfo => CurrentEventInfo != null;
 
-    public Color DisplayTint => CurrentFriendship == null ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
+    public Color DisplayTint =>
+        NpcInfo.CanEventuallySocialize && CurrentFriendship == null
+            ? HandbookContext.InactiveColor
+            : HandbookContext.ActiveColor;
     public bool Needed =>
         NpcInfo.CountForPerfection && (CurrentFriendship == null || CurrentFriendship.Points < NpcInfo.MaxPoints);
     public float FriendshipFill =>
@@ -245,8 +247,8 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         return SortMode switch
         {
             SORTMODE_NAME => displayList
-                .OrderBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
-                .ThenBy(static disp => disp.NpcInfo.CanEventuallySocialize ? 0 : 1)
+                .OrderBy(static disp => disp.NpcInfo.CanEventuallySocialize ? 0 : 1)
+                .ThenBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
             SORTMODE_COUNT => displayList
                 .OrderByDescending(static disp => (disp.FriendshipFill, disp.NpcInfo.CanEventuallySocialize ? 1 : 0))

@@ -76,7 +76,7 @@ public static class MenuHandler
                 "LooseSprites/emojis",
                 new(27, 54, 9, 9),
                 I18n.Ui_Mod_Name,
-                I18n.Ui_Mod_Desc,
+                I18n.Ui_Mod_Iconic_Desc,
                 ShowHandbook,
                 Reminders.ToggleVisibility
             );

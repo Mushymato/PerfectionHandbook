@@ -182,7 +182,15 @@ public sealed class ModEntry : Mod
 
     private static void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
     {
-        if (config.ShowHandbookKey.JustPressed())
+        if (Game1.activeClickableMenu != null)
+        {
+            return;
+        }
+        if (
+            config.ShowHandbookKey.JustPressed()
+            || Game1.player.ActiveItem?.QualifiedItemId == AssetManager.ObjectQId_Book
+                && Game1.didPlayerJustRightClick()
+        )
         {
             MenuHandler.ShowHandbook();
         }
