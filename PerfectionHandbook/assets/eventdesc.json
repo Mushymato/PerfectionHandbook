@@ -79,6 +79,10 @@
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:16.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:16.desc]"
   },
+  "16253595": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:16253595.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:16253595.desc]"
+  },
   "17": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:17.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:17.desc]"
@@ -431,6 +435,10 @@
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:52.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:52.desc]"
   },
+  "520702": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:520702.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:520702.desc]"
+  },
   "528052": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:528052.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:528052.desc]"
@@ -495,6 +503,10 @@
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611173.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611173.desc]"
   },
+  "611439": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611439.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611439.desc]"
+  },
   "611944": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611944.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:611944.desc]"
@@ -530,6 +542,10 @@
   "65": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:65.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:65.desc]"
+  },
+  "66": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:66.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:66.desc]"
   },
   "67": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:67.name]",
@@ -659,6 +675,10 @@
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:963113.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:963113.desc]"
   },
+  "963313": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:963313.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:963313.desc]"
+  },
   "97": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:97.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:97.desc]"
@@ -666,6 +686,10 @@
   "980558": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:980558.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:980558.desc]"
+  },
+  "980559": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:980559.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:980559.desc]"
   },
   "992253": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:992253.name]",
