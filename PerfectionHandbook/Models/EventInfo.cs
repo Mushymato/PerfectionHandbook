@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.Integration;
@@ -28,13 +29,14 @@ public sealed record EventPreconditionInfo(
     bool Negated,
     string[] Args,
     EventPreconditionDelegate Handler,
-    ArgGetInfo ArgInfo,
     EventLinkKind LinkKind,
     EventLink[]? Links
 )
 {
-    public readonly string DisplayText = ArgInfo.FormArgDesc(Negated, Handler.Method.Name, Args);
-    public readonly string PrecondText = ArgInfo.FormPrecondName(Negated, Handler.Method.Name);
+    public readonly string PrecondText = Negated ? $"NOT {Handler.Method.Name}" : Handler.Method.Name;
+    public readonly string DisplayText = Negated
+        ? "NOT "
+        : "" + $"{Handler.Method.Name} {string.Join(' ', Args.Skip(1))}";
 
     public bool Evaluate(EventInfo eventInfo)
     {
@@ -194,16 +196,20 @@ public sealed record EventInfo(
                     return false;
                 }
                 (EventLinkKind, EventLink[])? links = GetLinks(parts, handler);
+                if (
+                    handler.Method.Name.StartsWith("Not")
+                    && handler.Method.GetCustomAttribute(typeof(ObsoleteAttribute)) != null
+                )
+                {
+                    string notless = handler.Method.Name[3..];
+                    if (!Event.TryGetPreconditionHandler(notless, out EventPreconditionDelegate? handlerInvert))
+                    {
+                        negated = !negated;
+                        handler = handlerInvert;
+                    }
+                }
                 normalizedList.Add(
-                    new(
-                        realPrecond,
-                        negated,
-                        parts,
-                        handler,
-                        DelegateInspector.ExtractTryGetPairs(handler),
-                        links?.Item1 ?? EventLinkKind.None,
-                        links?.Item2
-                    )
+                    new(realPrecond, negated, parts, handler, links?.Item1 ?? EventLinkKind.None, links?.Item2)
                 );
             }
             normalized = normalizedList.ToArray();

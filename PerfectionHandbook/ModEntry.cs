@@ -107,19 +107,6 @@ public sealed class ModEntry : Mod
             "Invalidate some asset",
             static (cmd, args) => help.GameContent.InvalidateCache(args[0])
         );
-        help.ConsoleCommands.Add(
-            "ph-tryget",
-            "Test tryget extraction",
-            static (cmd, args) =>
-            {
-                if (Event.TryGetPreconditionHandler("Tile", out EventPreconditionDelegate handler))
-                {
-                    ArgGetInfo argGetInfo = DelegateInspector.ExtractTryGetPairs(handler);
-                    argGetInfo.LogRepr();
-                    Log(argGetInfo.FormArgDesc(false, "Tile", ["", "44", "55"]));
-                }
-            }
-        );
 #endif
     }
 

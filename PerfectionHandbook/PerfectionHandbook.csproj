@@ -9,7 +9,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>default</LangVersion>
-    <EnableHarmony>true</EnableHarmony>
     <ModZipPath>$(MSBuildThisFileDirectory)/../_releases</ModZipPath>
   </PropertyGroup>
 
