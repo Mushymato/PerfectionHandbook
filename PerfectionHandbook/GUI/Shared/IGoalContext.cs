@@ -12,6 +12,7 @@ public interface IGoalContext
     public string SummaryText { get; }
     string DisplayName { get; }
     ParsedItemData DisplayIcon { get; }
+    public bool Filled { get; }
     public IPageContext? PageCtx { get; }
     public IReadOnlyList<GoalFulfillment> Fulfillments { get; }
     public void DisposePageCtx();

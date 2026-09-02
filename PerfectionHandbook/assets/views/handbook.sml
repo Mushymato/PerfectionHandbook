@@ -89,9 +89,12 @@
       margin="2"
       padding="12,12,16,0"
       layout="stretch 144px">
-      <panel layout="100% 100%" >
+      <panel layout="100% 100%">
         <image sprite={:DisplayIcon} layout="48px 48px" />
         <label margin="56,0,0,0" font="small" text={:DisplayName} max-lines="3" shadow-alpha="0.8" />
+        <panel *if={:Filled} layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="Start" vertical-content-alignment="End">
+          <image layout="44px 44px" margin="2" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:greenStar} opacity="0.6"/>
+        </panel>
         <panel layout="100% 100%" padding="0,0,0,12" horizontal-content-alignment="End" vertical-content-alignment="End">
           <label font="dialogue" text={:SummaryText} shadow-alpha="0.8" />
         </panel>

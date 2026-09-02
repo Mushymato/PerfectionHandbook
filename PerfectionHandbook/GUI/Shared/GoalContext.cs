@@ -41,6 +41,7 @@ public sealed partial record GoalContext(
     public IPageContext? PageCtx => pageCtx ??= Goal.GetPageContext(this);
     public string DisplayName => Goal.DisplayName;
     public ParsedItemData DisplayIcon => Goal.DisplayIcon;
+    public bool Filled => Fulfillments[0].Filled;
 
     public void DisposePageCtx()
     {

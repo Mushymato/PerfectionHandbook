@@ -6,6 +6,12 @@
     },
     "speechBubble": {
       "SourceRect": "297,237,14,12"
+    },
+    "greenStar": {
+      "SourceRect": "457,298,11,11"
+    },
+    "junimo": {
+      "SourceRect": "386,299,13,15"
     }
   }
 }
