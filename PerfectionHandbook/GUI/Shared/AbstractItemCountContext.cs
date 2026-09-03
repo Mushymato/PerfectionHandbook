@@ -33,7 +33,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
 
     public virtual bool HasCount => Count > 0;
 
-    public float DisplayShadow => DisplayTint == HandbookContext.ActiveColor ? 0.35f : 0f;
+    public virtual float DisplayShadow => DisplayTint == HandbookContext.ActiveColor ? 0.35f : 0f;
 
     [Notify]
     private bool isHovered = false;
@@ -59,6 +59,7 @@ public abstract partial record AbstractItemCountDisplay(ItemInfo Info, int Owned
         this.countMode = countMode;
         UpdateCount();
         OnPropertyChanged(new(nameof(DisplayTint)));
+        OnPropertyChanged(new(nameof(DisplayShadow)));
     }
 
     public void UpdateCount()
@@ -199,7 +200,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         }
     }
 
-    protected void DoHoveredEnter(TDisplay display)
+    protected virtual void DoHoveredEnter(TDisplay display)
     {
         Hovered?.IsHovered = false;
         Hovered = display;

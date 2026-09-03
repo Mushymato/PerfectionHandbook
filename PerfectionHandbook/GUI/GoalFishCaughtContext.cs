@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
 using PerfectionHandbook.Models;
@@ -9,6 +10,7 @@ using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData.Locations;
 using StardewValley.ItemTypeDefinitions;
+using StardewValley.Objects;
 
 namespace PerfectionHandbook.GUI;
 
@@ -279,7 +281,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FishCaught, Info.ReprItem.QualifiedItemId);
 }
 
-public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
+public sealed partial class GoalFishCaughtContext(IGoalContext goalCtx)
     : AbstractItemCountContext<FishCaughtDisplay>(
         goalCtx,
         canToggleNeeded: true,
@@ -388,4 +390,63 @@ public sealed class GoalFishCaughtContext(IGoalContext goalCtx)
         }
         return result;
     }
+
+    #region tank fish rendering
+    private readonly SpriteBatch tankfishBatch = new(Game1.graphics.GraphicsDevice);
+    private const int TANK_WIDTH = 328;
+    private const int TANK_HEIGHT = 80;
+    private readonly RenderTarget2D tankfishRT = new(
+        Game1.graphics.GraphicsDevice,
+        TANK_WIDTH,
+        TANK_HEIGHT,
+        false,
+        SurfaceFormat.Color,
+        DepthFormat.None,
+        0,
+        RenderTargetUsage.DiscardContents
+    );
+
+    [Notify]
+    private TankFish? hoveredTankFish = null;
+    public bool HasHoveredTankFishSprite => HoveredTankFish != null;
+    public SDUISprite HoveredTankFishSprite =>
+        new(tankfishRT, tankfishRT.Bounds, SDUIEdges.NONE, SliceSettings: new(Scale: 1f));
+
+    private sealed class BogusFishTank() : FishTankFurniture("CCFishTank", Vector2.One)
+    {
+        public override Rectangle GetTankBounds()
+        {
+            return new(Game1.viewport.X, Game1.viewport.Y, TANK_WIDTH, TANK_HEIGHT);
+        }
+    }
+
+    protected override void DoHoveredEnter(FishCaughtDisplay display)
+    {
+        if (display.ReprItem.ItemId != HoveredTankFish?.fishItemId)
+        {
+            TankFish newTankfish = new(new BogusFishTank(), display.ReprItem);
+            if (newTankfish.isErrorFish)
+                HoveredTankFish = null;
+            else
+                HoveredTankFish = newTankfish;
+        }
+        base.DoHoveredEnter(display);
+    }
+
+    public void Update(TimeSpan timeSpan)
+    {
+        if (hoveredTankFish == null)
+            return;
+        hoveredTankFish.Update(Game1.currentGameTime);
+        hoveredTankFish.position.Y = TANK_HEIGHT;
+        if (hoveredTankFish.fishType == TankFish.FishType.Crawl)
+            hoveredTankFish.position.Y -= TANK_HEIGHT / 4;
+        hoveredTankFish.zPosition = -TANK_HEIGHT / 8;
+        DrawHelper.RenderToTarget(
+            tankfishRT,
+            (renderBatch) => hoveredTankFish.Draw(renderBatch, 1f, 1f),
+            tankfishBatch
+        );
+    }
+    #endregion
 }

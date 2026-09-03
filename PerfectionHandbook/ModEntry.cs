@@ -8,7 +8,6 @@ using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Delegates;
 
 namespace PerfectionHandbook;
 

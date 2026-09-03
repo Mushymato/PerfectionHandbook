@@ -116,7 +116,11 @@ public static class DrawHelper
         return exportRT;
     }
 
-    private static RenderTarget2D RenderToTarget(RenderTarget2D renderTarget, Action<SpriteBatch> drawCallback)
+    internal static RenderTarget2D RenderToTarget(
+        RenderTarget2D renderTarget,
+        Action<SpriteBatch> drawCallback,
+        SpriteBatch? renderBatch = null
+    )
     {
         RenderTarget2D? wasRenderTarget;
         {
@@ -126,10 +130,14 @@ public static class DrawHelper
 
         Game1.SetRenderTarget(renderTarget);
 
-        SpriteBatch? renderBatch = null;
+        bool makeBatch = false;
         try
         {
-            renderBatch = new SpriteBatch(Game1.graphics.GraphicsDevice);
+            if (renderBatch == null)
+            {
+                renderBatch = new SpriteBatch(Game1.graphics.GraphicsDevice);
+                makeBatch = true;
+            }
             renderBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp);
             Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
             drawCallback(renderBatch);
@@ -138,7 +146,8 @@ public static class DrawHelper
         finally
         {
             Game1.SetRenderTarget(wasRenderTarget);
-            renderBatch?.Dispose();
+            if (makeBatch)
+                renderBatch?.Dispose();
         }
 
         return renderTarget;

@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.0-alpha.7](https://github.com/Mushymato/PerfectionHandbook/tree/0.5.0-alpha.6) - 2026-08-31
+## [0.5.0-alpha.8](https://github.com/Mushymato/PerfectionHandbook/tree/0.5.0-alpha.8) - 2026-09-03
+
+### Added
+- Aquarium fish are now visible on the fish page.
+
+### Changed
+- Removed delegate parsing stuff as the extra info is not too helpful.
+
+### Fixed
+- Friends that don't count for perfection now goes into done by default.
+
+## [0.5.0-alpha.7](https://github.com/Mushymato/PerfectionHandbook/tree/0.5.0-alpha.7) - 2026-08-31
 
 ### Added
 - GMCM integration
