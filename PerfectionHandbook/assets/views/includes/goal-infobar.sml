@@ -16,7 +16,7 @@
       option2={#ui.showing-done} />
     <two-segment *if={:^CanToggleCountMode}
       binding={<>^CountModeIndex}
-      option1={#ui.counting-owned}
+      option1={:^OwnedCountToggleText}
       option2={:^CompleteCountToggleText} />
   </lane>
   <!-- Farmer Pick -->

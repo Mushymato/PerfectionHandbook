@@ -228,6 +228,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         MenuHandler.Handbook_FocusOnTaggedView(display.FocusableTag);
     }
 
+    public virtual string OwnedCountToggleText => I18n.Ui_CountingOwned();
     public virtual string CompleteCountToggleText => string.Empty;
 
     [Notify]

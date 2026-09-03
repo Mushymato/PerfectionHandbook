@@ -47,8 +47,8 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
         }
     }
     public string ExpToNextLayout =>
-        $"{(ExpToNext == 0 ? 0 : (expToNextMax == 0 ? 0 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax))}% stretch";
-    public Color ExpToNextTint => Level < 10 ? SkillColor1 : SkillColor2;
+        $"{((ExpToNext == 0 || expToNextMax == 0) ? 100 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax)}% stretch";
+    public Color ExpToNextTint => (Level < 10 || Level == MaxLevel) ? SkillColor1 : SkillColor2;
     public string ExpToNextDisplay => I18n.Ui_Fulfillment_Dipslay(ExpToNext, expToNextMax);
 
     public bool SearchMatch(string txt)
@@ -69,7 +69,7 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
         else
         {
             ExpToNext = 0;
-            expToNextMax = 1;
+            expToNextMax = 0;
         }
     }
 

@@ -15,6 +15,7 @@
   "ui.showing-need": "Need",
   "ui.showing-done": "Done",
   "ui.counting-owned": "Owned",
+  "ui.counting-ready": "Ready",
   "ui.counting-shipped": "Shipped",
   "ui.counting-cooked": "Cooked",
   "ui.counting-crafted": "Crafted",

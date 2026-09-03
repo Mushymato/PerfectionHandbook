@@ -18,7 +18,7 @@ public sealed record BuildingsConstructedDisplay(string Id, BuildingData Data, i
     public readonly SDUISprite Sprite = GetBuildingSprite(Data);
 
     public readonly Color DisplayTint = Count == 0 ? HandbookContext.InactiveColor : HandbookContext.ActiveColor;
-    public bool Needed { get; } = true;
+    public bool Needed { get; } = Count == 0;
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_BuildingsConstructed, Id);
     public bool HasShadow => Data.DrawShadow;
@@ -46,7 +46,7 @@ public sealed record BuildingsConstructedDisplay(string Id, BuildingData Data, i
 }
 
 public sealed class GoalBuildingsConstructedContext(IGoalContext goalCtx)
-    : AbstractPageListContext<BuildingsConstructedDisplay>(goalCtx, canToggleNeeded: false, canPaginate: false)
+    : AbstractPageListContext<BuildingsConstructedDisplay>(goalCtx, canToggleNeeded: true, canPaginate: false)
 {
     private static readonly string[] ObelisksAndClock =
     [
