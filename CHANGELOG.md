@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Aquarium fish are now visible on the fish page.
+- Display star for completed goal.
 
 ### Changed
 - Removed delegate parsing stuff as the extra info is not too helpful.
