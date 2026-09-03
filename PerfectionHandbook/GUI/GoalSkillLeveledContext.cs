@@ -46,10 +46,12 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
             return layoutRows;
         }
     }
+
     public string ExpToNextLayout =>
-        $"{((ExpToNext == 0 || expToNextMax == 0) ? 100 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax)}% stretch";
+        $"{(expToNextMax == 0 ? 100 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax)}% stretch";
     public Color ExpToNextTint => (Level < 10 || Level == MaxLevel) ? SkillColor1 : SkillColor2;
-    public string ExpToNextDisplay => I18n.Ui_Fulfillment_Dipslay(ExpToNext, expToNextMax);
+    public string ExpToNextDisplay =>
+        Level == MaxLevel ? string.Empty : I18n.Ui_Fulfillment_Dipslay(ExpToNext, expToNextMax);
 
     public bool SearchMatch(string txt)
     {
