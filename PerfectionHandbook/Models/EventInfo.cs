@@ -34,9 +34,9 @@ public sealed record EventPreconditionInfo(
 )
 {
     public readonly string PrecondText = Negated ? $"NOT {Handler.Method.Name}" : Handler.Method.Name;
-    public readonly string DisplayText = Negated
-        ? "NOT "
-        : "" + $"{Handler.Method.Name} {string.Join(' ', Args.Skip(1))}";
+    public readonly string DisplayText =
+        (Negated ? "NOT " : "") + $"{Handler.Method.Name} {string.Join(' ', Args.Skip(1))}";
+    public readonly string Tooltip = $"{Handler.Method.Name}:\n{I18n.GetByKey($"precond.{Handler.Method.Name}")}";
 
     public bool Evaluate(EventInfo eventInfo)
     {
@@ -202,7 +202,7 @@ public sealed record EventInfo(
                 )
                 {
                     string notless = handler.Method.Name[3..];
-                    if (!Event.TryGetPreconditionHandler(notless, out EventPreconditionDelegate? handlerInvert))
+                    if (Event.TryGetPreconditionHandler(notless, out EventPreconditionDelegate? handlerInvert))
                     {
                         negated = !negated;
                         handler = handlerInvert;

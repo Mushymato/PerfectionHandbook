@@ -1,6 +1,6 @@
 {
   "ui.mod.name": "Perfection Handbook",
-  "ui.mod.desc": "the pocket handbook for your perfection goals.",
+  "ui.mod.desc": "The pocket handbook for your perfection goals.",
   "ui.mod.iconic.desc": "Left click: show the handbook\nRight click: toggle reminders HUD",
   "ui.fulfillment.dipslay": "{{count}}/{{total}}",
   "ui.fulfillment.tooltip": "{{count}}/{{total}} ({{percent}})",

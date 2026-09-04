@@ -106,8 +106,8 @@
           <label text={:EventDescription} shadow-alpha="0.8" />
         </lane>
         <lane *repeat={:Preconds} *switch={:LinkKind} padding="4" >
-          <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
-          <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} layout="27px 27px" />
+          <image *if={:Status} focusable="true" screen-read={:Info.DisplayText} tooltip={:Info.Tooltip} layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
+          <spacer *!if={:Status} focusable="true" screen-read={:Info.DisplayText} tooltip={:Info.Tooltip} layout="27px 27px" />
           <label *case="None" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
           <lane *case="Event" margin="8,0,0,0">
             <label text={:Info.PrecondText} shadow-alpha="0.8" />
