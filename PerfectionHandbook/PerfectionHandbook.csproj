@@ -18,14 +18,14 @@
     <Description>UI for tracking perfection and achievements, plus getting more info about everything.</Description>
     <UniqueId>mushymato.PerfectionHandbook</UniqueId>
     <UpdateKeys>Nexus:???,GitHub:Mushymato/PerfectionHandbook</UpdateKeys>
-    <Version>0.5.0-alpha.8</Version>
+    <Version>0.5.0-alpha.9</Version>
     <BaseManifest>new</BaseManifest>
     <MinimumApiVersion_Behavior>Update</MinimumApiVersion_Behavior>
     <MinimumGameVersion_Behavior>UpdateFull</MinimumGameVersion_Behavior>
     <Dependencies_VersionBehavior>UpdateFull</Dependencies_VersionBehavior>
   </PropertyGroup>
   <ItemGroup>
-    <SMAPIDependency Include="focustense.StardewUI" Required="true" Version="0.6.3-unofficial-mushymato.2" />
+    <SMAPIDependency Include="focustense.StardewUI" Required="true" Version="0.6.4-unofficial-mushymato.0" />
   </ItemGroup>
 
   <ItemGroup>
