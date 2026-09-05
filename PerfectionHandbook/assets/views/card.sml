@@ -1,4 +1,4 @@
-<frame layout="1440px 620px" background={@Mods/StardewUI/Sprites/MenuBackground}>
+<frame layout={:CardLayout} background={@Mods/StardewUI/Sprites/MenuBackground}>
   <!-- Main -->
   <lane layout="content content">
     <lane margin="0,0,16,0" orientation="Vertical" layout="content stretch" horizontal-content-alignment="Middle" >

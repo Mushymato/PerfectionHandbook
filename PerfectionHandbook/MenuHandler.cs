@@ -153,7 +153,7 @@ public static class MenuHandler
         string exportPath = Path.Combine(exportDir, exportFile);
         IViewDrawable? drawable = viewEngine.CreateDrawableFromAsset(VIEW_ASSET_CARD);
         drawable.Context = context;
-        drawable.MaxSize = new Vector2(1280, 4096);
+        drawable.MaxSize = ModEntry.config.CardDimension.ToVector2();
         RenderTarget2D exportRT = DrawHelper.RenderDrawableToTarget(drawable);
         using Stream stream = File.Create(exportPath);
         exportRT.SaveAsPng(stream, exportRT.Width, exportRT.Height);

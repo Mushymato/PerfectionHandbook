@@ -7,6 +7,8 @@
   "config.desc.ShowHandbookKey": "Press this key to display the perfection handbook.",
   "config.name.AutoExportPeriod": "Auto-export Period",
   "config.desc.AutoExportPeriod": "Auto-export a new perfection card periodically, set to 0 to disable.",
+  "config.name.CardDimension": "Card Dimension",
+  "config.desc.CardDimension": "The width and height of the perfection card.",
   "config.section.Reminders": "Reminders",
   "config.name.RemindersToggleKey": "Toggle Key",
   "config.desc.RemindersToggleKey": "Press this key to toggle the reminders HUD",

@@ -79,6 +79,7 @@ public sealed partial class HandbookContext
     public string exportMsg = I18n.Ui_Export();
     public string PageName => SelectedCtx?.PageName ?? "Main";
 
+    public string CardLayout => $"{ModEntry.config.CardDimension.X}px {ModEntry.config.CardDimension.Y}px";
     public string PlayerName => who.displayName;
     public string FarmName =>
         Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11064", who.farmName.Value);

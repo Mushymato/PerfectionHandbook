@@ -21,6 +21,14 @@
         <spin-box *context={:AutoExportPeriodSpinBox} />
       </form-cell>
 
+      <form-label text={#config.name.CardDimension} tooltip={#config.desc.CardDimension} />
+      <form-cell>
+        <spin-box *context={:CardDimensionXSpinBox} />
+      </form-cell>
+      <form-cell>
+        <spin-box *context={:CardDimensionYSpinBox} />
+      </form-cell>
+
       <spacer item-span="-1"/>
 
       <!-- reminders -->
