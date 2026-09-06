@@ -69,6 +69,12 @@ public sealed partial record EventInfoDisplay(
 
     internal bool Matches(string searchText)
     {
+        if (Desc != null)
+        {
+            return EventHeaderText.Contains(searchText)
+                || Info.HeaderText.ContainsIgnoreCase(searchText)
+                || (EventDescription?.Contains(searchText) ?? false);
+        }
         return Info.HeaderText.ContainsIgnoreCase(searchText);
     }
 
