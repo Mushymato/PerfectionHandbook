@@ -12,18 +12,19 @@
           </panel>
           <lane vertical-content-alignment="Middle">
             <banner focusable="true" background={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame} background-border-thickness="12,2" text={:BundleCompletionText} />
-            <frame *if={:HasReward} layout="content stretch" border={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame}
+            <frame *if={:HasReward}
+              focusable="true"
+              layout="content stretch"
+              border={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame}
               horizontal-content-alignment="Middle"
               vertical-content-alignment="Middle"
-              margin="-4,0,0,0">
-              <image focusable="true"
-                sprite={:RewardSprite}
-                tooltip={:Reward}
-                hovered-subject={:Reward}
-                layout="32px 32px"
-                horizontal-alignment="Middle"
-                margin="10,4,10,4"
-              />
+              margin="-4,0,0,0"
+              tooltip={:Reward}
+              hovered-subject={:Reward}>
+              <panel horizontal-content-alignment="End" vertical-content-alignment="End" margin="12,4">
+                <image sprite={:RewardSprite} layout="32px 32px" horizontal-alignment="Middle" shadow-alpha="0.35" shadow-offset="-2,2"/>
+                <digits *if={:HasRewardCount} scale="2" number={:RewardCount} />
+              </panel>
             </frame>
           </lane>
         </panel>

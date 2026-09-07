@@ -36,8 +36,8 @@ public sealed record CommunityCenterBundleDisplay(
     public readonly bool HasReward = Reward != null;
     public readonly SDUITooltipData Tooltip = new(Text: RoomName, Title: BundleName);
     public readonly ParsedItemData? RewardSprite = Reward != null ? ItemRegistry.GetData(Reward.QualifiedItemId) : null;
-
-    public readonly Color RewardTint = Needed ? HandbookContext.HiddenColor : HandbookContext.ActiveColor;
+    public readonly bool HasRewardCount = Reward?.Stack > 1;
+    public readonly int RewardCount = Reward?.Stack ?? 0;
 
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_CommunityCenterBundle, BundleKey);
@@ -90,7 +90,7 @@ public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)
             CommunityCenterBundleDisplay display = new(
                 bundleKey,
                 !bundle.complete,
-                bundle.label,
+                Game1.content.LoadString("Strings\\UI:JunimoNote_BundleName", bundle.label),
                 I18n.Ui_Fulfillment_Dipslay(
                     bundle.ingredients.Count(ing => ing.completed),
                     bundle.numberOfIngredientSlots
