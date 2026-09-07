@@ -3,14 +3,29 @@
     <grid margin="0,0,8,0" item-layout="length: 500+" layout="stretch content"
         primary-item-count={>PrimaryItemCount}>
       <lane *repeat={:FilteredDisplayPaginated} margin="4" vertical-content-alignment="Start">
-        <panel focusable="true" tooltip={:BundleName} horizontal-content-alignment="Middle" vertical-content-alignment="End"
+        <panel focusable="true" tooltip={:Tooltip} horizontal-content-alignment="Middle" vertical-content-alignment="End"
           left-click=|ToggleReminder()|>
           <image layout="160px 160px" sprite={@mushymato.PerfectionHandbook/sprites/JunimoNote:pictureFrame} />
           <image layout="128px 128px" margin="16" sprite={:BundleIcon}/>
-          <banner background={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame} background-border-thickness="12,2" text={:BundleCompletionText} />
           <panel *context={:Reminder} layout="160px 160px" >
             <image *if={Active} margin="20,20,0,0" sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" />
           </panel>
+          <lane vertical-content-alignment="Middle">
+            <banner focusable="true" background={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame} background-border-thickness="12,2" text={:BundleCompletionText} />
+            <frame *if={:HasReward} layout="content stretch" border={@mushymato.PerfectionHandbook/sprites/JunimoNote:textFrame}
+              horizontal-content-alignment="Middle"
+              vertical-content-alignment="Middle"
+              margin="-4,0,0,0">
+              <image focusable="true"
+                sprite={:RewardSprite}
+                tooltip={:Reward}
+                hovered-subject={:Reward}
+                layout="32px 32px"
+                horizontal-alignment="Middle"
+                margin="10,4,10,4"
+              />
+            </frame>
+          </lane>
         </panel>
         <grid margin="4,0,0,0" layout="content content[128..]" item-layout="length: 80" item-spacing="-4,-4">
           <frame *repeat={:BundleIngredients}
@@ -33,7 +48,7 @@
             </panel>
           </frame>
         </grid>
-    </lane>
+      </lane>
     </grid>
   </scrollable>
 </panel>

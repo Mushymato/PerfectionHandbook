@@ -6,6 +6,7 @@ using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
 using StardewValley;
 using StardewValley.Extensions;
+using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 
 namespace PerfectionHandbook.GUI;
@@ -25,10 +26,18 @@ public sealed record CommunityCenterBundleDisplay(
     string BundleName,
     string BundleCompletionText,
     SDUISprite BundleIcon,
-    IReadOnlyList<CommunityCenterBundleIngredient> BundleIngredients
+    IReadOnlyList<CommunityCenterBundleIngredient> BundleIngredients,
+    string RoomName,
+    Item? Reward
 ) : IPageDisplayEntry
 {
     public override int GetHashCode() => BundleKey.GetHashCode();
+
+    public readonly bool HasReward = Reward != null;
+    public readonly SDUITooltipData Tooltip = new(Text: RoomName, Title: BundleName);
+    public readonly ParsedItemData? RewardSprite = Reward != null ? ItemRegistry.GetData(Reward.QualifiedItemId) : null;
+
+    public readonly Color RewardTint = Needed ? HandbookContext.HiddenColor : HandbookContext.ActiveColor;
 
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_CommunityCenterBundle, BundleKey);
@@ -51,7 +60,8 @@ public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)
         List<CommunityCenterBundleDisplay> bundleDisplay = [];
         foreach ((string bundleKey, string bundleData) in Game1.netWorldState.Value.BundleData)
         {
-            int bundleId = Convert.ToInt32(bundleKey.Split('/')[1]);
+            string[] bundleKeyParts = bundleKey.Split('/');
+            int bundleId = Convert.ToInt32(bundleKeyParts[1]);
             if (!Game1.netWorldState.Value.Bundles.TryGetValue(bundleId, out bool[] completion))
             {
                 continue;
@@ -63,6 +73,20 @@ public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)
             if (bundleIngredients.Count == 0)
                 continue;
             SDUISprite bundleTx = GetBundleTexture(bundle);
+            string roomDisplayName = bundleKeyParts[0] switch
+            {
+                "Pantry" => Game1.content.LoadString("Strings\\Locations:CommunityCenter_AreaName_Pantry"),
+                "Crafts Room" => Game1.content.LoadString("Strings\\Locations:CommunityCenter_AreaName_CraftsRoom"),
+                "Fish Tank" => Game1.content.LoadString("Strings\\Locations:CommunityCenter_AreaName_FishTank"),
+                "Boiler Room" => Game1.content.LoadString("Strings\\Locations:CommunityCenter_AreaName_BoilerRoom"),
+                "Bulletin Board" => Game1.content.LoadString(
+                    "Strings\\Locations:CommunityCenter_AreaName_BulletinBoard"
+                ),
+                "Abandoned Joja Mart" => Game1.content.LoadString(
+                    "Strings\\Locations:CommunityCenter_AreaName_AbandonedJojaMart"
+                ),
+                _ => "???",
+            };
             CommunityCenterBundleDisplay display = new(
                 bundleKey,
                 !bundle.complete,
@@ -72,7 +96,9 @@ public sealed class GoalCommunityCenterContext(IGoalContext goalCtx)
                     bundle.numberOfIngredientSlots
                 ),
                 bundleTx,
-                bundleIngredients
+                bundleIngredients,
+                roomDisplayName,
+                bundle.rewardDescription.Split(' ').Length < 3 ? null : bundle.getReward()
             );
             bundleDisplay.Add(display);
         }
