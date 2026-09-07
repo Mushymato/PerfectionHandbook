@@ -9,6 +9,7 @@ using PerfectionHandbook.Reminders;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Triggers;
 
 namespace PerfectionHandbook;
 
@@ -32,6 +33,7 @@ public static class MenuHandler
     internal const string VIEW_ASSET_REMINDERS = $"{VIEW_ASSET_PREFIX}/reminder-hud";
     internal const string VIEW_ASSET_CARD = $"{VIEW_ASSET_PREFIX}/card";
     internal const string DEFAULT_FOCUS = "default-focus";
+    internal const string Action_ShowHandbook = $"{ModEntry.ModId}_ShowHandbook";
     internal static string exportDir = null!;
 
     internal static readonly PerScreen<RemindersHUD> reminders = new(() =>
@@ -81,6 +83,16 @@ public static class MenuHandler
                 Reminders.ToggleVisibility
             );
         }
+
+        TriggerActionManager.RegisterAction(
+            Action_ShowHandbook,
+            (args, context, out error) =>
+            {
+                error = null;
+                ShowHandbook();
+                return true;
+            }
+        );
     }
 
     public static void ShowHandbook()

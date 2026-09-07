@@ -3,6 +3,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Locations;
 using StardewValley.GameData.Objects;
+using StardewValley.GameData.Shops;
 
 namespace PerfectionHandbook.Models;
 
@@ -50,9 +51,39 @@ public static class AssetManager
                 AssetLoadPriority.Exclusive
             );
         }
+        // add the book item
         else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
         {
             e.Edit(Edit_Objects, AssetEditPriority.Default);
+        }
+        // add the book item to Bookseller
+        else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops"))
+        {
+            e.Edit(Edit_Shops, AssetEditPriority.Default);
+        }
+        // launch drawer
+        else if (e.NameWithoutLocale.IsEquivalentTo("aedenthorn.LauncherDrawer/dict"))
+        {
+            e.Edit(Edit_LaunchDrawer, AssetEditPriority.Default);
+        }
+    }
+
+    private static void Edit_LaunchDrawer(IAssetData assets)
+    {
+        assets.AsDictionary<string, Dictionary<string, object>>().Data[ModEntry.ModId] = new()
+        {
+            { "Name", I18n.Ui_Mod_Name_Short() },
+            { "Description", I18n.Ui_Mod_Name() },
+            { "Action", MenuHandler.Action_ShowHandbook },
+        };
+    }
+
+    private static void Edit_Shops(IAssetData assets)
+    {
+        IDictionary<string, ShopData> data = assets.AsDictionary<string, ShopData>().Data;
+        if (data.TryGetValue("Bookseller", out ShopData? booksellers))
+        {
+            booksellers.Items.Add(new ShopItemData() { Id = ObjectQId_Book, ItemId = ObjectId_Book });
         }
     }
 
@@ -63,10 +94,10 @@ public static class AssetManager
         {
             Name = ObjectId_Book,
             DisplayName = I18n.Ui_Mod_Name(),
-            Description = I18n.Ui_Mod_Desc(),
+            Description = I18n.Ui_Mod_Desc_Item(),
             Type = "Basic",
             Category = 0,
-            Price = 2,
+            Price = 5,
             Texture = "TileSheets\\Objects_2",
             SpriteIndex = 96,
             ExcludeFromFishingCollection = true,
