@@ -1,8 +1,8 @@
 <panel layout="stretch 100%">
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
-    <grid margin="0,0,8,0" item-layout="length: 500+" layout="stretch content"
+    <grid margin="8,0,8,0" item-layout="length: 500+" layout="stretch content"
         primary-item-count={>PrimaryItemCount}>
-      <lane *repeat={:FilteredDisplayPaginated} margin="4" vertical-content-alignment="Start">
+      <lane *repeat={:FilteredDisplayPaginated} margin="4" vertical-content-alignment="Middle">
         <panel focusable="true" tooltip={:Tooltip} horizontal-content-alignment="Middle" vertical-content-alignment="End"
           left-click=|ToggleReminder()|>
           <image layout="160px 160px" sprite={@mushymato.PerfectionHandbook/sprites/JunimoNote:pictureFrame} />
@@ -28,7 +28,7 @@
             </frame>
           </lane>
         </panel>
-        <grid margin="4,0,0,0" layout="content content[128..]" item-layout="length: 80" item-spacing="-4,-4">
+        <grid margin="4,0,0,0" layout="content content[128..]" item-layout="length: 64" item-spacing="-4,-4">
           <frame *repeat={:BundleIngredients}
             layout="content content"
             border={:IngredientBorder}
@@ -39,13 +39,13 @@
             <panel horizontal-content-alignment="End" vertical-content-alignment="End">
               <image sprite={:Info.Datum}
                 shadow-alpha="0.35"
-                layout="64px 64px"
-                shadow-offset="-4,4"
+                layout="48px 48px"
+                shadow-offset="-3,3"
               />
               <panel *if={:HasQualityStar} layout="stretch stretch" horizontal-content-alignment="start" vertical-content-alignment="end">
-                <image sprite={:QualityStar} layout="24px 24px"/>
+                <image sprite={:QualityStar} layout="16px 16px"/>
               </panel>
-              <digits *if={:HasCount} scale="3" number={:Count} />
+              <digits *if={:HasCount} scale="2" number={:Count} />
             </panel>
           </frame>
         </grid>
