@@ -63,36 +63,19 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         7
     );
 
-    public IntSpinBoxViewModel CardDimensionXSpinBox = new(
-        () => config.CardDimension.X,
+    public IntSpinBoxViewModel CardWidthSpinBox = new(
+        () => config.CardWidth,
         (value) =>
         {
-            if (config.CardDimension.X != value)
+            if (config.CardWidth != value)
             {
-                config.CardDimension = new(value, config.CardDimension.Y);
+                config.CardWidth = value;
                 ModEntry.help.WriteConfig(config);
                 return true;
             }
             return false;
         },
-        1440,
-        int.MaxValue,
-        20
-    );
-
-    public IntSpinBoxViewModel CardDimensionYSpinBox = new(
-        () => config.CardDimension.Y,
-        (value) =>
-        {
-            if (config.CardDimension.Y != value)
-            {
-                config.CardDimension = new(config.CardDimension.X, value);
-                ModEntry.help.WriteConfig(config);
-                return true;
-            }
-            return false;
-        },
-        620,
+        ModConfig.DEFAULT_CARD_X,
         int.MaxValue,
         20
     );
@@ -174,8 +157,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         RowPerPageSpinBox.Value = defaultConfig.RowPerPage;
         RemindersMaxCountSpinBox.Value = defaultConfig.RemindersMaxCount;
         AutoExportPeriodSpinBox.Value = defaultConfig.AutoExportCardPeriod;
-        CardDimensionXSpinBox.Value = defaultConfig.CardDimension.X;
-        CardDimensionYSpinBox.Value = defaultConfig.CardDimension.Y;
+        CardWidthSpinBox.Value = defaultConfig.CardWidth;
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;
         RemindersToggleKey = defaultConfig.RemindersToggleKey;

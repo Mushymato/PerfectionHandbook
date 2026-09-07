@@ -64,9 +64,7 @@ public sealed class IntSpinBoxViewModel(
 {
     public override void ValueSetter(int newValue)
     {
-        if (newValue < minimum || newValue > maximum)
-            return;
-        base.ValueSetter(newValue);
+        base.ValueSetter(Math.Clamp(newValue, minimum, maximum));
     }
 
     public override bool Decrease()

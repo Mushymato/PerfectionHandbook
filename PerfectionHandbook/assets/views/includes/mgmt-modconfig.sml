@@ -3,9 +3,9 @@
     background-border-thickness="48,12"
     margin="12,-80,0,0" text={#ui.misc.mod-config} layout="content content" item-span="-1"/>
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
-    <grid item-layout="count: 9" layout="stretch content" margin="24,12">
+    <grid item-layout="count: 10" layout="stretch content" margin="64,12,0,0">
       <!-- general -->
-      <banner margin="4" text={#config.section.General} layout="content content" item-span="-1"/>
+      <banner text={#config.section.General} margin="-32,12,0,12" layout="content content" item-span="-1"/>
       <form-label text={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey} />
       <form-cell>
         <keybind keybind-list={<>ShowHandbookKey} />
@@ -21,18 +21,15 @@
         <spin-box *context={:AutoExportPeriodSpinBox} />
       </form-cell>
 
-      <form-label text={#config.name.CardDimension} tooltip={#config.desc.CardDimension} />
+      <form-label text={#config.name.CardWidth} tooltip={#config.desc.CardWidth} />
       <form-cell>
-        <spin-box *context={:CardDimensionXSpinBox} />
-      </form-cell>
-      <form-cell>
-        <spin-box *context={:CardDimensionYSpinBox} />
+        <spin-box *context={:CardWidthSpinBox} />
       </form-cell>
 
       <spacer item-span="-1"/>
 
       <!-- reminders -->
-      <banner margin="4,16,0,4" text={#config.section.Reminders} layout="content content" item-span="-1"/>
+      <banner text={#config.section.Reminders} margin="-32,12,0,12" layout="content content" item-span="-1"/>
 
       <form-label text={#config.name.RemindersToggleKey} tooltip={#config.desc.RemindersToggleKey} />
       <form-cell>
@@ -65,11 +62,9 @@
           <include *context={:RemindersHUDCtx} name="mushymato.PerfectionHandbook/views/reminder-hud" />
         </nine-grid-editor>
       </form-cell>
-
-      <spacer item-span="-1"/>
     </grid>
   </scrollable>
-  <button *float="Below" item-span="-1"
+  <button *float="Below"
     hover-background={@Mods/StardewUI/Sprites/ButtonLight}
     font="dialogue"
     margin="10,-72,16,0"
@@ -82,7 +77,7 @@
   <panel item-span="2"
     layout="stretch 88px"
     margin="0,0,12,0"
-    horizontal-content-alignment="End"
+    horizontal-content-alignment="Start"
     vertical-content-alignment="Middle"
     focusable="true"
     tooltip={&tooltip}>
@@ -94,7 +89,7 @@
 </template>
 
 <template name="form-cell">
-  <panel item-span="1"
+  <panel item-span="3"
     layout="stretch 88px"
     margin="4,0,0,0"
     horizontal-content-alignment="Start"
@@ -127,7 +122,6 @@
       focusable="true"
       horizontal-alignment="middle"
       shadow-alpha="0.8"
-      shadow-color="#4448"
       shadow-offset="-2, 2"/>
     <image sprite={@Mods/StardewUI/Sprites/CaretRight} focusable="true"
       left-click=|Increase()|
