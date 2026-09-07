@@ -7,8 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.6.0-alpha.0](https://github.com/Mushymato/PerfectionHandbook/tree/0.5.0-alpha.8) - 2026-09-03
 
 ### Added
-- config for the card size
+- config for the card width
 - display for bundle area and rewards
+- add the book item to bookseller shop
+- add support for launcher drawer
 
 ### Changed
 - event search now includes the mod provided description
