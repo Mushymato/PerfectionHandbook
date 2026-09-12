@@ -4,8 +4,8 @@
     margin="12,-80,0,0" text={#ui.misc.mod-config} layout="content content" item-span="-1"/>
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
     <grid item-layout="count: 10" layout="stretch content" margin="64,12,0,0">
-      <!-- general -->
-      <banner text={#config.section.General} margin="-32,12,0,12" layout="content content" item-span="-1"/>
+      <!-- handbook -->
+      <banner text={#config.section.Handbook} margin="-32,12,0,12" layout="content content" item-span="-1"/>
       <form-label text={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey} />
       <form-cell>
         <keybind keybind-list={<>ShowHandbookKey} />
@@ -24,6 +24,11 @@
       <form-label text={#config.name.CardWidth} tooltip={#config.desc.CardWidth} />
       <form-cell>
         <spin-box *context={:CardWidthSpinBox} />
+      </form-cell>
+
+      <form-label text={#config.name.StrictItemOwnedCheck} tooltip={#config.desc.StrictItemOwnedCheck} />
+      <form-cell>
+        <checkbox margin="4" is-checked={<>StrictItemOwnedCheck}/>
       </form-cell>
 
       <spacer item-span="-1"/>

@@ -35,7 +35,9 @@ public sealed record RecipeDisplay(ItemInfo Info, CraftingRecipe Recipe, bool Ex
             Recipe.DisplayName + ((Recipe.numberProducedPerCraft > 1) ? " x" + Recipe.numberProducedPerCraft : ""),
             Item: Info.ReprItem,
             CraftingRecipe: Recipe,
-            AdditionalCraftingMaterials: OwnedInfo.OwnedRepr
+            AdditionalCraftingMaterials: (ModEntry.config.StrictItemOwnedCheck && Recipe.isCookingRecipe)
+                ? OwnedInfo.OwnedReprOnlyFridge
+                : OwnedInfo.OwnedRepr
         );
 
     public readonly bool CanCraft = Recipe.doesFarmerHaveIngredientsInInventory(OwnedInfo.OwnedRepr);

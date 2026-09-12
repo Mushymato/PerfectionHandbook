@@ -80,6 +80,19 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         20
     );
 
+    public bool StrictItemOwnedCheck
+    {
+        get => config.StrictItemOwnedCheck;
+        set
+        {
+            if (value != config.StrictItemOwnedCheck)
+            {
+                config.StrictItemOwnedCheck = value;
+                RaisePropertyChanged(nameof(StrictItemOwnedCheck));
+            }
+        }
+    }
+
     public KeybindList RemindersToggleKey
     {
         get => config.RemindersToggleKey;
@@ -160,9 +173,11 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         CardWidthSpinBox.Value = defaultConfig.CardWidth;
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;
+        StrictItemOwnedCheck = defaultConfig.StrictItemOwnedCheck;
         RemindersToggleKey = defaultConfig.RemindersToggleKey;
         RemindersEditModifierKey = defaultConfig.RemindersEditModifierKey;
         RemindersHUDPosition = defaultConfig.RemindersHUDPosition;
+        RemindersDefaultExpanded = defaultConfig.RemindersDefaultExpanded;
     }
 
     public bool TryOpenPage() => true;

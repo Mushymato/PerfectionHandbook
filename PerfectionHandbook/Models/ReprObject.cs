@@ -29,9 +29,10 @@ public sealed class ReprObject : SObject
         set { }
     }
 
-    internal void SetReprStack(int stack)
+    internal ReprObject SetReprStack(int stack)
     {
         reprStack = stack;
+        return this;
     }
 
     protected override Item GetOneNew()

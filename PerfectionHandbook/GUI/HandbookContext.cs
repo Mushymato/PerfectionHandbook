@@ -23,7 +23,7 @@ public sealed partial class HandbookContext
     public readonly IReadOnlyList<MiscContext> MiscPages;
 
     private readonly PlayerOwned playerOwned = MenuHandler.IsPreloading
-        ? new(new Dictionary<string, OwnedItemGroup>(), [])
+        ? new(new Dictionary<string, OwnedItemGroup>(), [], [])
         : ItemOwnedLookup.GetPlayerOwned();
 
     public HandbookContext(Farmer who)
