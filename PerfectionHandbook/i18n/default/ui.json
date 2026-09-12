@@ -9,7 +9,6 @@
   "ui.search": "Search...",
   "ui.owned-count": "(You own {{count}})",
   "ui.shipped-count": "(You shipped {{count}})",
-  "ui.fish-from": "Fish this in:",
   "ui.fish-catch": "(You caught {{count}} of these{{length}})",
   "ui.fish-catch-length": ", record length {{length}}cm",
   "ui.fish-time-range": "{{startTime}} - {{endTime}}",

@@ -1,0 +1,12 @@
+{
+  "reminder.verb.ship": "出售：{{thing}}",
+  "reminder.verb.fish": "钓鱼：{{thing}}",
+  "reminder.verb.cook": "烹饪：{{thing}}",
+  "reminder.verb.craft": "制造：{{thing}}",
+  "reminder.verb.donate": "捐赠：{{thing}}",
+  "reminder.verb.prepare": "准备：{{thing}}",
+  "reminder.verb.bundle": "社区：{{thing}}",
+  "reminder.verb.build": "建造：{{thing}}",
+  "reminder.verb.slay": "杀怪：{{thing}}",
+  "reminder.verb.friend": "友谊：{{thing}}"
+}
