@@ -23,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   "location.Greenhouse": "Greenhouse",
   "location.FarmCave": "Farm Cave",
   "location.HarveyRoom": "Harvey's Room",
-  "location.BeachNightMarket": "Beach (Night Market)",
+  "location.BeachNightMarket": "Pelican Beach (Night Market)",
   "location.SebastianRoom": "Sebastian's Room",
   "location.BugLand": "Mutant Bug Lair",
   "location.SandyHouse": "Oasis",
@@ -50,6 +50,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   "location.LeoTreeHouse": "Leo's Tree House",
   "location.QiNutRoom": "Qi's Walnut Room",
   "location.MasteryCave": "Mastery Cave",
-  "location.DesertFestival": "Desert (Festival)",
+  "location.DesertFestival": "Calico Desert (Festival)",
   "location.LewisBasement": "Lewis's Basement",
 }

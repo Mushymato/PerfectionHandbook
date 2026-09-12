@@ -1,0 +1,55 @@
+{
+  // crab pots
+  "crabpot.ocean": "盐水",
+  "crabpot.freshwater": "淡水",
+  // backup names for vanilla locations
+  "location.Default": "Default",
+  "location.Temp": "Temp",
+  "location.pneuma163.WorldNavigator_OffLimits": "Hi Cam :)",
+  /*
+https: //codeberg.org/pneuma163/StardewValleyMods/src/branch/main/World%20Navigator/i18n/default.json
+
+MIT License
+
+Copyright (c) 2024-2025 pneuma163
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+  "location.FarmHouse": "农舍",
+  "location.Greenhouse": "温室",
+  "location.FarmCave": "农场洞穴",
+  "location.HarveyRoom": "哈维的房间",
+  "location.BeachNightMarket": "棕榈镇海滩（夜市）",
+  "location.SebastianRoom": "塞巴斯蒂安的房间",
+  "location.BugLand": "变异虫巢穴",
+  "location.SandyHouse": "绿洲",
+  "location.WitchSwamp": "女巫沼泽",
+  "location.WitchHut": "女巫小屋",
+  "location.WitchWarpCave": "女巫传送阵洞穴",
+  "location.SkullCave": "骷髅洞穴",
+  "location.MermaidHouse": "美人鱼之船",
+  "location.BoatTunnel": "威利的船隧道",
+  "location.IslandSouth": "姜岛南",
+  "location.IslandSouthEast": "姜岛东南",
+  "location.IslandSouthEastCave": "姜岛东南洞穴",
+  "location.IslandEast": "姜岛东",
+  "location.IslandWest": "姜岛西与农场",
+  "location.IslandNorth": "姜岛北",
+  "location.IslandHut": "雷欧的姜岛小屋",
+  "location.IslandWestCave1": "姜岛西谜题洞",
+  "location.IslandNorthCave1": "姜岛北蘑菇洞",
+  "location.IslandFieldOffice": "姜岛办事处",
+  "location.IslandFarmHouse": "姜岛农舍",
+  "location.CaptainRoom": "姜岛船长室",
+  "location.IslandShrine": "姜岛神龛",
+  "location.IslandFarmCave": "姜岛农场洞穴",
+  "location.LeoTreeHouse": "雷欧的树屋",
+  "location.QiNutRoom": "齐先生的核桃室",
+  "location.MasteryCave": "精通洞穴",
+  "location.DesertFestival": "卡利科沙漠（节日）",
+  "location.LewisBasement": "刘易斯的地下室",
+}
