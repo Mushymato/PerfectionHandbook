@@ -53,7 +53,7 @@ public sealed partial record EventInfoDisplay(
         .ToArray();
     public readonly EventActorLink[] ActorLinks = GetActorLinks(Info, ForNPC);
 
-    private static EventActorLink[] GetActorLinks(EventInfo info, string forNPC)
+    private static EventActorLink[] GetActorLinks(EventInfo info, string forNPC, int limit = 18)
     {
         List<EventActorLink> actorLinks = [];
         foreach (string actorNameRaw in info.Actors)
@@ -66,6 +66,8 @@ public sealed partial record EventInfoDisplay(
             )
             {
                 actorLinks.Add(new(mugshot, npcInfo.DisplayName, actorName != forNPC ? actorName : null));
+                if (actorLinks.Count == limit)
+                    return actorLinks.ToArray();
             }
         }
         return actorLinks.ToArray();
