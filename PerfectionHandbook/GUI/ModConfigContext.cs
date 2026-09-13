@@ -93,6 +93,21 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         }
     }
 
+    public bool HasModNamesAPI => ModEntry.modNameAPI != null;
+
+    public bool EnableModNames
+    {
+        get => config.EnableModNames;
+        set
+        {
+            if (value != config.EnableModNames)
+            {
+                config.EnableModNames = value;
+                RaisePropertyChanged(nameof(EnableModNames));
+            }
+        }
+    }
+
     public KeybindList RemindersToggleKey
     {
         get => config.RemindersToggleKey;
@@ -174,6 +189,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;
         StrictItemOwnedCheck = defaultConfig.StrictItemOwnedCheck;
+        EnableModNames = defaultConfig.EnableModNames;
         RemindersToggleKey = defaultConfig.RemindersToggleKey;
         RemindersEditModifierKey = defaultConfig.RemindersEditModifierKey;
         RemindersHUDPosition = defaultConfig.RemindersHUDPosition;

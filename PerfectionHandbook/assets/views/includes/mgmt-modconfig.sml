@@ -31,6 +31,11 @@
         <checkbox margin="4" is-checked={<>StrictItemOwnedCheck}/>
       </form-cell>
 
+      <form-label *if={:HasModNamesAPI} text={#config.name.EnableModNames} tooltip={#config.desc.EnableModNames} />
+      <form-cell *if={:HasModNamesAPI}>
+        <checkbox margin="4" is-checked={<>EnableModNames}/>
+      </form-cell>
+
       <spacer item-span="-1"/>
 
       <!-- reminders -->

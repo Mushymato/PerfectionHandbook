@@ -29,7 +29,7 @@ public sealed record NPCInfo(string Name, CharacterData Data)
             : string.Empty;
 
     public IModNameInfo? ModNameInfo { get; private set; } = ModEntry.modNameAPI?.GetModName_FromNpcName(Name);
-    public bool HasModName => ModNameInfo != null;
+    public bool HasModName => ModEntry.config.EnableModNames && ModNameInfo != null;
     public string ModName => ModNameInfo?.ModName ?? string.Empty;
     public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
     public string DisplayName => Chara?.displayName ?? TokenParser.ParseText(Data.DisplayName);

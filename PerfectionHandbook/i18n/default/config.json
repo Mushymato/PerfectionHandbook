@@ -11,6 +11,8 @@
   "config.desc.CardWidth": "The width the perfection card.",
   "config.name.StrictItemOwnedCheck": "Strict Item Owned Check",
   "config.desc.StrictItemOwnedCheck": "When determining whether you have items needed for shipping/crafting/cooking, only consider items in your backpack and in the farmhouse. For cooking recipes, further restrict to only items in fridges.",
+  "config.name.EnableModNames": "Show Mod Names",
+  "config.desc.EnableModNames": "Display mod names for friends and events (requires Mod Name Tooltip API)",
   "config.section.Reminders": "Reminders",
   "config.name.RemindersToggleKey": "Toggle Key",
   "config.desc.RemindersToggleKey": "Press this key to toggle the reminders HUD",

@@ -71,7 +71,7 @@ public sealed record EventInfo(
 {
     public readonly string HeaderText = $"{EventId} @ {LocationName}";
 
-    public bool HasModName => ModNameInfo != null;
+    public bool HasModName => ModEntry.config.EnableModNames && ModNameInfo != null;
     public string ModName => ModNameInfo?.ModName ?? string.Empty;
     public Color ModNameTint => ModNameInfo?.ModNameColor ?? Game1.textColor;
 

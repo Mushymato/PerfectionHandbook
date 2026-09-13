@@ -11,9 +11,10 @@ public sealed class ModConfig
     internal const int DEFAULT_CARD_Y = 620;
     public int RowPerPage { get; set; } = 16;
     public KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("RightShift+H");
-    public bool StrictItemOwnedCheck { get; set; } = false;
     public int AutoExportCardPeriod { get; set; } = 7;
     public int CardWidth { get; set; } = DEFAULT_CARD_X;
+    public bool StrictItemOwnedCheck { get; set; } = false;
+    public bool EnableModNames { get; set; } = true;
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
     public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");
     public int RemindersMaxCount { get; set; } = 12;
