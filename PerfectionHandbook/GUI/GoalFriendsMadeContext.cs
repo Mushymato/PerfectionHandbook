@@ -38,6 +38,10 @@ public sealed partial record EventInfoDisplay(
     [Notify]
     private bool isExpanded = false;
 
+    [Notify]
+    private string eventHeaderTextToggled = string.Empty;
+    private bool? eventHeaderTextToggledState = null;
+
     public readonly int RequiredHeartLevelForNPC = RequiredFriendshipForNPC / NPC.friendshipPointsPerHeartLevel;
     public readonly bool HasRequiredFriendshipForNPC = RequiredFriendshipForNPC > -1;
     public readonly bool HasDesc = Desc != null;
@@ -67,6 +71,18 @@ public sealed partial record EventInfoDisplay(
         return actorLinks.ToArray();
     }
 
+    public bool ToggleHeaderText()
+    {
+        if (!eventHeaderTextToggledState.HasValue)
+            return false;
+        eventHeaderTextToggledState = !eventHeaderTextToggledState;
+        if (eventHeaderTextToggledState.Value)
+            EventHeaderTextToggled = Info.HeaderText;
+        else
+            EventHeaderTextToggled = EventHeaderText;
+        return true;
+    }
+
     internal bool Matches(string searchText)
     {
         if (Desc != null)
@@ -80,7 +96,15 @@ public sealed partial record EventInfoDisplay(
 
     internal static EventInfoDisplay Make(EventInfo Info, string ForNPC)
     {
-        return new(Info, AssetManager.GetEventDesc(Info.EventId), ForNPC, Info.GetRequiredFriendship(ForNPC));
+        EventInfoDisplay display = new(
+            Info,
+            AssetManager.GetEventDesc(Info.EventId),
+            ForNPC,
+            Info.GetRequiredFriendship(ForNPC)
+        );
+        display.eventHeaderTextToggledState = display.EventHeaderText != Info.HeaderText ? false : null;
+        display.EventHeaderTextToggled = display.EventHeaderText;
+        return display;
     }
 }
 
@@ -210,7 +234,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
                 ReSortFilteredDisplay();
             }
         }
-    } = SORTMODE_NAME;
+    } = SORTMODE_DEFAULT;
 
     public override string SearchText
     {
@@ -252,14 +276,16 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         return SortMode switch
         {
-            SORTMODE_NAME => displayList
-                .OrderBy(static disp => disp.NpcInfo.CanEventuallySocialize ? 0 : 1)
+            SORTMODE_DEFAULT => displayList
+                .OrderByDescending(static disp => (disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill))
                 .ThenBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
             SORTMODE_COUNT => displayList
-                .OrderByDescending(static disp => (disp.FriendshipFill, disp.NpcInfo.CanEventuallySocialize ? 1 : 0))
+                .OrderByDescending(static disp => (disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill))
                 .ToList(),
-            SORTMODE_DEFAULT => displayList.OrderBy(static disp => disp.NpcInfo.Name).ToList(),
+            SORTMODE_NAME => displayList
+                .OrderBy(static disp => disp.NpcInfo.DisplayName, ModEntry.displayStringComparer)
+                .ToList(),
             _ => base.SortAllDisplay(displayList),
         };
     }

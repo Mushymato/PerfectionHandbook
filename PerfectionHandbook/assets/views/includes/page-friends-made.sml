@@ -79,7 +79,7 @@
           padding="8"
           left-click=|~GoalFriendsMadeContext.ShowEvent(this)|
           >
-          <event-header />
+          <event-header text={:EventHeaderText}/>
         </frame>
       </grid>
     </scrollable>
@@ -88,8 +88,10 @@
       <lane *context={CurrentEventInfo} layout="stretch content" orientation="vertical" margin="48,8,16,12">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
           margin="-36,0,0,0" padding="8">
-          <lane layout="stretch content" orientation="horizontal" vertical-content-alignment="End">
-            <event-header/>
+          <lane layout="stretch content" orientation="horizontal" vertical-content-alignment="End"
+            left-click=|ToggleHeaderText()|
+            >
+            <event-header text={EventHeaderTextToggled}/>
             <image *repeat={:ActorLinks}
               padding="4,0,0,-4"
               fit="Contain"
@@ -151,10 +153,10 @@
       focusable-tag="default-focus"
       margin="8,0"
       orientation="vertical">
-      <label text={:EventHeaderText} shadow-alpha="0.8" max-lines="1"/>
+      <label text={&text} shadow-alpha="0.8" max-lines="1"/>
       <label text={:Info.ModName} color={:Info.ModNameTint} shadow-alpha="0.8" max-lines="1"/>
     </lane>
-    <label *!if={:Info.HasModName} text={:EventHeaderText}
+    <label *!if={:Info.HasModName} text={&text}
       focusable="true"
       focusable-tag="default-focus"
       shadow-alpha="0.8"/>
