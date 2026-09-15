@@ -16,7 +16,7 @@ public sealed class ModConfig
     public bool StrictItemOwnedCheck { get; set; } = false;
     public bool EnableModNames { get; set; } = true;
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
-    public KeybindList RemindersEditModifierKey { get; set; } = KeybindList.Parse("LeftAlt");
+    public KeybindList RemindersEditModifierKey { get; set; } = new KeybindList();
     public int RemindersMaxCount { get; set; } = 12;
     public bool RemindersDefaultExpanded { get; set; } = true;
     public SDUINineGridPlacement RemindersHUDPosition
