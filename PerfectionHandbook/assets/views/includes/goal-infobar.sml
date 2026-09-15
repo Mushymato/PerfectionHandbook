@@ -1,6 +1,6 @@
-<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content" padding="4,0,0,0">
+<lane *context={:GoalCtx} *switch={InSubPage} orientation="Horizontal" vertical-content-alignment="Middle" layout="stretch content" padding="4,0,0,0">
   <!-- Reminder -->
-  <frame *if={:^CanSetReminders} layout="content 48px"
+  <frame *case="False" *if={:^CanSetReminders} layout="content 48px"
     background={@Mods/StardewUI/Sprites/ButtonDark}
     tooltip={#reminder.btn.tooltip}
     margin="4,0,0,0"
@@ -10,16 +10,15 @@
     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} tint={^ReminderBtnTint} focusable="true" layout="12px 32px" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
   </frame>
   <!-- Sort -->
-  <panel margin="4,0,0,0" layout="content 48px" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
+  <panel *case="False" margin="4,0,0,0" layout="content 48px" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px" />
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
     </panel>
   </panel>
   <!-- Search Bar -->
-  <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="260px content" border-thickness="16,18"/>
-  <!-- Swtich Modes -->
-  <lane orientation="horizontal" margin="4,8" layout="content content">
+  <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,8,0,4" layout="260px content" border-thickness="16,18"/>  <!-- Swtich Modes -->
+  <lane *case="False" orientation="horizontal" margin="4,8" layout="content content">
     <two-segment *if={:^CanToggleNeeded}
       binding={<>^NeededIndex}
       option1={#ui.showing-need}
@@ -31,7 +30,7 @@
       option2={:^CompleteCountToggleText} />
   </lane>
   <!-- Farmer Pick -->
-  <frame *repeat={:Fulfillments}
+  <frame *case="False" *repeat={:Fulfillments}
     left-click=|^^ClickFulfilment(this)|
     border={@Mods/StardewUI/Sprites/MenuSlotTransparent}
     border-tint={DisplayTint}
@@ -49,7 +48,7 @@
     </lane>
   </frame>
   <!-- paginator -->
-  <panel *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
+  <panel *case="False" *if={^HasPagination} layout="stretch content" horizontal-content-alignment="End">
     <lane orientation="horizontal" margin="0,0,8,0"
       vertical-content-alignment="Middle">
       <image sprite={@Mods/StardewUI/Sprites/LargeLeftArrow}

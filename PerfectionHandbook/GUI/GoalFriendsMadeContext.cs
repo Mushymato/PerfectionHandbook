@@ -347,6 +347,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
 
     private void ShowFriend(FriendsMadeDisplay display)
     {
+        InSubPage = true;
         Game1.playSound("shiny4");
         Selected = display;
         // needed to make sure events get their first pass populate
@@ -375,6 +376,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
             Game1.playSound("shiny4");
             Selected = null;
             SearchText = previousSearchText;
+            InSubPage = false;
             return false;
         }
         MenuHandler.Handbook_SetDefaultFocusableTag(false);

@@ -15,10 +15,43 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public readonly IReadOnlyList<TDisplay> AllDisplay;
 
-    public readonly bool CanToggleNeeded = true;
-    public readonly bool CanToggleCountMode = false;
-    public readonly bool CanPaginate = true;
-    public readonly bool CanSetReminders = true;
+    public readonly bool CanToggleNeeded;
+    public readonly bool CanToggleCountMode;
+    public readonly bool CanPaginate;
+    public readonly bool CanSetReminders;
+
+    public AbstractPageListContext(
+        IGoalContext pageCtx,
+        bool canToggleNeeded = true,
+        bool canToggleCountMode = false,
+        bool canPaginate = true,
+        double itemPerPageModifier = 1,
+        bool canSetReminders = true
+    )
+    {
+        GoalCtx = pageCtx;
+        AllDisplay = MakeAllDisplay();
+        CanToggleNeeded = canToggleNeeded;
+        CanToggleCountMode = canToggleCountMode;
+        CanPaginate = canPaginate;
+        CanSetReminders = canSetReminders;
+        this.itemPerPageModifier = itemPerPageModifier;
+
+        if (pageCtx.Fulfillments.Any())
+        {
+            NeededIndex = pageCtx.Fulfillments[0].Filled ? 1 : 0;
+            UpdateDisplayingFulfillment(pageCtx.Fulfillments[0]);
+        }
+        else
+        {
+            NeededIndex = 0;
+            CanToggleNeeded = false;
+            UpdateAllStatus(pageCtx.Who);
+        }
+    }
+
+    [Notify]
+    protected bool inSubPage = false;
 
     public const string SORTMODE_DEFAULT = "default";
     public const string SORTMODE_NAME = "name";
@@ -62,36 +95,6 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     {
         filteredDisplay = null;
         UpdateFilteredDisplayPaginated();
-    }
-
-    public AbstractPageListContext(
-        IGoalContext pageCtx,
-        bool canToggleNeeded = true,
-        bool canToggleCountMode = false,
-        bool canPaginate = true,
-        double itemPerPageModifier = 1,
-        bool canSetReminders = true
-    )
-    {
-        GoalCtx = pageCtx;
-        AllDisplay = MakeAllDisplay();
-        CanToggleNeeded = canToggleNeeded;
-        CanToggleCountMode = canToggleCountMode;
-        CanPaginate = canPaginate;
-        CanSetReminders = canSetReminders;
-        this.itemPerPageModifier = itemPerPageModifier;
-
-        if (pageCtx.Fulfillments.Any())
-        {
-            NeededIndex = pageCtx.Fulfillments[0].Filled ? 1 : 0;
-            UpdateDisplayingFulfillment(pageCtx.Fulfillments[0]);
-        }
-        else
-        {
-            NeededIndex = 0;
-            CanToggleNeeded = false;
-            UpdateAllStatus(pageCtx.Who);
-        }
     }
 
     public int PrimaryItemCount
@@ -361,6 +364,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public virtual bool TryExitPage()
     {
+        InSubPage = false;
         ResetIsEditingReminders();
         return true;
     }

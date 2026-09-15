@@ -50,7 +50,10 @@
             sprite={:MugShotSprite}
             tint={:DisplayTint}/>
           <lane orientation="Vertical" margin="0,0,12,0" >
-            <label focusable="true"  margin="8,0,0,8" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+            <lane margin="8,0,0,8" vertical-content-alignment="End">
+              <label focusable="true" layout="stretch content" font="dialogue" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+              <label *if={:NpcInfo.HasModName} focusable="true" margin="8,0,0,4" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
+            </lane>
             <lane vertical-content-alignment="Middle">
               <label focusable="true" margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
               <frame *if={:NpcInfo.CanEventuallySocialize} layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
@@ -61,7 +64,6 @@
                   <label text={FriendshipPointDisplay} horizontal-alignment="End" layout="stretch content" shadow-alpha="0.8" />
                 </panel>
               </frame>
-              <label *if={:NpcInfo.HasModName} focusable="true" margin="8,0,0,0" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
             </lane>
           </lane>
         </lane>
