@@ -101,7 +101,7 @@ public sealed partial class HandbookContext
     {
         if (ctx.PageCtx?.TryOpenPage() ?? false)
         {
-            Game1.playSound("shwip");
+            Game1.playSound("smallSelect");
             SelectedCtx?.PageCtx?.TryExitPage();
             SelectedCtx = ctx;
         }
@@ -141,7 +141,7 @@ public sealed partial class HandbookContext
         {
             if (SelectedCtx.PageCtx is IPageContext ctx && ctx.TryExitPage())
             {
-                Game1.playSound("shwip");
+                Game1.playSound("smallSelect");
                 SelectedCtx = null;
             }
             return false;

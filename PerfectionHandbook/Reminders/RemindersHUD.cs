@@ -26,6 +26,8 @@ public sealed class RemindersHUD
         this.ctx.PropertyChanged += OnCtxPropertyChanged;
     }
 
+    public bool IsEditingReminders { get; set; } = false;
+
     public void ToggleEntry(ReminderEntry entry) => ctx.ToggleEntry(entry);
 
     public bool HasEntry(ReminderEntry entry) => ctx.HasEntry(entry);
@@ -34,7 +36,7 @@ public sealed class RemindersHUD
 
     public bool ToggleEntryKeyChecked(ReminderEntry? entry)
     {
-        if (entry != null && ModEntry.config.RemindersEditModifierKey.IsDown())
+        if (entry != null && (IsEditingReminders || ModEntry.config.RemindersEditModifierKey.IsDown()))
         {
             MenuHandler.Reminders.ToggleEntry(entry);
             return true;

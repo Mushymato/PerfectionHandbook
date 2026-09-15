@@ -174,8 +174,10 @@ public sealed class ModEntry : Mod
         }
         if (
             config.ShowHandbookKey.JustPressed()
-            || Game1.player.ActiveItem?.QualifiedItemId == AssetManager.ObjectQId_Book
+            || (
+                Game1.player.ActiveItem?.QualifiedItemId == AssetManager.ObjectQId_Book
                 && Game1.didPlayerJustRightClick()
+            )
         )
         {
             MenuHandler.ShowHandbook();

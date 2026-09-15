@@ -16,7 +16,6 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
     [Notify]
     protected int level = 0;
 
-    [Notify]
     protected int expToNext = 0;
     protected int expToNextMax = 1;
 
@@ -47,11 +46,19 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
         }
     }
 
-    public string ExpToNextLayout =>
-        $"{(expToNextMax == 0 ? 100 : 100f * MathF.Min(ExpToNext, expToNextMax) / expToNextMax)}% stretch";
-    public Color ExpToNextTint => (Level < 10 || Level == MaxLevel) ? SkillColor1 : SkillColor2;
+    public string ExpToNextLayout
+    {
+        get
+        {
+            ModEntry.Log($"{SkillName}: {Level} {expToNext}/{expToNextMax}");
+            return Level == MaxLevel
+                ? "100% stretch"
+                : $"{100f * (MathF.Min(expToNext, expToNextMax) / expToNextMax)}% stretch";
+        }
+    }
+    public Color ExpToNextTint => (Level < 10 || 10 == MaxLevel) ? SkillColor1 : SkillColor2;
     public string ExpToNextDisplay =>
-        Level == MaxLevel ? string.Empty : I18n.Ui_Fulfillment_Dipslay(ExpToNext, expToNextMax);
+        Level == MaxLevel ? string.Empty : I18n.Ui_Fulfillment_Dipslay(expToNext, expToNextMax);
 
     public bool SearchMatch(string txt)
     {
@@ -60,19 +67,20 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
 
     public void SetStatus(Farmer who)
     {
-        Level = GetSkillLevel(who);
-        if (Level < MaxLevel)
+        int level = GetSkillLevel(who);
+        if (level < MaxLevel)
         {
             int exp = GetSkillExperience(who);
             int lvlExp = Math.Max(GetSkillExperienceForLevel(level), 0);
-            ExpToNext = exp - lvlExp;
             expToNextMax = Math.Max(GetSkillExperienceForLevel(level + 1) - lvlExp, 0);
+            expToNext = exp - lvlExp;
         }
         else
         {
-            ExpToNext = 0;
-            expToNextMax = 0;
+            expToNextMax = 1;
+            expToNext = 1;
         }
+        Level = level;
     }
 
     protected abstract int GetSkillExperienceForLevel(int level);
@@ -100,6 +108,8 @@ public sealed record VanillaSkillDisplay(int SkillIdx, int MaxLevel)
         MaxLevel
     )
 {
+    public override int GetHashCode() => SkillIdx;
+
     protected override int GetSkillExperienceForLevel(int level) => GoalSkillLeveledContext.GetExpForLevel(level);
 
     protected override int GetSkillLevel(Farmer who) => who.GetUnmodifiedSkillLevel(SkillIdx);
@@ -114,6 +124,8 @@ public sealed record SpacecoreSkillDisplay(string SkillId)
         10
     )
 {
+    public override int GetHashCode() => SkillId.GetHashCode();
+
     internal static ISpaceCoreApi? spaceCoreApi = null;
 
     protected override int GetSkillExperienceForLevel(int level) => Farmer.getBaseExperienceForLevel(level);
@@ -124,7 +136,7 @@ public sealed record SpacecoreSkillDisplay(string SkillId)
 }
 
 public sealed class GoalSkillLeveledContext(IGoalContext goalCtx)
-    : AbstractPageListContext<AbstractSkillDisplay>(goalCtx, itemPerPageModifier: 4.0 / 8.0)
+    : AbstractPageListContext<AbstractSkillDisplay>(goalCtx, itemPerPageModifier: 4.0 / 8.0, canSetReminders: false)
 {
     internal static int VanillaMaxLevel = 10;
     internal static Func<int, int> GetExpForLevel = Farmer.getBaseExperienceForLevel;

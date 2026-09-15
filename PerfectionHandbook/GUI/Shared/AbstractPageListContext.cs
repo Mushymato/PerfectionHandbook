@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework;
 using PerfectionHandbook.Models;
 using PropertyChanged.SourceGenerator;
 using StardewModdingAPI;
@@ -17,6 +18,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     public readonly bool CanToggleNeeded = true;
     public readonly bool CanToggleCountMode = false;
     public readonly bool CanPaginate = true;
+    public readonly bool CanSetReminders = true;
 
     public const string SORTMODE_DEFAULT = "default";
     public const string SORTMODE_NAME = "name";
@@ -52,6 +54,10 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             "ui.sort-mode."
         );
 
+    [Notify]
+    private bool isEditingReminders = false;
+    public Color ReminderBtnTint => IsEditingReminders ? HandbookContext.ActiveColor : HandbookContext.HiddenColor;
+
     protected void ReSortFilteredDisplay()
     {
         filteredDisplay = null;
@@ -63,7 +69,8 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         bool canToggleNeeded = true,
         bool canToggleCountMode = false,
         bool canPaginate = true,
-        double itemPerPageModifier = 1
+        double itemPerPageModifier = 1,
+        bool canSetReminders = true
     )
     {
         GoalCtx = pageCtx;
@@ -71,6 +78,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         CanToggleNeeded = canToggleNeeded;
         CanToggleCountMode = canToggleCountMode;
         CanPaginate = canPaginate;
+        CanSetReminders = canSetReminders;
         this.itemPerPageModifier = itemPerPageModifier;
 
         if (pageCtx.Fulfillments.Any())
@@ -172,6 +180,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     {
         if (HasPrevPage)
         {
+            Game1.playSound("shwip");
             ScrollPage--;
             UpdateFilteredDisplayPaginated();
             return true;
@@ -183,6 +192,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     {
         if (HasNextPage)
         {
+            Game1.playSound("shwip");
             ScrollPage++;
             UpdateFilteredDisplayPaginated();
             return true;
@@ -202,11 +212,9 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         switch (button)
         {
             case SButton.LeftShoulder:
-                Game1.playSound("dwoop");
                 PaginatePrev();
                 return true;
             case SButton.RightShoulder:
-                Game1.playSound("dwoop");
                 PaginateNext();
                 return true;
         }
@@ -321,8 +329,27 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             FilteredDisplayPaginated.Add(display);
     }
 
+    public bool ToggleIsEditingReminders()
+    {
+        if (!CanSetReminders)
+            return false;
+        IsEditingReminders = !IsEditingReminders;
+        MenuHandler.Reminders.IsEditingReminders = IsEditingReminders;
+        Game1.playSound(IsEditingReminders ? "dwop" : "dwoop");
+        return true;
+    }
+
+    private void ResetIsEditingReminders()
+    {
+        if (!CanSetReminders)
+            return;
+        IsEditingReminders = false;
+        MenuHandler.Reminders.IsEditingReminders = false;
+    }
+
     public virtual bool TryOpenPage()
     {
+        ResetIsEditingReminders();
         int oldRowPerPage = rowPerPage;
         rowPerPage = ModEntry.config.RowPerPage;
         if (CanPaginate && oldRowPerPage != rowPerPage)
@@ -332,5 +359,9 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         return true;
     }
 
-    public virtual bool TryExitPage() => true;
+    public virtual bool TryExitPage()
+    {
+        ResetIsEditingReminders();
+        return true;
+    }
 }

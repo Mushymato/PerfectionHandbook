@@ -138,7 +138,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
 
     public readonly string DisplayName = NpcInfo.DisplayName;
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
-    public ReminderEntry? Reminder { get; } = new ReminderEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
+    public ReminderEntry? Reminder { get; } =
+        MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
     public readonly IReadOnlyList<EventInfoDisplay> EventDisplays = NpcInfo
         .Events.Values.Select(ei => EventInfoDisplay.Make(ei, NpcInfo.Name))
@@ -208,6 +209,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
             {
                 CurrentEventInfo = null;
             }
+            Game1.playSound("shiny4");
             return true;
         }
         return false;
@@ -328,6 +330,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
 
     public bool ShowEvent(EventInfoDisplay eventInfo)
     {
+        Game1.playSound("shiny4");
         return Selected?.ShowEventImpl(eventInfo) ?? false;
     }
 
@@ -344,6 +347,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
 
     private void ShowFriend(FriendsMadeDisplay display)
     {
+        Game1.playSound("shiny4");
         Selected = display;
         // needed to make sure events get their first pass populate
         if (string.IsNullOrEmpty(SearchText))
@@ -368,6 +372,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
                 ShowFriend(display);
                 return false;
             }
+            Game1.playSound("shiny4");
             Selected = null;
             SearchText = previousSearchText;
             return false;

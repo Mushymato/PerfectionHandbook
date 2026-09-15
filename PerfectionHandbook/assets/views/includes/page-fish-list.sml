@@ -3,7 +3,7 @@
   <scrollable *context={Hovered} scrollbar-visibility="Hidden">
     <lane layout="528px content" orientation="vertical">
       <panel layout="528px content" vertical-content-alignment="Middle" focusable-tag="side-panel-title" focusable="true">
-        <image *if={^HasHoveredTankFishSprite} margin="200,0,0,0" sprite={:^HoveredTankFishSprite}/>
+        <image *if={^HasHoveredTankFishSprite} shadow-offset="-4,4" shadow-alpha="0.4" margin="200,0,0,0" sprite={:^HoveredTankFishSprite}/>
         <lane vertical-content-alignment="Middle" >
           <image sprite={:Info.Datum}
             shadow-alpha="0.35"

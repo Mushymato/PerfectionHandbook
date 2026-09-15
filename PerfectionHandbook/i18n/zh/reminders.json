@@ -1,4 +1,5 @@
 {
+  "reminder.btn.tooltip": "编辑备忘提醒",
   "reminder.verb.ship": "出售：{{thing}}",
   "reminder.verb.fish": "钓鱼：{{thing}}",
   "reminder.verb.cook": "烹饪：{{thing}}",

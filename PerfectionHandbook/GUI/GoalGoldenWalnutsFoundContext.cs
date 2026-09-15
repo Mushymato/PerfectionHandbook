@@ -24,7 +24,11 @@ public sealed record GoldenWalnutsFoundDisplay(string Key, int Count = 1, int Ma
 }
 
 public sealed class GoalGoldenWalnutsFoundContext(IGoalContext goalCtx)
-    : AbstractPageListContext<GoldenWalnutsFoundDisplay>(goalCtx, itemPerPageModifier: 7.0 / 8.0)
+    : AbstractPageListContext<GoldenWalnutsFoundDisplay>(
+        goalCtx,
+        itemPerPageModifier: 7.0 / 8.0,
+        canSetReminders: false
+    )
 {
     /*
       Based on:

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using PropertyChanged.SourceGenerator;
+using StardewValley;
 using StardewValley.Extensions;
 
 namespace PerfectionHandbook.Reminders;
@@ -34,6 +35,7 @@ public sealed partial class RemindersContext()
         }
 
         HasReminders = ReminderEntries.Count > 0;
+        Game1.playSound("drumkit6");
         return;
     }
 

@@ -1,4 +1,5 @@
 {
+  "reminder.btn.tooltip": "Edit Reminders",
   "reminder.verb.ship": "Ship: {{thing}}",
   "reminder.verb.fish": "Fish: {{thing}}",
   "reminder.verb.cook": "Cook: {{thing}}",

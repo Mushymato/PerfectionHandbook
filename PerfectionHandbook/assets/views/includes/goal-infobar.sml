@@ -1,20 +1,31 @@
-<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content">
+<lane orientation="Horizontal" *context={:GoalCtx} vertical-content-alignment="Middle" layout="stretch content" padding="4,0,0,0">
+  <!-- Reminder -->
+  <frame *if={:^CanSetReminders} layout="content 48px"
+    background={@Mods/StardewUI/Sprites/ButtonDark}
+    tooltip={#reminder.btn.tooltip}
+    margin="4,0,0,0"
+    padding="16,8"
+    vertical-content-alignment="middle"
+    left-click=|^ToggleIsEditingReminders()|>
+    <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} tint={^ReminderBtnTint} focusable="true" layout="12px 32px" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
+  </frame>
   <!-- Sort -->
-  <panel margin="4,0,0,0" layout="content stretch" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
+  <panel margin="4,0,0,0" layout="content 48px" vertical-content-alignment="middle" *if={:^HasSortModes} *context={:^SortModeCtx} >
     <panel focusable="true" tooltip={ValueLabel} left-click=|Increase()| right-click=|Decrease()|>
-      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px"/>
+      <image sprite={@mushymato.PerfectionHandbook/sprites/cursors2:dotdotdot} layout="64px 64px" />
       <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:organize} layout="40px 48px" margin="12,10,0,0" +hover:scale="1.2" +transition:scale="100ms EaseInSine"/>
     </panel>
   </panel>
   <!-- Search Bar -->
   <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,4,0,0" layout="260px content" border-thickness="16,18"/>
   <!-- Swtich Modes -->
-  <lane orientation="horizontal" margin="4,0" layout="content content">
+  <lane orientation="horizontal" margin="4,8" layout="content content">
     <two-segment *if={:^CanToggleNeeded}
       binding={<>^NeededIndex}
       option1={#ui.showing-need}
       option2={#ui.showing-done} />
     <two-segment *if={:^CanToggleCountMode}
+      margin="-4,0"
       binding={<>^CountModeIndex}
       option1={:^OwnedCountToggleText}
       option2={:^CompleteCountToggleText} />
@@ -59,7 +70,7 @@
 </lane>
 
 <template name="two-segment">
-  <frame margin="2,0" border={@Mods/StardewUI/Sprites/ScrollBarTrack}>
+  <frame margin={&margin} background={@Mods/StardewUI/Sprites/ScrollBarTrack}>
     <segments balanced="true"
         highlight={@Mods/StardewUI/Sprites/ButtonDark}
         highlight-transition="150ms EaseOutQuart"

@@ -28,7 +28,7 @@ public sealed partial record MonsterSlayerDisplay(
     public bool isExpanded = false;
 
     public bool Needed => KilledCount < RequiredCount;
-    public ReminderEntry? Reminder =>
+    public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_MonsterSlayer, Id);
 
     public string DisplayCounts => I18n.Ui_Fulfillment_Dipslay(KilledCount, RequiredCount);

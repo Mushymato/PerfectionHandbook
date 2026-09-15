@@ -11,10 +11,12 @@
         left-click=|ToggleReminder()|>
         <panel>
           <image sprite={@Mods/StardewUI/Sprites/White} tint="#4CAF50" fit="Stretch" layout={QuestFillLayout}/>
-          <lane padding="6" orientation="Horizontal" vertical-content-alignment="Middle">
-            <image sprite={:DisplaySprite} fit="Contain" layout="32px 64px" horizontal-alignment="Middle" vertical-alignment="Middle"/>
-            <label font="dialogue" text={:DisplayName} max-lines="1" shadow-alpha="0.5" layout="stretch content" />
-            <label font="dialogue" text={:DisplayCounts} max-lines="1" shadow-alpha="0.5" />
+          <lane padding="6,0"  orientation="Horizontal" vertical-content-alignment="Middle">
+            <image sprite={:DisplaySprite} fit="Contain" layout="32px 64px" margin="4,0" horizontal-alignment="Middle" vertical-alignment="Middle"/>
+            <label text={:DisplayName} max-lines="1" shadow-alpha="0.5" layout="stretch content" />
+            <label text={:DisplayCounts} max-lines="1" shadow-alpha="0.5" />
+            <image *if={Reminder.Active} sprite={@mushymato.PerfectionHandbook/sprites/cursors:blueExclaim} layout="12px 32px" margin="2"/>
+            <spacer *!if={Reminder.Active} layout="12px 32px" margin="2"/>
           </lane>
         </panel>
       </frame>
