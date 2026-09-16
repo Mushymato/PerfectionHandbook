@@ -8,7 +8,7 @@ namespace PerfectionHandbook.Models;
 public sealed class ModConfig
 {
     internal const int DEFAULT_CARD_X = 1480;
-    internal const int DEFAULT_CARD_Y = 620;
+    internal const int DEFAULT_CARD_Y = 680;
     public int RowPerPage { get; set; } = 16;
     public KeybindList ShowHandbookKey { get; set; } = KeybindList.Parse("RightShift+H");
     public int AutoExportCardPeriod { get; set; } = 7;
