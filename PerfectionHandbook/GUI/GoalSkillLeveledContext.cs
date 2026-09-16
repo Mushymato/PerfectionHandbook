@@ -46,16 +46,8 @@ public abstract partial record AbstractSkillDisplay(string SkillName, SDUISprite
         }
     }
 
-    public string ExpToNextLayout
-    {
-        get
-        {
-            ModEntry.Log($"{SkillName}: {Level} {expToNext}/{expToNextMax}");
-            return Level == MaxLevel
-                ? "100% stretch"
-                : $"{100f * (MathF.Min(expToNext, expToNextMax) / expToNextMax)}% stretch";
-        }
-    }
+    public string ExpToNextLayout =>
+        Level == MaxLevel ? "100% stretch" : $"{100f * (MathF.Min(expToNext, expToNextMax) / expToNextMax)}% stretch";
     public Color ExpToNextTint => (Level < 10 || 10 == MaxLevel) ? SkillColor1 : SkillColor2;
     public string ExpToNextDisplay =>
         Level == MaxLevel ? string.Empty : I18n.Ui_Fulfillment_Dipslay(expToNext, expToNextMax);

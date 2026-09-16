@@ -19,6 +19,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     public readonly bool CanToggleCountMode;
     public readonly bool CanPaginate;
     public readonly bool CanSetReminders;
+    public readonly double itemPerPageModifier = 1;
 
     public AbstractPageListContext(
         IGoalContext pageCtx,
@@ -113,7 +114,6 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     }
 
     private int rowPerPage = ModEntry.config.RowPerPage;
-    protected readonly double itemPerPageModifier = 1;
 
     private int GetItemPerPage()
     {

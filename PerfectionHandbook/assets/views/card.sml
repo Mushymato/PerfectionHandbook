@@ -34,7 +34,7 @@
       vertical-content-alignment="Start"
       margin="2"
       padding="12,12,16,0"
-      layout="stretch 144px">
+      layout="stretch 160px">
       <panel layout="100% 100%" >
         <image sprite={:DisplayIcon} layout="48px 48px" />
         <label margin="56,0,0,0" font="small" text={:DisplayName} max-lines="3" shadow-alpha="0.8" />

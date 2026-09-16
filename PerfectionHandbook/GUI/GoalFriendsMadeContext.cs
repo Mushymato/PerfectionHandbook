@@ -223,7 +223,7 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
 }
 
 public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
-    : AbstractPageListContext<FriendsMadeDisplay>(goalCtx, itemPerPageModifier: 6.0 / 8.0)
+    : AbstractPageListContext<FriendsMadeDisplay>(goalCtx, itemPerPageModifier: 9.0 / 13.0)
 {
     public override bool HasSortModes => true;
     protected override string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
