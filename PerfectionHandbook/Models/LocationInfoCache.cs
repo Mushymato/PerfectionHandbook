@@ -36,7 +36,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             }
         }
         else if (
-            (Location.IsOutdoors || Location.HasMapPropertyWithValue("indoorWater"))
+            (Location.IsOutdoors || Location.treatAsOutdoors.Value || Location.HasMapPropertyWithValue("indoorWater"))
             && Location.Map?.Layers?.Count > 0
         )
         {
@@ -61,11 +61,6 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
         Dictionary<string, SpawnFishData> fishes = [];
         foreach (SpawnFishData spawnFishData in Data.Fish ?? [])
         {
-            FishAreaData? fishAreaData = null;
-            if (spawnFishData.Id != null)
-            {
-                Data.FishAreas.TryGetValue(spawnFishData.Id, out fishAreaData);
-            }
             foreach (ParsedItemData parsedItemData in GameQueryHelper.SimplifiedResolveAll(spawnFishData, Location))
             {
                 fishes[parsedItemData.QualifiedItemId] = spawnFishData;
