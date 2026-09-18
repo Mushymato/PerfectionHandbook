@@ -45,10 +45,17 @@ public sealed partial class HandbookContext
             new MiscContext(
                 who,
                 playerOwned,
+                "Misc_Location_Info",
+                I18n.Ui_Misc_Location(),
+                ItemRegistry.GetDataOrErrorItem("(F)1366"),
+                (ctx) => new GoalLocationContext(ctx)
+            ),
+            new MiscContext(
+                who,
+                playerOwned,
                 "Misc_Crop_Calendar",
                 I18n.Ui_Misc_CropCalendar(),
                 ItemRegistry.GetDataOrErrorItem("(O)889"),
-                string.Empty,
                 (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
             ),
             new MiscContext(
@@ -57,7 +64,6 @@ public sealed partial class HandbookContext
                 "Misc_Required_Ingredients",
                 I18n.Ui_Misc_Ingredients(),
                 ItemRegistry.GetDataOrErrorItem("(O)419"),
-                string.Empty,
                 (ctx) => new GoalRecipesIngredientContext(ctx)
             ),
             new MiscContext(
@@ -66,7 +72,6 @@ public sealed partial class HandbookContext
                 "Misc_Mod_Config",
                 I18n.Ui_Misc_ModConfig(),
                 ItemRegistry.GetDataOrErrorItem("(O)112"),
-                string.Empty,
                 (ctx) => new ModConfigContext(ModEntry.config)
             ),
         ];

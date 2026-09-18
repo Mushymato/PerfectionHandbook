@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Locations;
@@ -76,7 +77,7 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
         // events
         if (
             (EventInvalidateTracker == null || EventInvalidateTracker.CheckChanged())
-            && Location.TryGetLocationEvents(out string assetName, out Dictionary<string, string> events)
+            && TryGetLocationEventsNoGrandpa(Location, out string assetName, out Dictionary<string, string>? events)
         )
         {
             EventInvalidateTracker ??= InvalidateTracker.GetInvalidateTracker(assetName);
@@ -102,6 +103,25 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
             hasNewEvent = true;
         }
         return hasNewEvent;
+    }
+
+    private static bool TryGetLocationEventsNoGrandpa(
+        GameLocation location,
+        [NotNullWhen(true)] out string assetName,
+        [NotNullWhen(true)] out Dictionary<string, string>? events
+    )
+    {
+        assetName =
+            (location.NameOrUniqueName == Game1.player.homeLocation.Value)
+                ? "Data\\Events\\FarmHouse"
+                : ("Data\\Events\\" + location.Name);
+        events = null;
+        if (Game1.content.DoesAssetExist<Dictionary<string, string>>(assetName))
+        {
+            events = Game1.content.Load<Dictionary<string, string>>(assetName);
+            return true;
+        }
+        return false;
     }
 }
 

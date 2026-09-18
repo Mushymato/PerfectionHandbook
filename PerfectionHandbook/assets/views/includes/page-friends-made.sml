@@ -1,4 +1,4 @@
-<panel *switch={InEventPage} layout="stretch 100%">
+<panel *switch={HasSelected} layout="stretch 100%">
   <!-- Scroll -->
   <scrollable *case="false" peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
     <grid margin="4,0,12,0" item-layout="length: 400+" item-spacing="-4,-4" layout="stretch content"
@@ -85,7 +85,7 @@
         </frame>
       </grid>
     </scrollable>
-  <!-- Event Detail -->
+    <!-- Event Detail -->
     <scrollable *if={HasCurrentEventInfo} peeking="128" layout="stretch" scrollbar-margin="-18,0,0,0" >
       <lane *context={CurrentEventInfo} layout="stretch content" orientation="vertical" margin="48,8,16,12">
         <frame border={@Mods/StardewUI/Sprites/MenuSlotTransparent}

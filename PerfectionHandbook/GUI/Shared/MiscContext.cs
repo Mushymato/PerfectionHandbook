@@ -10,10 +10,10 @@ public sealed record MiscContext(
     string PageName,
     string DisplayName,
     ParsedItemData DisplayIcon,
-    string SummaryText,
     Func<IGoalContext, IPageContext?> GetPageCtx
 ) : IGoalContext
 {
+    public string SummaryText => string.Empty;
     private static readonly IReadOnlyList<GoalFulfillment> Empty = [];
     private IPageContext? pageCtx = null;
     public IPageContext? PageCtx => pageCtx ??= GetPageCtx(this);

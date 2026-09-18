@@ -128,6 +128,8 @@ public sealed record EventInfo(
         info = null;
 
         string[] idPrecond = Event.SplitPreconditions(key);
+        if (idPrecond.Length == 1)
+            return false;
         string eventId = idPrecond[0];
         if (!TryNormalizePrecond(idPrecond.Skip(1), out EventPreconditionInfo[]? preconds))
         {

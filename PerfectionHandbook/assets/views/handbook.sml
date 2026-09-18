@@ -69,12 +69,14 @@
   <infobar-page page-name="Achievement_Polyculture" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
   <!-- Achievement_Monoculture -->
   <infobar-page page-name="Achievement_Monoculture" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
-  <!-- Misc_Mod_Config -->
-  <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
+  <!-- Misc_Location_Info -->
+  <infobar-page page-name="Misc_Location_Info" page-include="mushymato.PerfectionHandbook/views/includes/page-locations"/>
   <!-- Misc_Crop_Calendar -->
   <infobar-page page-name="Misc_Crop_Calendar" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
   <!-- Misc_Required_Ingredients -->
   <infobar-page page-name="Misc_Required_Ingredients" page-include="mushymato.PerfectionHandbook/views/includes/page-ingredient-count"/>
+  <!-- Misc_Mod_Config -->
+  <include *case="Misc_Mod_Config" *context={:SelectedCtx.PageCtx} name="mushymato.PerfectionHandbook/views/includes/mgmt-modconfig" />
 </frame>
 
 <template name="goal-grid">
