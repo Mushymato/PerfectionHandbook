@@ -36,12 +36,9 @@ public sealed record LocationInfo(string LocationId, GameLocation Location)
                 }
             }
         }
-        else if (
-            (Location.IsOutdoors || Location.treatAsOutdoors.Value || Location.HasMapPropertyWithValue("indoorWater"))
-            && Location.Map?.Layers?.Count > 0
-        )
+        else if (Location.Map?.Layers?.Count > 0)
         {
-            // need this check because desert >:(
+            // need this check because people aren't declaring their water >:(
             xTile.Layers.Layer layer = Location.Map.Layers[0];
             for (int i = 0; i < layer.LayerWidth; i++)
             {
