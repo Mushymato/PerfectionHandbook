@@ -40,6 +40,8 @@ public sealed record EventPreconditionInfo(
 
     public bool Evaluate(EventInfo eventInfo)
     {
+        if (Handler == EventInfo.Precondition_SendMail)
+            return true;
         if (LocationInfoCache.Cache.TryGetValue(eventInfo.LocationId, out LocationInfo? locationInfo))
         {
             return Handler(locationInfo.Location, eventInfo.EventId, Args) == !Negated;
@@ -92,6 +94,7 @@ public sealed record EventInfo(
         field ??= EventPreconditionInfo.Make("ActiveDialogueEvent");
     internal static EventPreconditionDelegate? Precondition_NotActiveDialogueEvent =>
         field ??= EventPreconditionInfo.Make("A");
+    internal static EventPreconditionDelegate? Precondition_SendMail => field ??= EventPreconditionInfo.Make("x");
     internal static Regex EventCTPattern = new(
         @"eventSeen_(.+)(?:_memory_oneday|_memory_oneweek|_memory_twoweeks|_memory_fourweeks|_memory_eightweeks|_memory_oneyear)?"
     );

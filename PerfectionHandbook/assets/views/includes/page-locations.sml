@@ -1,7 +1,7 @@
 <panel *switch={HasSelected} layout="stretch 100%">
   <!-- Event List -->
   <scrollable *case="false" peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
-    <grid margin="4,0,12,0" item-layout="length: 400+" item-spacing="-4,-4" layout="stretch content"
+    <grid margin="4,0,12,0" item-layout="length: 600+" item-spacing="-4,-4" layout="stretch content"
       primary-item-count={>PrimaryItemCount}>
       <frame *repeat={:FilteredDisplayPaginated}
         layout="stretch content"

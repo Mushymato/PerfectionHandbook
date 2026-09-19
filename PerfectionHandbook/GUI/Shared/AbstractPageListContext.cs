@@ -158,6 +158,7 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     [DependsOn(nameof(ScrollPage))]
     private bool HasNextPage => ScrollPage * GetItemPerPage() < FilteredDisplay.Count;
 
+    protected bool debounceScrollProgress = false;
     private float scrollProgress;
     public float ScrollProgress
     {
@@ -166,6 +167,11 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         {
             if (Game1.options.gamepadControls)
                 return;
+            if (debounceScrollProgress)
+            {
+                debounceScrollProgress = false;
+                return;
+            }
             if (value <= 0 && PaginatePrev())
             {
                 scrollProgress = 0.9999f;
@@ -175,6 +181,10 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             {
                 scrollProgress = 0.0001f;
                 OnPropertyChanged(new(nameof(ScrollProgress)));
+            }
+            else
+            {
+                scrollProgress = value;
             }
         }
     }

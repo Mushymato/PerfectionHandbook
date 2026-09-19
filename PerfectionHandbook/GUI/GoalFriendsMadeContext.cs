@@ -221,6 +221,7 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
             Selected = null;
             SearchText = previousSearchText;
             InSubPage = false;
+            debounceScrollProgress = true;
             return false;
         }
         MenuHandler.Handbook_SetDefaultFocusableTag(false);

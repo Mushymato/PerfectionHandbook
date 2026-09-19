@@ -91,6 +91,7 @@ public sealed partial class GoalLocationContext(IGoalContext goalCtx)
             Selected = null;
             SearchText = previousSearchText;
             InSubPage = false;
+            debounceScrollProgress = true;
             return false;
         }
         MenuHandler.Handbook_SetDefaultFocusableTag(false);
