@@ -43,6 +43,8 @@ public sealed partial record GoalContext(
     public ParsedItemData DisplayIcon => Goal.DisplayIcon;
     public bool Filled => Fulfillments[0].Filled;
 
+    public string ScreenRead => $"{DisplayName} {SummaryText}";
+
     public void DisposePageCtx()
     {
         (pageCtx as IDisposable)?.Dispose();

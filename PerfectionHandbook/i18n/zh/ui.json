@@ -45,6 +45,7 @@
   "ui.week-day": "{{dayOfWeek}} {{day}}",
   "screenread.ingredient": "需要{{needCount}}个{{thing}}，现有{{haveCount}}。",
   "ui.mines.floor": "矿洞F{{floor}}",
+  "ui.event.count": "（{{count}}个事件）",
   "ui.prev-page": "上一页",
   "ui.next-page": "下一页"
 }

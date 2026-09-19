@@ -1,0 +1,7 @@
+{
+  "screenread.cropday.growing": "第{{day}}天，生长中",
+  "screenread.cropday.harvest": "第{{day}}天，可收获",
+  "screenread.fish.catch.yes": "今日可钓：",
+  "screenread.fish.catch.no": "今日不可钓：",
+  "screenread.fish.catch": "{{catchable}} 地点 {{location}}, 时间 {{time}}, 季节 {{season}}, 天气 {{weather}}"
+}

@@ -8,7 +8,7 @@
     <!-- Misc -->
     <lane margin="6,4,12,4" orientation="Horizontal" layout="stretch content">
       <panel layout="stretch content">
-        <banner margin="4,12,0,0" text={:PerfectionTitle} />
+        <banner focusable="true" margin="4,12,0,0" text={:PerfectionTitle} />
       </panel>
       <button
         default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
@@ -16,6 +16,7 @@
         left-click=|ExportCard()|
         right-click=|OpenCardDir()|
         tooltip={ExportMsg}
+        screen-read={:ExportMsg}
         horizontal-content-alignment="Start"
         vertical-content-alignment="Start"
         margin="2"
@@ -28,6 +29,7 @@
         hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
         left-click=|^ChangePage(this)|
         tooltip={:DisplayName}
+        screen-read={:DisplayName}
         horizontal-content-alignment="Start"
         vertical-content-alignment="Start"
         margin="2"
@@ -85,7 +87,7 @@
       default-background={@Mods/StardewUI/Sprites/MenuSlotOutset}
       hover-background={@Mods/StardewUI/Sprites/MenuSlotInset}
       left-click=|^ChangePage(this)|
-      screen-read={:DisplayName}
+      screen-read={:ScreenRead}
       horizontal-content-alignment="Start"
       vertical-content-alignment="Start"
       margin="2"
@@ -107,12 +109,7 @@
 
 <template name="infobar-page">
   <panel *context={:SelectedCtx.PageCtx} *case={&page-name} layout="stretch content">
-    <lane layout="stretch content"
-      orientation="vertical"
-      opacity="0"
-      +show:opacity="1"
-      +transition:opacity="150ms EaseOutSine"
-      button-press=|HandleShoulderButtons($Button)|>
+    <lane layout="stretch content" orientation="vertical" button-press=|HandleShoulderButtons($Button)|>
       <include name="mushymato.PerfectionHandbook/views/includes/goal-infobar" />
       <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="stretch content" fit="Stretch"/>
       <include name={&page-include} />

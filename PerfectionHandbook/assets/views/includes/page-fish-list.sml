@@ -2,7 +2,7 @@
   <!-- Fish Where -->
   <scrollable *context={Hovered} scrollbar-visibility="Hidden">
     <lane layout="528px content" orientation="vertical">
-      <panel layout="528px content" vertical-content-alignment="Middle" focusable-tag="side-panel-title" focusable="true">
+      <panel layout="528px content" vertical-content-alignment="Middle" focusable-tag="side-panel-title" screen-read={:Info.Datum.DisplayName} focusable="true">
         <image *if={^HasHoveredTankFishSprite} shadow-offset="-4,4" shadow-alpha="0.4" margin="200,0,0,0" sprite={:^HoveredTankFishSprite}/>
         <lane vertical-content-alignment="Middle" >
           <image sprite={:Info.Datum}
@@ -16,7 +16,13 @@
           <label text={:Info.Datum.DisplayName} font="dialogue" shadow-alpha="0.8"/>
         </lane>
       </panel>
-      <lane *repeat={:CanCatchIn} *switch={:IsCrabPot} orientation="horizontal" vertical-content-alignment="Middle" margin="4" focusable="true" opacity={:Opacity}>
+      <lane *repeat={:CanCatchIn} *switch={:IsCrabPot}
+        orientation="horizontal"
+        vertical-content-alignment="Middle"
+        margin="4"
+        focusable="true"
+        opacity={:Opacity}
+        screen-read={:ScreenRead}>
         <frame *case="false" border={@Mods/StardewUI/Sprites/MenuSlotTransparent} border-thickness="4">
           <grid item-layout="count: 2" layout="72px content">
             <image *repeat={:SpawnSeasonSprites} layout="36px 24px" sprite={:Sprite} tint={:DisplayTint} />

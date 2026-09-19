@@ -7,7 +7,7 @@
         layout="stretch content"
         padding="24,24"
         focusable="true"
-        screen-read={:DisplayName}
+        screen-read={:ScreenRead}
         background={@Mods/StardewUI/Sprites/ShopEntryBorder}
         left-click=|^HandleLeftClick(this)|>
         <label text={:DisplayName} shadow-alpha="0.8" max-lines="-1"/>

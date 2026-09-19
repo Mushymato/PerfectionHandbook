@@ -1,0 +1,7 @@
+{
+  "screenread.cropday.growing": "Day {{day}}, growing",
+  "screenread.cropday.harvest": "Day {{day}}, harvest",
+  "screenread.fish.catch.yes": "Can catch today:",
+  "screenread.fish.catch.no": "Can't catch right today:",
+  "screenread.fish.catch": "{{catchable}} Location {{location}} Time {{time}}, Season {{season}}, Weather {{weather}}"
+}

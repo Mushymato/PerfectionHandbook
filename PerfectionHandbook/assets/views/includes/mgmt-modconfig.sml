@@ -3,7 +3,7 @@
     background-border-thickness="48,12"
     margin="12,-80,0,0" text={#ui.misc.mod-config} layout="content content" item-span="-1"/>
   <scrollable peeking="128" scrollbar-margin="-18,0,0,0">
-    <grid item-layout="count: 10" layout="stretch content" margin="64,12,0,0">
+    <grid item-layout="count: 4" layout="stretch content" margin="64,12,0,0">
       <!-- handbook -->
       <banner text={#config.section.Handbook} margin="-32,12,0,12" layout="content content" item-span="-1"/>
       <form-label text={#config.name.ShowHandbookKey} tooltip={#config.desc.ShowHandbookKey} />
@@ -84,8 +84,7 @@
 </panel>
 
 <template name="form-label">
-  <panel item-span="2"
-    layout="stretch 88px"
+  <panel layout="stretch 88px"
     margin="0,0,12,0"
     horizontal-content-alignment="Start"
     vertical-content-alignment="Middle"
@@ -99,8 +98,7 @@
 </template>
 
 <template name="form-cell">
-  <panel item-span="3"
-    layout="stretch 88px"
+  <panel layout="stretch 88px"
     margin="4,0,0,0"
     horizontal-content-alignment="Start"
     vertical-content-alignment="Middle">

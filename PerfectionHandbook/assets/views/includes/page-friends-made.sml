@@ -145,7 +145,7 @@
   <lane orientation="horizontal"
     vertical-content-alignment="Middle"
     layout="stretch content"
-    screen-read={:Info.HeaderText}>
+    screen-read={&text}>
     <image *if={:HasSeen} margin="4,0" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark} />
     <spacer *!if={:HasSeen} margin="4,0" layout="27px 27px" />
     <digits *if={:HasRequiredFriendshipForNPC} margin="0,0,4,0" scale="3" number={:RequiredHeartLevelForNPC} />

@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Models;
 using PerfectionHandbook.Reminders;
@@ -9,10 +8,12 @@ using StardewValley.Extensions;
 namespace PerfectionHandbook.GUI;
 
 public sealed partial record LocationDisplay(LocationInfo Info)
-    : EventHoldingDisplay(Info.Events!.Values.Select(ei => EventInfoDisplay.Make(ei)).ToList()),
+    : EventHoldingDisplay(Info.Events!.Values.Select(EventInfoDisplay.Make).ToList()),
         IPageDisplayEntry
 {
-    public string DisplayName = Info.Location.DisplayName ?? Info.LocationId;
+    public readonly string DisplayName = Info.Location.DisplayName ?? Info.LocationId;
+    public readonly string EventCount = I18n.Ui_Event_Count(Info.Events!.Count);
+    public string ScreenRead => $"{DisplayName} {EventCount}";
     public bool Needed => true;
 
     public bool SearchMatch(string txt)

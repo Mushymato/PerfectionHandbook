@@ -46,6 +46,8 @@
   "ui.week-day": "{{dayOfWeek}} {{day}}",
   "screenread.ingredient": "Need {{needCount}} {{thing}}, currently have {{haveCount}}.",
   "ui.mines.floor": "Mines F{{floor}}",
+  "ui.friend.tooltip": "{{friend}} ({{friendship}})",
+  "ui.event.count": "({{count}} events)",
   "ui.prev-page": "Prev Page",
   "ui.next-page": "Next Page"
 }

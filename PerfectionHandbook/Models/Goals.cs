@@ -24,7 +24,7 @@ public sealed partial record GoalFulfillment(Farmer? Who, int Count, int Total) 
         {
             string tooltip = I18n.Ui_Fulfillment_Tooltip(Count, Total, $"{Percent:P2}");
             if (Who != null)
-                return string.Concat(Who.displayName, ": ", tooltip);
+                return string.Concat(Who.displayName, "\n", tooltip);
             return tooltip;
         }
     }

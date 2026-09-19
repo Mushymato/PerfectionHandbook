@@ -42,6 +42,20 @@ public sealed record CatchInDisplay(
     public readonly bool HasSpawnMinFishingLevel = SpawnMinFishingLevel > 0;
     public readonly bool IsCrabPot = CrabPot != null;
 
+    public string ScreenRead =>
+        I18n.Screenread_Fish_Catch(
+            CatchableToday ? I18n.Screenread_Fish_Catch_Yes() : I18n.Screenread_Fish_Catch_No(),
+            LocationName,
+            string.Join(
+                ' ',
+                SpawnTimeRange.Select(
+                    (timing) => I18n.Ui_FishTimeRange(FormatTime(timing.Item1), FormatTime(timing.Item2))
+                )
+            ),
+            string.Join(' ', SpawnSeasons.Select(season => DrawHelper.GetSeasonName(season))),
+            string.Join(' ', SpawnWeather)
+        );
+
     private static string FormatTime(int timeCode)
     {
         int hour = timeCode / 100;

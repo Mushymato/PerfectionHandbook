@@ -40,7 +40,9 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
         I18n.Ui_Fulfillment_Dipslay(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints);
 
     public readonly string DisplayName = NpcInfo.DisplayName;
-    public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay}";
+    public string ScreenRead =>
+        $"{DisplayName} {FriendshipPointDisplay} {I18n.Ui_Event_Count(NpcInfo
+            .Events.Values.Count)}";
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 

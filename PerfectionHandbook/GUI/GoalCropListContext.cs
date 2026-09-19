@@ -60,6 +60,12 @@ public sealed partial class CropDetailDisplay
 
         public int Day { get; set; } = 0;
         public Season ThisSeason { get; set; } = Season.Spring;
+        public string ScreenRead =>
+            Sprite != null
+                ? IsHarvest
+                    ? I18n.Screenread_Cropday_Harvest(Day)
+                    : I18n.Screenread_Cropday_Growing(Day)
+                : string.Empty;
         public float DisplayShadow => IsHarvest ? 0.35f : 0f;
         public Color CellBorderTint
         {

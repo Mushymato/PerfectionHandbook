@@ -64,6 +64,7 @@
           layout="content content"
           border={@Mods/StardewUI/Sprites/MenuSlotInset}
           border-tint={:CellBorderTint}
+          screen-read={ScreenRead}
           focusable="true"
           margin="-4,-2"
           border-thickness="14,4"

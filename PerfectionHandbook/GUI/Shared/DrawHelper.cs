@@ -189,6 +189,18 @@ public static class DrawHelper
         return new(Game1.mouseCursors, new(317 + 12 * weatherIcon, 421, 12, 8));
     }
 
+    internal static string GetSeasonName(Season season)
+    {
+        return season switch
+        {
+            Season.Spring => Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5680"),
+            Season.Summer => Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5681"),
+            Season.Fall => Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5682"),
+            Season.Winter => Game1.content.LoadString("Strings/StringsFromCSFiles:Utility.cs.5683"),
+            _ => "???",
+        };
+    }
+
     private static IReadOnlyList<SeasonSprite> GetAllSeasonSprites()
     {
         return

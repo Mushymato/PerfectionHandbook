@@ -47,7 +47,7 @@ public sealed partial class HandbookContext
                 playerOwned,
                 "Misc_Location_Info",
                 I18n.Ui_Misc_Location(),
-                ItemRegistry.GetDataOrErrorItem("(F)1366"),
+                ItemRegistry.GetDataOrErrorItem("(O)102"),
                 (ctx) => new GoalLocationContext(ctx)
             ),
             new MiscContext(
