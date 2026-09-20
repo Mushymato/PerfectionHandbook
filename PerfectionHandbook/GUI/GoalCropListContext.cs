@@ -10,6 +10,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Crops;
 using StardewValley.ItemTypeDefinitions;
+using StardewValley.TerrainFeatures;
 
 namespace PerfectionHandbook.GUI;
 
@@ -368,6 +369,8 @@ public sealed partial record CropDisplay(
     CropDetailDisplaySettings CropCalendarSettings
 ) : ItemShippedDisplay(Info, OwnedCount, NeededCount)
 {
+    public string PlantedCountText { get; internal set; } = string.Empty;
+
     public override string FocusableTag { get; } = $"crop-{Info.Datum.QualifiedItemId}";
 
     public override bool Needed => completedCount <= NeededCount;
@@ -412,6 +415,38 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
             CropListKind.Polyculture => itemInfo.CountForPolyculture,
             _ => itemInfo.FromCrop.Any(),
         };
+
+    protected override List<CropDisplay> FinalizeDisplay(List<CropDisplay> displayList)
+    {
+        Dictionary<string, int> cropCounts = [];
+        Utility.ForEachLocation(location =>
+        {
+            location.ForEachDirt(dirt =>
+            {
+                if (dirt.crop is Crop crop && !crop.dead.Value && crop.netSeedIndex.Value is string seed)
+                {
+                    if (cropCounts.TryGetValue(seed, out int count))
+                        cropCounts[seed] = count + 1;
+                    else
+                        cropCounts[seed] = 1;
+                }
+                return true;
+            });
+            return true;
+        });
+        ModEntry.Log(string.Join(' ', cropCounts.Keys));
+        foreach (CropDisplay display in displayList)
+        {
+            int countTotal = 0;
+            foreach ((string seedId, CropData cropData) in display.Info.FromCrop)
+            {
+                if (cropCounts.TryGetValue(seedId, out int count))
+                    countTotal += count;
+            }
+            display.PlantedCountText = I18n.Ui_PlantedCount(countTotal);
+        }
+        return base.FinalizeDisplay(displayList);
+    }
 
     protected override List<CropDisplay> SortAllDisplay(List<CropDisplay> displayList)
     {

@@ -352,17 +352,10 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         return true;
     }
 
-    private void ResetIsEditingReminders()
-    {
-        if (!CanSetReminders)
-            return;
-        IsEditingReminders = false;
-        MenuHandler.Reminders.IsEditingReminders = false;
-    }
-
     public virtual bool TryOpenPage()
     {
-        ResetIsEditingReminders();
+        if (CanSetReminders)
+            IsEditingReminders = MenuHandler.Reminders.IsEditingReminders;
         int oldRowPerPage = rowPerPage;
         rowPerPage = ModEntry.config.RowPerPage;
         if (CanPaginate && oldRowPerPage != rowPerPage)
@@ -374,8 +367,11 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public virtual bool TryExitPage()
     {
+        if (CanSetReminders)
+            IsEditingReminders = false;
         InSubPage = false;
-        ResetIsEditingReminders();
+        ScrollPage = 1;
+        ScrollProgress = 0;
         return true;
     }
 }

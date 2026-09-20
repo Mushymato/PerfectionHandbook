@@ -57,6 +57,11 @@ These correspond to achievements
 * Crop Calendar: The crop calendar, with every crop on display.
 * Ingredients: Page listing all the ingredients you'll need to cook and craft your remaining recipes.
 * Location and Events: Page listing events per location, to cover anything missed in the great friends page.
+* Mod Configuration: Configs for this mod.
+
+## Reminders
+
+You can add reminders for tasks from the perfection handbook
 
 ## Configuration
 

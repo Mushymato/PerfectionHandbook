@@ -1,7 +1,7 @@
 <lane layout="stretch 100%">
   <!-- Crop Calendar -->
-  <lane *context={Hovered.CropDetail} padding="8,0,8,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
-    <lane orientation="Vertical" layout="100% content">
+  <lane *context={Hovered} padding="8,0,8,8" layout="528px 100%" horizontal-content-alignment="End" orientation="Vertical">
+    <lane *context={CropDetail} orientation="Vertical" layout="100% content">
       <lane focusable-tag="side-panel-title" vertical-content-alignment="Middle" focusable="true">
         <image sprite={:Seed}
           shadow-alpha="0.35"
@@ -112,6 +112,7 @@
           </panel>
         </frame>
       </grid>
+      <label margin="12,8" text={:^PlantedCountText} shadow-alpha="0.8"/>
     </lane>
   </lane>
   <!-- Divider -->

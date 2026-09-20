@@ -10,6 +10,7 @@
   "ui.owned-count": "（你有{{count}}个）",
   "ui.shipped-count": "（你出售了{{count}}个）",
   "ui.fish-catch": "（{{count}}条{{length}}）",
+  "ui.planted-count": "已种植{{count}}棵",
   "ui.fish-catch-length": "，最长{{length}}cm",
   "ui.fish-time-range": "{{startTime}} - {{endTime}}",
   "ui.showing-need": "还需要",
