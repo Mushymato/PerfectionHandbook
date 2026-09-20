@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using PerfectionHandbook.Integration;
+using PerfectionHandbook.Models;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData;
@@ -193,7 +194,13 @@ public sealed class RemindersHUD
     // cooking
     private void RecipesCookedOnValueAdded(string key, int value)
     {
-        RemoveEntry(new(ReminderEntryFactory.Kind_CookingRecipe, key));
+        if (ItemRegistry.QualifyItemId(key) is string qId && ItemInfoCache.Cache.TryGetValue(qId, out ItemInfo? info))
+        {
+            foreach (CraftingRecipeWithNeeds recipeWithNeeds in info.FromRecipe)
+            {
+                RemoveEntry(new(ReminderEntryFactory.Kind_CookingRecipe, recipeWithNeeds.Recipe.name));
+            }
+        }
     }
 
     // crafting

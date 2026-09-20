@@ -191,7 +191,7 @@ public static class LocationInfoCache
         }
 
         if (stopwatch != null)
-            ModEntry.LogDebug($"LocationInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Debug);
+            ModEntry.LogDebug($"LocationInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}");
 
         return cacheRet;
     }

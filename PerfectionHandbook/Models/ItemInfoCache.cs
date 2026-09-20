@@ -213,7 +213,7 @@ public static class ItemInfoCache
         UpdateFishReq(cacheRet, useCached);
 
         if (stopwatch != null)
-            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}", LogLevel.Debug);
+            ModEntry.Log($"ItemInfoCache({Game1.ticks}): refreshed in {stopwatch.Elapsed}");
         return cacheRet;
     }
 

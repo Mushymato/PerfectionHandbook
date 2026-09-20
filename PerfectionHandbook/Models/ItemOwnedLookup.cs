@@ -73,7 +73,7 @@ public static class ItemOwnedLookup
             }
         }
 
-        ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}", LogLevel.Debug);
+        ModEntry.Log($"OwnedItems({Game1.ticks}): gathered in {stopwatch.Elapsed}");
 
         PlayerOwned result = new(
             ownedItemGroups,
