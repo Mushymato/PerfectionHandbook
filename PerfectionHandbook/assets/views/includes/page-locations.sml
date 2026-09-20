@@ -1,7 +1,7 @@
 <panel *switch={HasSelected} layout="stretch 100%">
   <!-- Event List -->
   <scrollable *case="false" peeking="128" scrollbar-margin="-18,0,0,0" progress={<>ScrollProgress}>
-    <grid margin="4,0,12,0" item-layout="length: 600+" item-spacing="-4,-4" layout="stretch content"
+    <grid margin="4,0,12,0" item-layout="length: 500+" item-spacing="-4,-4" layout="stretch content"
       primary-item-count={>PrimaryItemCount}>
       <frame *repeat={:FilteredDisplayPaginated}
         layout="stretch content"
@@ -10,7 +10,10 @@
         screen-read={:ScreenRead}
         background={@Mods/StardewUI/Sprites/ShopEntryBorder}
         left-click=|^HandleLeftClick(this)|>
-        <label text={:DisplayName} shadow-alpha="0.8" max-lines="-1"/>
+        <lane orientation="vertical">
+          <label text={:DisplayName} shadow-alpha="0.8" max-lines="1"/>
+          <label text={:EventCount} shadow-alpha="0.8" max-lines="-1"/>
+        </lane>
       </frame>
     </grid>
   </scrollable>

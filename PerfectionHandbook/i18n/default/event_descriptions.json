@@ -350,5 +350,7 @@
   "992553.name": "Furnace unlock",
   "992553.desc": "Clint gives you blueprints for a furnace.",
   "992559.name": "Sewing machine unlock",
-  "992559.desc": "Emily gives you access to her sewing machine for tailoring."
+  "992559.desc": "Emily gives you access to her sewing machine for tailoring.",
+  "prizeTicketIntro.name": "Prize Ticket Intro",
+  "prizeTicketIntro.desc": "Lewis introduces you to the prize ticket machine."
 }

@@ -702,5 +702,9 @@
   "992559": {
     "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:992559.name]",
     "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:992559.desc]"
+  },
+  "prizeTicketIntro": {
+    "DisplayName": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:prizeTicketIntro.name]",
+    "Description": "[LocalizedText mushymato.PerfectionHandbook.EventDescStrings:prizeTicketIntro.desc]"
   }
 }

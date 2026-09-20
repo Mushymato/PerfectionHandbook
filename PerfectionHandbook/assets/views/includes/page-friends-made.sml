@@ -55,7 +55,7 @@
               <label *if={:NpcInfo.HasModName} focusable="true" margin="8,0,0,4" font="small" text={:NpcInfo.ModName} color={:NpcInfo.ModNameTint} max-lines="-1" shadow-alpha="0.8"/>
             </lane>
             <lane vertical-content-alignment="Middle">
-              <label focusable="true" margin="8,0" font="small" text={:NpcInfo.BirthdayText} max-lines="-1" shadow-alpha="0.8" />
+              <label focusable="true" margin="8,0" font="small" text={:FriendDetailText} max-lines="-1" shadow-alpha="0.8" />
               <frame *if={:NpcInfo.CanEventuallySocialize} layout="stretch 24px" margin="8,0,0,0" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                 <panel layout="stretch stretch" vertical-content-alignment="End">
                   <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>

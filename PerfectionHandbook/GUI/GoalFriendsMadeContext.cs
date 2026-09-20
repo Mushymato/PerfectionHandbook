@@ -40,9 +40,11 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
         I18n.Ui_Fulfillment_Dipslay(CurrentFriendship?.Points ?? 0, NpcInfo.MaxPoints);
 
     public readonly string DisplayName = NpcInfo.DisplayName;
-    public string ScreenRead =>
-        $"{DisplayName} {FriendshipPointDisplay} {I18n.Ui_Event_Count(NpcInfo
-            .Events.Values.Count)}";
+
+    [Notify]
+    private string eventCount = "";
+    public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay} {EventCount}";
+    public string FriendDetailText => $"{NpcInfo.BirthdayText} | {EventCount}";
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
@@ -57,10 +59,13 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
             CurrentFriendship = friendship;
         else
             CurrentFriendship = null;
+        int seenCount = 0;
         foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
             eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
+            seenCount += eventDisp.HasSeen ? 1 : 0;
         }
+        EventCount = I18n.Ui_Event_Count(seenCount, EventDisplays.Count);
     }
 
     public bool ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);

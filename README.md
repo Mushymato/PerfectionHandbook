@@ -19,7 +19,10 @@ You can open the handbook via these means:
 * [Iconic Framework](https://www.nexusmods.com/stardewvalley/mods/11026)
 * [Launcher Drawer](https://www.nexusmods.com/stardewvalley/mods/48269)
 
-It is divided up into pages for each perfection and achievement goal, plus some bonus utilities.
+The handbook is divided into 3 groups:
+1. Perfection: Covers goals directly contributing to perfection
+2. Achievements: Covers achievement related items such as community center and museum
+3. Extras: Additional useful pages not related to specific goal
 
 ## Perfection
 
@@ -52,7 +55,8 @@ These correspond to achievements
 
 * Card Export: Save your current perfection progress as a png to share with friends.
 * Crop Calendar: The crop calendar, with every crop on display.
-* Ingredients: 
+* Ingredients: Page listing all the ingredients you'll need to cook and craft your remaining recipes.
+* Location and Events: Page listing events per location, to cover anything missed in the great friends page.
 
 ## Configuration
 

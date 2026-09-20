@@ -12,7 +12,9 @@ public sealed partial record LocationDisplay(LocationInfo Info)
         IPageDisplayEntry
 {
     public readonly string DisplayName = Info.Location.DisplayName ?? Info.LocationId;
-    public readonly string EventCount = I18n.Ui_Event_Count(Info.Events!.Count);
+
+    [Notify]
+    private string eventCount = string.Empty;
     public string ScreenRead => $"{DisplayName} {EventCount}";
     public bool Needed => true;
 
@@ -21,7 +23,13 @@ public sealed partial record LocationDisplay(LocationInfo Info)
         return DisplayName.ContainsIgnoreCase(txt);
     }
 
-    public void SetStatus(Farmer who) { }
+    public void SetStatus(Farmer who)
+    {
+        EventCount = I18n.Ui_Event_Count(
+            Info.Events!.Values.Count(ei => who.eventsSeen.Contains(ei.EventId)),
+            Info.Events!.Count
+        );
+    }
 
     public ReminderEntry? Reminder => throw new NotImplementedException();
 
@@ -34,7 +42,7 @@ public sealed partial class GoalLocationContext(IGoalContext goalCtx)
         canToggleNeeded: false,
         canToggleCountMode: false,
         canSetReminders: false,
-        itemPerPageModifier: 12.5 / 13.0
+        itemPerPageModifier: 9.0 / 13.0
     )
 {
     private string previousSearchText = string.Empty;
