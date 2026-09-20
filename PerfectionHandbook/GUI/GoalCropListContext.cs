@@ -434,7 +434,6 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
             });
             return true;
         });
-        ModEntry.Log(string.Join(' ', cropCounts.Keys));
         foreach (CropDisplay display in displayList)
         {
             int countTotal = 0;

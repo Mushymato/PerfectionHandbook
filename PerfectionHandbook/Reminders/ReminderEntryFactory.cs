@@ -428,13 +428,13 @@ public static class ReminderEntryFactory
         {
             foreach (BuildingMaterial material in buildingData.BuildMaterials)
             {
-                if (ItemInfoCache.Cache.TryGetValue(material.ItemId, out ItemInfo? itemInfo))
+                if (ItemRegistry.GetData(material.ItemId) is ParsedItemData data)
                 {
                     subReminders.Add(
                         new ReminderEntryDisplay(
-                            itemInfo.Datum.DisplayName,
-                            itemInfo.Datum.GetTexture(),
-                            itemInfo.Datum.GetSourceRect(),
+                            data.DisplayName,
+                            data.GetTexture(),
+                            data.GetSourceRect(),
                             material.Amount
                         )
                     );
