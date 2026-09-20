@@ -373,7 +373,7 @@ public sealed partial record CropDisplay(
 
     public override string FocusableTag { get; } = $"crop-{Info.Datum.QualifiedItemId}";
 
-    public override bool Needed => completedCount <= NeededCount;
+    public override bool Needed => completedCount < NeededCount;
 
     public CropDetailDisplay CropDetail => field ??= new(Info, CropCalendarSettings);
 
