@@ -19,6 +19,12 @@
   <!-- Search Bar -->
   <textinput text={<>^SearchText} placeholder={#ui.search} margin="0,8,0,4" layout="260px content" border-thickness="16,18"/>  <!-- Swtich Modes -->
   <lane *case="False" orientation="horizontal" margin="4,8" layout="content content">
+    <three-segment *if={:^CanToggleRecipeMode}
+      binding={<>^RecipeModeIndex}
+      option1={#ui.counting-crafting}
+      option2={#ui.counting-both}
+      option3={#ui.counting-cooking}
+    />
     <two-segment *if={:^CanToggleNeeded}
       binding={<>^NeededIndex}
       option1={#ui.showing-need}
@@ -79,6 +85,25 @@
       </panel>
       <panel layout="112px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
         <label margin="4,8" text={&option2}/>
+      </panel>
+    </segments>
+  </frame>
+</template>
+
+<template name="three-segment">
+  <frame margin={&margin} background={@Mods/StardewUI/Sprites/ScrollBarTrack}>
+    <segments
+        highlight={@Mods/StardewUI/Sprites/ButtonDark}
+        highlight-transition="150ms EaseOutQuart"
+        selected-index={&binding}>
+      <panel layout="124px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
+        <label margin="4,8" text={&option1} />
+      </panel>
+      <panel layout="112px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
+        <label margin="4,8" text={&option2}/>
+      </panel>
+      <panel layout="124px 60px" horizontal-content-alignment="middle" vertical-content-alignment="middle">
+        <label margin="4,8" text={&option3}/>
       </panel>
     </segments>
   </frame>

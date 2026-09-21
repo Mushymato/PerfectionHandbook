@@ -15,6 +15,13 @@ using StardewValley.TokenizableStrings;
 
 namespace PerfectionHandbook.Models;
 
+public enum RecipeMode
+{
+    Crafting = 0,
+    Both = 1,
+    Cooking = 2,
+}
+
 public sealed record SpawnFishParsedReq(
     int MinFishing,
     bool? Rain,
@@ -28,17 +35,31 @@ public sealed record NeededForInfoGroup(
     ItemInfo ReprInfo,
     string RawId,
     string CraftingDesc,
-    Func<NeededForInfoGroup, PlayerOwned, int> GetOwnedFunc
+    Func<NeededForInfoGroup, PlayerOwned, bool, int> GetOwnedFunc
 )
 {
     public readonly List<NeededForInfo> NeededFor = [];
     public SDUISprite? ReprIcon = null;
     public SDUISprite Repr => ReprIcon ?? ReprInfo.Sprite;
 
-    public List<NeededForInfo> GetNotYetCrafted(Farmer who) =>
-        NeededFor.Where(recipe => recipe.Recipe.GetRecipeCraftedCount(recipe.ResultItem, who) <= 0).ToList();
+    public List<NeededForInfo> GetNotYetCrafted(Farmer who, RecipeMode recipeMode)
+    {
+        List<NeededForInfo> notYetCrafted = [];
+        foreach (NeededForInfo needed in NeededFor)
+        {
+            if (recipeMode == RecipeMode.Crafting && needed.Recipe.isCookingRecipe)
+                continue;
+            if (recipeMode == RecipeMode.Cooking && !needed.Recipe.isCookingRecipe)
+                continue;
+            if (needed.Recipe.GetRecipeCraftedCount(needed.ResultItem, who) <= 0)
+            {
+                notYetCrafted.Add(needed);
+            }
+        }
+        return notYetCrafted;
+    }
 
-    public int GetOwned(PlayerOwned owned) => GetOwnedFunc(this, owned);
+    public int GetOwned(PlayerOwned owned, bool fridgeOnly) => GetOwnedFunc(this, owned, fridgeOnly);
 }
 
 public sealed record CraftingRecipeWithNeeds(
@@ -403,17 +424,17 @@ public static class ItemInfoCache
                         ingredientInfo,
                         ingrediantId,
                         recipe.getNameFromIndex(ingrediantId),
-                        static (info, owned) =>
+                        static (info, owned, fridgeOnly) =>
                         {
                             int ownedCount = 0;
-                            if (owned.OwnedGroups.TryGetValue("(O)495", out OwnedItemGroup? group))
-                                ownedCount += group.CountRepr.ReprStack;
-                            if (owned.OwnedGroups.TryGetValue("(O)496", out group))
-                                ownedCount += group.CountRepr.ReprStack;
-                            if (owned.OwnedGroups.TryGetValue("(O)497", out group))
-                                ownedCount += group.CountRepr.ReprStack;
-                            if (owned.OwnedGroups.TryGetValue("(O)495", out group))
-                                ownedCount += group.CountRepr.ReprStack;
+                            if (owned.TryGetOwnedCount("(O)495", fridgeOnly, out int count))
+                                ownedCount += count;
+                            if (owned.TryGetOwnedCount("(O)496", fridgeOnly, out count))
+                                ownedCount += count;
+                            if (owned.TryGetOwnedCount("(O)497", fridgeOnly, out count))
+                                ownedCount += count;
+                            if (owned.TryGetOwnedCount("(O)495", fridgeOnly, out count))
+                                ownedCount += count;
                             return ownedCount;
                         }
                     );
@@ -447,13 +468,15 @@ public static class ItemInfoCache
                         ingredientInfo,
                         ingrediantId,
                         craftingDesc,
-                        static (info, owned) =>
+                        static (info, owned, fridgeOnly) =>
                         {
                             int ownedCount = 0;
                             foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
                             {
                                 if (group.CountRepr.Category.ToString() == info.RawId)
-                                    ownedCount += group.CountRepr.ReprStack;
+                                    ownedCount += fridgeOnly
+                                        ? group.CountReprFridgeOnly.ReprStack
+                                        : group.CountReprWithoutInventory.ReprStack;
                             }
                             return ownedCount;
                         }
@@ -479,15 +502,10 @@ public static class ItemInfoCache
                         ingredientInfo,
                         ingrediantId,
                         ingredientInfo.ReprItem.DisplayName,
-                        static (info, owned) =>
+                        static (info, owned, fridgeOnly) =>
                         {
-                            if (
-                                owned.OwnedGroups.TryGetValue(
-                                    info.ReprInfo.Datum.QualifiedItemId,
-                                    out OwnedItemGroup? group
-                                )
-                            )
-                                return group.CountRepr.ReprStack;
+                            if (owned.TryGetOwnedCount(info.ReprInfo.Datum.QualifiedItemId, fridgeOnly, out int count))
+                                return count;
                             return 0;
                         }
                     );
@@ -563,13 +581,15 @@ public static class ItemInfoCache
                         ingredientInfo,
                         ingrediantId,
                         craftingDesc,
-                        static (info, owned) =>
+                        static (info, owned, fridgeOnly) =>
                         {
                             int ownedCount = 0;
                             foreach ((string itemId, OwnedItemGroup group) in owned.OwnedGroups)
                             {
                                 if (group.CountRepr.HasContextTag(info.RawId))
-                                    ownedCount += group.CountRepr.ReprStack;
+                                    ownedCount += fridgeOnly
+                                        ? group.CountReprFridgeOnly.ReprStack
+                                        : group.CountReprWithoutInventory.ReprStack;
                             }
                             return ownedCount;
                         }

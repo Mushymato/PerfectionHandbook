@@ -347,6 +347,7 @@ public static class ReminderEntryFactory
         [NotNullWhen(true)] out IReminderEntryDisplay? entryDisplay
     )
     {
+        // TODO: make this respect the split
         entryDisplay = null;
         if (!ItemInfoCache.NeededForRecipe.TryGetValue(entryId, out NeededForInfoGroup? neededForInfoGroup))
         {
@@ -356,7 +357,7 @@ public static class ReminderEntryFactory
             I18n.Reminder_Verb_Prepare(neededForInfoGroup.ReprInfo.Datum.DisplayName),
             neededForInfoGroup.ReprInfo.Datum.GetTexture(),
             neededForInfoGroup.ReprInfo.Datum.GetSourceRect(),
-            Count: neededForInfoGroup.GetNotYetCrafted(Game1.player).Sum(notYet => notYet.Count)
+            Count: neededForInfoGroup.GetNotYetCrafted(Game1.player, RecipeMode.Both).Sum(notYet => notYet.Count)
         );
         return true;
     }

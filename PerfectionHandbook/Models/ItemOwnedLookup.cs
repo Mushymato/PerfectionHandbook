@@ -10,8 +10,8 @@ public sealed record OwnedItem(Item ThisItem, Chest? Container = null);
 public sealed record OwnedItemGroup(
     IReadOnlyList<OwnedItem> Things,
     ReprObject CountRepr,
-    ReprObject CountWithoutInventoryRepr,
-    ReprObject CountFromOnlyFridge
+    ReprObject CountReprWithoutInventory,
+    ReprObject CountReprFridgeOnly
 )
 {
     public static OwnedItemGroup Make(IReadOnlyList<OwnedItem> Things)
@@ -46,7 +46,19 @@ public sealed record PlayerOwned(
     IReadOnlyDictionary<string, OwnedItemGroup> OwnedGroups,
     IList<Item> OwnedRepr,
     IList<Item> OwnedReprOnlyFridge
-);
+)
+{
+    public bool TryGetOwnedCount(string key, bool fridgeOnly, out int count)
+    {
+        count = 0;
+        if (!OwnedGroups.TryGetValue(key, out OwnedItemGroup? group))
+        {
+            return false;
+        }
+        count = fridgeOnly ? group.CountReprFridgeOnly.ReprStack : group.CountReprWithoutInventory.ReprStack;
+        return true;
+    }
+}
 
 public static class ItemOwnedLookup
 {
@@ -77,8 +89,8 @@ public static class ItemOwnedLookup
 
         PlayerOwned result = new(
             ownedItemGroups,
-            ownedItemGroups.Values.Select(value => (Item)value.CountWithoutInventoryRepr).ToList(),
-            ownedItemGroups.Values.Select(value => (Item)value.CountFromOnlyFridge).ToList()
+            ownedItemGroups.Values.Select(value => (Item)value.CountReprWithoutInventory).ToList(),
+            ownedItemGroups.Values.Select(value => (Item)value.CountReprFridgeOnly).ToList()
         );
 
         return result;
@@ -127,7 +139,7 @@ public static class ItemOwnedLookup
                     {
                         AddToOwnedItems(ownedItems, item, chest);
                     }
-                    else if (path is Farmer)
+                    else if (path == Game1.player)
                     {
                         AddToOwnedItems(ownedItems, item, null);
                     }

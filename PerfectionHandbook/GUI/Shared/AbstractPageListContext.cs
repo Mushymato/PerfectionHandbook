@@ -17,12 +17,13 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
 
     public readonly bool CanToggleNeeded;
     public readonly bool CanToggleCountMode;
+    public readonly bool CanToggleRecipeMode;
     public readonly bool CanPaginate;
     public readonly bool CanSetReminders;
     public readonly double itemPerPageModifier = 1;
 
     public AbstractPageListContext(
-        IGoalContext pageCtx,
+        IGoalContext goalCtx,
         bool canToggleNeeded = true,
         bool canToggleCountMode = false,
         bool canPaginate = true,
@@ -30,24 +31,25 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
         bool canSetReminders = true
     )
     {
-        GoalCtx = pageCtx;
+        GoalCtx = goalCtx;
         AllDisplay = MakeAllDisplay();
         CanToggleNeeded = canToggleNeeded;
         CanToggleCountMode = canToggleCountMode;
+        CanToggleRecipeMode = goalCtx.PageName == "Misc_Required_Ingredients";
         CanPaginate = canPaginate;
         CanSetReminders = canSetReminders;
         this.itemPerPageModifier = itemPerPageModifier;
 
-        if (pageCtx.Fulfillments.Any())
+        if (goalCtx.Fulfillments.Any())
         {
-            NeededIndex = pageCtx.Fulfillments[0].Filled ? 1 : 0;
-            UpdateDisplayingFulfillment(pageCtx.Fulfillments[0]);
+            NeededIndex = goalCtx.Fulfillments[0].Filled ? 1 : 0;
+            UpdateDisplayingFulfillment(goalCtx.Fulfillments[0]);
         }
         else
         {
             NeededIndex = 0;
             CanToggleNeeded = false;
-            UpdateAllStatus(pageCtx.Who);
+            UpdateAllStatus(goalCtx.Who);
         }
     }
 

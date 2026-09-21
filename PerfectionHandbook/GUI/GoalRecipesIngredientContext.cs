@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using PerfectionHandbook.GUI.Shared;
 using PerfectionHandbook.Integration;
@@ -9,7 +10,7 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI;
 
-public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor, int OwnedCount)
+public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor, int OwnedCount, int OwnedCountFridge)
     : AbstractItemCountDisplay(NeededFor.ReprInfo, OwnedCount)
 {
     [Notify]
@@ -17,16 +18,27 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
     public override bool Needed => NeededCount > 0;
     public Color DigitTint => Count >= NeededCount ? Color.LimeGreen : Color.White;
     private List<NeededForInfo> notYetCrafted = [];
+    private RecipeMode lastRecipeMode = RecipeMode.Both;
 
     public override Color DisplayTint =>
         OwnedCount >= NeededCount ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
 
     public override void SetStatus(Farmer who)
     {
-        notYetCrafted = NeededFor.GetNotYetCrafted(who);
-        NeededCount = notYetCrafted.Sum(notYet => notYet.Count);
+        RefreshNotYetCrafted(who, lastRecipeMode);
         UpdateCount();
         OnPropertyChanged(new(nameof(Tooltip)));
+    }
+
+    public void RefreshNotYetCrafted(Farmer who, RecipeMode recipeMode)
+    {
+        if (recipeMode == RecipeMode.Cooking)
+            Count = OwnedCountFridge;
+        else
+            Count = OwnedCount;
+        lastRecipeMode = recipeMode;
+        notYetCrafted = NeededFor.GetNotYetCrafted(who, lastRecipeMode);
+        NeededCount = notYetCrafted.Sum(notYet => notYet.Count);
     }
 
     public override SDUITooltipData Tooltip =>
@@ -74,21 +86,51 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_RecipesIngredient, Key);
 }
 
-public sealed class GoalRecipesIngredientContext(IGoalContext goalCtx)
-    : AbstractItemCountContext<IngredientDisplay>(
-        goalCtx,
-        canToggleNeeded: false,
-        canToggleCountMode: false,
-        itemPerPageModifier: 6.0 / 13.0
-    )
+public sealed partial class GoalRecipesIngredientContext : AbstractItemCountContext<IngredientDisplay>
 {
+    public GoalRecipesIngredientContext(IGoalContext goalCtx)
+        : base(goalCtx, canToggleNeeded: false, canToggleCountMode: false, itemPerPageModifier: 6.0 / 13.0)
+    {
+        PropertyChanged += OnPropertyChanged_RecipeMode;
+    }
+
+    private void OnPropertyChanged_RecipeMode(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(RecipeMode))
+            SetAllRecipeMode();
+    }
+
+    private void SetAllRecipeMode()
+    {
+        foreach (IngredientDisplay display in AllDisplay)
+        {
+            display.RefreshNotYetCrafted(GoalCtx.Who, recipeMode);
+        }
+        ReSortFilteredDisplay();
+    }
+
+    [Notify]
+    private RecipeMode recipeMode = RecipeMode.Both;
+    public int RecipeModeIndex
+    {
+        get => (int)RecipeMode;
+        set => RecipeMode = (RecipeMode)value;
+    }
+
     protected override IReadOnlyList<IngredientDisplay> MakeAllDisplay()
     {
         List<IngredientDisplay> displayList = [];
         foreach ((string key, NeededForInfoGroup neededForInfoGroup) in ItemInfoCache.NeededForRecipe)
         {
-            int ownedCount = neededForInfoGroup.GetOwned(GoalCtx.OwnedInfo);
-            displayList.Add(new(key, neededForInfoGroup, ownedCount));
+            int inventoryCount = GoalCtx.Who.Items.CountId(key);
+            displayList.Add(
+                new(
+                    key,
+                    neededForInfoGroup,
+                    neededForInfoGroup.GetOwned(GoalCtx.OwnedInfo, false) + inventoryCount,
+                    neededForInfoGroup.GetOwned(GoalCtx.OwnedInfo, true) + inventoryCount
+                )
+            );
         }
         return displayList;
     }
