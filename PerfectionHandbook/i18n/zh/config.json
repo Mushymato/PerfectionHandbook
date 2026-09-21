@@ -11,6 +11,8 @@
   "config.desc.CardWidth": "完美度卡的图片宽度。",
   "config.name.StrictItemOwnedCheck": "物品拥有限制",
   "config.desc.StrictItemOwnedCheck": "在检查你是否拥有出售/制作/烹饪所需的物品时，只需考虑你的背包和你农舍中的物品。",
+  "config.name.CookingFromFridgeOnly": "烹饪需求限冰箱限制",
+  "config.desc.CookingFromFridgeOnly": "在检查你是否拥有烹饪所需的物品时，只需考虑你的背包和冰箱中的物品。",
   "config.name.EnableModNames": "显示模组名称",
   "config.desc.EnableModNames": "在好友和事件页面里显示模组名称（需要50688‘模组名称显示’）",
   "config.section.Reminders": "备忘提醒",

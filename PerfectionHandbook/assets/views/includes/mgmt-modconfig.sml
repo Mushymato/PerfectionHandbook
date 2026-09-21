@@ -31,6 +31,11 @@
         <checkbox margin="4" is-checked={<>StrictItemOwnedCheck}/>
       </form-cell>
 
+      <form-label text={#config.name.CookingFromFridgeOnly} tooltip={#config.desc.CookingFromFridgeOnly} />
+      <form-cell>
+        <checkbox margin="4" is-checked={<>CookingFromFridgeOnly}/>
+      </form-cell>
+
       <form-label *if={:HasModNamesAPI} text={#config.name.EnableModNames} tooltip={#config.desc.EnableModNames} />
       <form-cell *if={:HasModNamesAPI}>
         <checkbox margin="4" is-checked={<>EnableModNames}/>

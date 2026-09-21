@@ -93,6 +93,19 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
         }
     }
 
+    public bool CookingFromFridgeOnly
+    {
+        get => config.CookingFromFridgeOnly;
+        set
+        {
+            if (value != config.CookingFromFridgeOnly)
+            {
+                config.CookingFromFridgeOnly = value;
+                RaisePropertyChanged(nameof(CookingFromFridgeOnly));
+            }
+        }
+    }
+
     public bool HasModNamesAPI => ModEntry.modNameAPI != null;
 
     public bool EnableModNames
@@ -189,6 +202,7 @@ internal sealed class ModConfigContext(ModConfig config) : INotifyPropertyChange
 
         ShowHandbookKey = defaultConfig.ShowHandbookKey;
         StrictItemOwnedCheck = defaultConfig.StrictItemOwnedCheck;
+        CookingFromFridgeOnly = defaultConfig.CookingFromFridgeOnly;
         EnableModNames = defaultConfig.EnableModNames;
         RemindersToggleKey = defaultConfig.RemindersToggleKey;
         RemindersEditModifierKey = defaultConfig.RemindersEditModifierKey;

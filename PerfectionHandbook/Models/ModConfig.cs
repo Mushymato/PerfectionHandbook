@@ -14,6 +14,7 @@ public sealed class ModConfig
     public int AutoExportCardPeriod { get; set; } = 7;
     public int CardWidth { get; set; } = DEFAULT_CARD_X;
     public bool StrictItemOwnedCheck { get; set; } = false;
+    public bool CookingFromFridgeOnly { get; set; } = false;
     public bool EnableModNames { get; set; } = true;
     public KeybindList RemindersToggleKey { get; set; } = KeybindList.Parse("LeftShift+H");
     public KeybindList RemindersEditModifierKey { get; set; } = new KeybindList();
