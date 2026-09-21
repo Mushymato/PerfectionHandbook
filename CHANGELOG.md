@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.6.0-alpha.7](https://github.com/Mushymato/PerfectionHandbook/tree/0.6.0-alpha.7) - 2026-09-20
+
+### Added
+- Building material display
+- Planted counts on calendar
+- Event counts on friends and locations
+- Ingredients tab can now swap between Crafting/Both/Cooking
+
+## [0.6.0-alpha.6](https://github.com/Mushymato/PerfectionHandbook/tree/0.6.0-alpha.6) - 2026-09-19
+
+### Fixed
+- precondition 'x' is being evaluated and thus sending mail.
+
 ## [0.6.0-alpha.5](https://github.com/Mushymato/PerfectionHandbook/tree/0.6.0-alpha.5) - 2026-09-18
 
 ### Fixed
