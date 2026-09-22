@@ -25,10 +25,14 @@ public sealed partial record LocationDisplay(LocationInfo Info)
 
     public void SetStatus(Farmer who)
     {
-        EventCount = I18n.Ui_Event_Count(
-            Info.Events!.Values.Count(ei => who.eventsSeen.Contains(ei.EventId)),
-            Info.Events!.Count
-        );
+        int seenCount = 0;
+        foreach (EventInfoDisplay eventDisp in EventDisplays)
+        {
+            eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
+            if (eventDisp.HasSeen)
+                seenCount++;
+        }
+        EventCount = I18n.Ui_Event_Count(seenCount, EventDisplays.Count);
     }
 
     public ReminderEntry? Reminder => throw new NotImplementedException();

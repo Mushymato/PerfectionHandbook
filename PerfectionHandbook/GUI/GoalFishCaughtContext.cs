@@ -283,7 +283,10 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
             sb.Append(Environment.NewLine);
             sb.Append(Environment.NewLine);
             sb.Append(
-                I18n.Ui_FishCatch(Count, biggestCatch > 0 ? I18n.Ui_FishCatchLength(biggestCatch) : string.Empty)
+                I18n.Ui_FishCatch(
+                    Count,
+                    biggestCatch > 0 ? I18n.Ui_FishCatchLength(Math.Round(biggestCatch * 2.54)) : string.Empty
+                )
             );
         }
         string result = sb.ToString();

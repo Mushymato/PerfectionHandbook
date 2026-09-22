@@ -63,7 +63,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
         foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
             eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
-            seenCount += eventDisp.HasSeen ? 1 : 0;
+            if (eventDisp.HasSeen)
+                seenCount++;
         }
         EventCount = I18n.Ui_Event_Count(seenCount, EventDisplays.Count);
     }
