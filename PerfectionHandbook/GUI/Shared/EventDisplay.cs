@@ -29,8 +29,27 @@ public sealed partial record EventInfoDisplay(
 {
     public override int GetHashCode() => HashCode.Combine(Info.EventId, ForNPC);
 
+    public enum EventInfoDisplayStatus
+    {
+        NotReady,
+        Seen,
+        Ready,
+    }
+
     [Notify]
     private bool hasSeen = false;
+
+    public EventInfoDisplayStatus EventStatus
+    {
+        get
+        {
+            if (HasSeen)
+                return EventInfoDisplayStatus.Seen;
+            if (Preconds.All(static precond => precond.Status))
+                return EventInfoDisplayStatus.Ready;
+            return EventInfoDisplayStatus.NotReady;
+        }
+    }
 
     [Notify]
     private bool isExpanded = false;

@@ -44,7 +44,8 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
     [Notify]
     private string eventCount = "";
     public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay} {EventCount}";
-    public string FriendDetailText => $"{NpcInfo.BirthdayText} | {EventCount}";
+    public string FriendDetailText =>
+        NpcInfo.Data.BirthSeason != null ? $"{NpcInfo.BirthdayText} | {EventCount}" : EventCount;
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
