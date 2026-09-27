@@ -295,7 +295,7 @@ public static class ItemInfoCache
         PopulateRecipes(cacheRet, false);
         static void PopulateRecipes(Dictionary<string, ItemInfo> newCache, bool isCooking)
         {
-            HashSet<string>? perfectionExcluded = ItemInfoCache.GetPerfectionExclusionsRecipes(isCooking);
+            HashSet<string>? perfectionExcluded = GetPerfectionExclusionsRecipes(isCooking);
             dynamic? spacecoreVAE = null;
             if (isSpacecore)
             {
@@ -307,8 +307,10 @@ public static class ItemInfoCache
                     spacecoreVAE = Game1.content.Load<dynamic>(assetName);
                 }
             }
-            var recipeIds = (isCooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes).Keys;
-            foreach (string recipeId in recipeIds)
+            Dictionary<string, string> recipeBase = isCooking
+                ? CraftingRecipe.cookingRecipes
+                : CraftingRecipe.craftingRecipes;
+            foreach ((string recipeId, string recipeData) in recipeBase)
             {
                 CraftingRecipe recipe = MakeCraftingRecipe(recipeId, isCooking);
 
@@ -318,6 +320,18 @@ public static class ItemInfoCache
                 {
                     itemInfo = new(datum);
                     newCache[datum.QualifiedItemId] = itemInfo;
+                }
+
+                if (isCooking)
+                {
+                    string vanillaCookedId = ArgUtility.SplitBySpaceAndGet(ArgUtility.Get(recipeData.Split('/'), 2), 0);
+                    if (vanillaCookedId != datum.ItemId)
+                    {
+                        ModEntry.Log(
+                            $"Mismatched cooking recipe output item '{recipeId}': {vanillaCookedId} != {datum.ItemId}, this could prevent perfection!",
+                            LogLevel.Warn
+                        );
+                    }
                 }
 
                 List<(NeededForInfoGroup, NeededForInfo)> needs = [];
