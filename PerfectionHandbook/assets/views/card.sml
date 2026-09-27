@@ -9,9 +9,12 @@
       </lane>
       <image layout="200px 208px" sprite={:FarmerPanel} />
       <banner text={:PlayerName} />
-      <panel layout="content stretch" vertical-content-alignment="End">
-        <image layout="88px 80px" sprite={:FarmIcon} shadow-alpha="0.4" shadow-offset="-4,4"/>
-      </panel>
+      <lane layout="content content" margin="0,8" orientation="horizontal" vertical-content-alignment="Middle">
+        <image layout="32px 32px" margin="4" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:goldCoins} />
+        <label max-lines="-1" focusable="true" text={:PlayerMoney} shadow-alpha="0.8"/>
+      </lane>
+      <spacer layout="content stretch"/>
+      <image layout="88px 80px" sprite={:FarmIcon} shadow-alpha="0.4" shadow-offset="-4,4"/>
       <label margin="0,8" text={:FarmName} shadow-alpha="0.8" />
     </lane>
     <image sprite={@Mods/StardewUI/Sprites/ThinVerticalDivider} margin="-15,0,16,0" layout="content stretch" fit="Stretch"/>

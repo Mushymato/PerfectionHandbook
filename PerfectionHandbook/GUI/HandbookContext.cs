@@ -86,6 +86,7 @@ public sealed partial class HandbookContext
 
     public string CardLayout => $"{ModEntry.config.CardWidth}px {ModConfig.DEFAULT_CARD_Y}px";
     public string PlayerName => who.displayName;
+    public string PlayerMoney => who.Money.ToString();
     public string FarmName =>
         Game1.content.LoadString("Strings\\StringsFromCSFiles:MapPage.cs.11064", who.farmName.Value);
     public string GameYear => Game1.content.LoadString("Strings\\UI:Billboard_Year", Game1.year);

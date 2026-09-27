@@ -2,6 +2,7 @@
   // crab pots
   "crabpot.ocean": "盐水",
   "crabpot.freshwater": "淡水",
+  "crabpot.estidepools": "东斯卡普潮池",
   // backup names for vanilla locations
   "location.Default": "Default",
   "location.Temp": "Temp",

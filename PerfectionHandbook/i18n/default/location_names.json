@@ -2,6 +2,7 @@
   // crab pots
   "crabpot.ocean": "Saltwater",
   "crabpot.freshwater": "Freshwater",
+  "crabpot.estidepools": "East Scarp Tidepools",
   // backup names for vanilla locations
   "location.Default": "Default",
   "location.Temp": "Temp",

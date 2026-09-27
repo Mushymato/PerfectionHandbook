@@ -9,6 +9,9 @@
     },
     "greenStar": {
       "SourceRect": "457,298,11,11"
+    },
+    "goldCoins": {
+      "SourceRect": "131,0,16,16"
     }
   }
 }
