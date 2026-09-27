@@ -26,6 +26,7 @@ public sealed record CatchInDisplay(
     HashSet<string> SpawnWeather,
     HashSet<(int, int)> SpawnTimeRange,
     int SpawnMinFishingLevel,
+    string? ConditionText = null,
     string? CrabPot = null
 )
 {
@@ -41,6 +42,8 @@ public sealed record CatchInDisplay(
     public readonly bool HasSpawnWeather = SpawnWeather.Any();
     public readonly bool HasSpawnMinFishingLevel = SpawnMinFishingLevel > 0;
     public readonly bool IsCrabPot = CrabPot != null;
+
+    public readonly bool HasConditionText = !string.IsNullOrEmpty(ConditionText);
 
     public string ScreenRead =>
         I18n.Screenread_Fish_Catch(
@@ -146,9 +149,14 @@ public sealed record CatchInDisplay(
             seasons.Add(spawnFish.Season.Value);
         }
 
+        StringBuilder condSb = new();
+        if (spawnFish.CatchLimit > 0)
+        {
+            condSb.Append($"CATCH_LIMIT {spawnFish.CatchLimit}");
+        }
         foreach (GameStateQuery.ParsedGameStateQuery cond in conditions)
         {
-            string query = cond.Query[0];
+            string query = cond.Query[0].ToUpper();
             if (query == "SEASON")
             {
                 foreach (string seasonStr in cond.Query.Skip(1))
@@ -182,6 +190,19 @@ public sealed record CatchInDisplay(
                     timeRanges.Add((minTime, maxTime));
                 }
             }
+            else
+            {
+                if (condSb.Length > 0)
+                    condSb.Append('\n');
+                if (cond.Negated)
+                    condSb.Append('!');
+                condSb.Append(query);
+                foreach (string str in cond.Query.Skip(1))
+                {
+                    condSb.Append(' ');
+                    condSb.Append(str);
+                }
+            }
         }
 
         if (spawnReq != null && !spawnFish.IgnoreFishDataRequirements)
@@ -205,12 +226,13 @@ public sealed record CatchInDisplay(
 
         int minFishingLevel = Math.Max(spawnFish?.MinFishingLevel ?? 0, spawnReq?.MinFishing ?? 0);
 
-        if (canCatchIn.TryGetValue(locInfo.Location.NameOrUniqueName, out CatchInDisplay? existingCanCatchIn))
+        string key = locInfo.Location.NameOrUniqueName;
+        if (condSb.Length == 0 && canCatchIn.TryGetValue(key, out CatchInDisplay? existingCanCatchIn))
         {
             existingCanCatchIn.SpawnSeasons.UnionWith(seasons);
             existingCanCatchIn.SpawnWeather.UnionWith(weather);
             existingCanCatchIn.SpawnTimeRange.UnionWith(timeRanges);
-            canCatchIn[locInfo.Location.NameOrUniqueName] = new(
+            canCatchIn[key] = new(
                 locInfo.Location.NameOrUniqueName,
                 existingCanCatchIn.LocationName,
                 existingCanCatchIn.CatchableToday || catchableToday,
@@ -222,14 +244,19 @@ public sealed record CatchInDisplay(
         }
         else
         {
-            canCatchIn[locInfo.Location.NameOrUniqueName] = new(
+            if (condSb.Length > 0)
+            {
+                key = $"{key}:{condSb}";
+            }
+            canCatchIn[key] = new(
                 locInfo.Location.NameOrUniqueName,
                 locInfo.Location.DisplayName ?? locInfo.LocationId,
                 catchableToday,
                 seasons,
                 weather,
                 timeRanges.Any() ? timeRanges : [(0600, 2600)],
-                Math.Max(spawnFish?.MinFishingLevel ?? 0, spawnReq?.MinFishing ?? 0)
+                Math.Max(spawnFish?.MinFishingLevel ?? 0, spawnReq?.MinFishing ?? 0),
+                ConditionText: condSb.ToString()
             );
         }
     }
@@ -239,7 +266,7 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
 {
     public override string FocusableTag { get; } = $"fish-{Info.Datum.QualifiedItemId}";
 
-    public override bool Needed => Count < 0;
+    public override bool Needed => Info.IsCatchableFishRequired && Count < 0;
     private int biggestCatch = 0;
     public IReadOnlyList<CatchInDisplay> CanCatchIn { get; set; } = [];
 
@@ -442,6 +469,7 @@ public sealed partial class GoalFishCaughtContext(IGoalContext goalCtx)
         if (display.ReprItem.ItemId != HoveredTankFish?.fishItemId)
         {
             TankFish newTankfish = new(new BogusFishTank(), display.ReprItem);
+            newTankfish.position.X = TANK_WIDTH / 4 * 3;
             if (newTankfish.isErrorFish)
                 HoveredTankFish = null;
             else

@@ -74,6 +74,7 @@ public sealed record ItemInfo(ParsedItemData Datum)
     public readonly bool IsPotentialShipped = ItemInfoCache.IsPotentialBasicShipped(Datum);
     public bool IsMuseumDonation = ItemInfoCache.IsMuseumDonation(Datum);
     public bool IsCatchableFish = ItemInfoCache.IsCatchableFish(Datum);
+    public bool IsCatchableFishRequired = ItemInfoCache.IsCatchableFish(Datum, true);
     public string DisplayName => TokenParser.ParseText(Datum.DisplayName) ?? Datum.DisplayName;
 
     public bool CountForPolyculture = false;
@@ -759,10 +760,11 @@ public static class ItemInfoCache
         return LibraryMuseum.IsItemSuitableForDonation(datum.ItemId, checkDonatedItems: false);
     }
 
-    internal static bool IsCatchableFish(ParsedItemData datum)
+    internal static bool IsCatchableFish(ParsedItemData datum, bool requiredOnly = false)
     {
         if (datum.IsErrorItem)
             return false;
-        return datum.ObjectType == "Fish" && !(datum.RawData is ObjectData { ExcludeFromFishingCollection: not false });
+        return datum.ObjectType == "Fish"
+            && (!requiredOnly || !(datum.RawData is ObjectData { ExcludeFromFishingCollection: not false }));
     }
 }

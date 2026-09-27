@@ -283,7 +283,7 @@ public static class Goals
             int total = 0;
             foreach (ItemInfo itemInfo in ItemInfoCache.Cache.Values)
             {
-                if (!itemInfo.IsCatchableFish)
+                if (!itemInfo.IsCatchableFishRequired)
                     continue;
                 total++;
                 if (who.fishCaught.ContainsKey(itemInfo.Datum.QualifiedItemId))

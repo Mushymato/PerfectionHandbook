@@ -191,6 +191,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
             if (display == Hovered)
             {
                 UnlockHoverable(display);
+                DoHoveredEnter(display);
             }
             else
             {
@@ -203,6 +204,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     protected virtual void DoHoveredEnter(TDisplay display)
     {
         Hovered?.IsHovered = false;
+        Hovered?.IsLocked = false;
         Hovered = display;
         display.IsHovered = true;
     }

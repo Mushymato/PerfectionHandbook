@@ -34,12 +34,14 @@
           </grid>
         </frame>
         <lane *case="false" orientation="vertical" margin="8,0">
-          <panel *if={:HasSpawnMinFishingLevel} vertical-content-alignment="End">
-            <image layout="30px 30px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:fishLv} />
-            <digits margin="8,0,0,0" scale="3" number={:SpawnMinFishingLevel} />
-            <label margin="40,0,0,0" text={:LocationName} shadow-alpha="0.8"/>
-          </panel>
-          <label *!if={:HasSpawnMinFishingLevel} text={:LocationName} shadow-alpha="0.8"/>
+          <lane orientation="horizontal">
+            <panel *if={:HasSpawnMinFishingLevel} vertical-content-alignment="End">
+              <image layout="30px 30px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:fishLv} />
+              <digits margin="8,0,0,0" scale="3" number={:SpawnMinFishingLevel} />
+            </panel>
+            <image *if={:HasConditionText} padding="4,0" layout="18px 30px" focusable="true" sprite={@mushymato.PerfectionHandbook/sprites/cursors2:question} tooltip={:ConditionText} />
+            <label text={:LocationName} shadow-alpha="0.8"/>
+          </lane>
           <image sprite={@Mods/StardewUI/Sprites/ThinHorizontalDivider} layout="440px 2px" margin="-4,4,0,0" fit="Stretch"/>
           <lane *repeat={:SpawnTimeRangeText}>
             <label text={:Text} shadow-alpha="0.8" />

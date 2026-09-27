@@ -6,6 +6,9 @@
     },
     "camera": {
       "SourceRect": "96,32,16,16"
+    },
+    "question": {
+      "SourceRect": "114,53,6,10"
     }
   }
 }
