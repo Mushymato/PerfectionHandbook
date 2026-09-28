@@ -15,6 +15,10 @@ public sealed partial record LocationDisplay(LocationInfo Info)
 
     [Notify]
     private int seenCount = 0;
+
+    [Notify]
+    private bool hasReadyEvents = false;
+
     private readonly int eventsHere = Info.Events?.Count ?? 0;
     public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere);
     public string ScreenRead => $"{DisplayName} {EventCountText}";
@@ -28,13 +32,17 @@ public sealed partial record LocationDisplay(LocationInfo Info)
     public void SetStatus(Farmer who)
     {
         int seenCount = 0;
+        bool hasReady = false;
         foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
             eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
             if (eventDisp.HasSeen)
                 seenCount++;
+            if (eventDisp.EventStatus == EventInfoDisplay.EventInfoDisplayStatus.Ready)
+                hasReady = true;
         }
         SeenCount = seenCount;
+        HasReadyEvents = hasReady;
     }
 
     public ReminderEntry? Reminder => throw new NotImplementedException();

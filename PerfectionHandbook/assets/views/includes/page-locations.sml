@@ -10,9 +10,12 @@
         screen-read={:ScreenRead}
         background={@Mods/StardewUI/Sprites/ShopEntryBorder}
         left-click=|^HandleLeftClick(this)|>
-        <lane orientation="vertical">
-          <label text={:DisplayName} shadow-alpha="0.8" max-lines="1"/>
-          <label text={:EventCountText} shadow-alpha="0.8" max-lines="-1"/>
+        <lane orientation="horizontal" vertical-content-alignment="middle">
+          <lane orientation="vertical" layout="stretch content">
+            <label text={:DisplayName} shadow-alpha="0.8" max-lines="1"/>
+            <label text={:EventCountText} shadow-alpha="0.8" max-lines="-1"/>
+          </lane>
+          <image *if={:HasReadyEvents} focusable="true" margin="6,0" layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
         </lane>
       </frame>
     </grid>
@@ -72,17 +75,6 @@
               left-click=|~MiscLocationContext.ShowEventById(Link)| />
           </lane>
           <label *case="Friend" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
-          <!-- <lane *case="Friend" margin="8,0,0,0">
-            <label text={:Info.PrecondText} shadow-alpha="0.8" />
-            <label *repeat={:Links}
-              focusable="true"
-              margin="8,0,0,0"
-              color={:TextColor}
-              +hover:color={:TextHoverColor}
-              shadow-alpha="0.8"
-              text={:Label}
-            />
-          </lane> -->
         </lane>
       </lane>
     </scrollable>
