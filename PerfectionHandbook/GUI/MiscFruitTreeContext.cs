@@ -18,13 +18,15 @@ public sealed partial record FruitTreeDisplay(
     string Id,
     ItemInfo SaplingInfo,
     FruitTreeData Data,
-    int PlantedCount,
+    int Count,
     string DisplayText,
     SDUISprite Sprite,
     IReadOnlyList<FruitTreeFruitDisplay> FruitDisplays
 ) : IPageDisplayEntry
 {
     public bool Needed => true;
+
+    public readonly Color DisplayTint = Count > 0 ? HandbookContext.ActiveColor : HandbookContext.InactiveColor;
 
     public bool SearchMatch(string txt)
     {
@@ -41,36 +43,44 @@ public sealed partial record FruitTreeDisplay(
         string treeId,
         ItemInfo saplingInfo,
         FruitTreeData fruitTreeData,
-        Dictionary<string, (int, int)> treeCount
+        Dictionary<string, Dictionary<string, int>> treeCounts
     )
     {
-        int plantedCount = 0;
-        int maxStage = 0;
-        if (treeCount.TryGetValue(treeId, out (int, int) counters))
-        {
-            plantedCount = counters.Item1;
-            maxStage = counters.Item1;
-        }
-        int spriteRowNumber = fruitTreeData.TextureSpriteRow;
-        Rectangle sourceRect = maxStage switch
-        {
-            0 => new Rectangle(0, spriteRowNumber * 5 * 16, 48, 80),
-            1 => new Rectangle(48, spriteRowNumber * 5 * 16, 48, 80),
-            2 => new Rectangle(96, spriteRowNumber * 5 * 16, 48, 80),
-            3 => new Rectangle(144, spriteRowNumber * 5 * 16, 48, 80),
-            _ => new Rectangle((12 + (int)Game1.season * 3) * 16, spriteRowNumber * 5 * 16, 48, 80),
-        };
+        Rectangle sourceRect = new(
+            (12 + (int)(fruitTreeData.Seasons.Any() ? fruitTreeData.Seasons[0] : Game1.season) * 3) * 16,
+            fruitTreeData.TextureSpriteRow * 5 * 16,
+            48,
+            80
+        );
         SDUISprite sprite = new(DrawHelper.SafeLoad(fruitTreeData.Texture ?? "TileSheets\\fruitTrees"), sourceRect);
+
         StringBuilder sb = HandbookContext.sb;
         sb.AppendLine(TokenParser.ParseText(fruitTreeData.DisplayName) ?? treeId);
-        sb.Append(I18n.Ui_PlantedCount(plantedCount));
+
+        int plantedCount = 0;
+        if (treeCounts.TryGetValue(treeId, out Dictionary<string, int>? locations))
+        {
+            plantedCount = locations.Values.Sum();
+            sb.Append(I18n.Ui_PlantedCount(plantedCount));
+            foreach ((string loc, int count) in locations)
+            {
+                sb.Append('\n');
+                sb.Append(I18n.Ui_PlantedLocationCount(loc, count));
+            }
+        }
+        else
+        {
+            sb.Append(I18n.Ui_PlantedCount(plantedCount));
+        }
+
         string displayText = sb.ToString();
         sb.Clear();
+
         List<FruitTreeFruitDisplay> fruitDisplays = [];
-        if (plantedCount > 0 && maxStage >= 4 && (fruitTreeData.Fruit?.Any() ?? false))
+        if (plantedCount > 0 && (fruitTreeData.Fruit?.Any() ?? false))
         {
             const int MAX_COUNT = 3;
-            const int OFFSET = 16;
+
             foreach (FruitTreeFruitData fruit in fruitTreeData.Fruit)
             {
                 if (
@@ -78,38 +88,28 @@ public sealed partial record FruitTreeDisplay(
                     && ItemInfoCache.Cache.TryGetValue(qId, out ItemInfo? info)
                 )
                 {
-                    fruitDisplays.Add(
-                        new(
-                            info,
-                            fruitDisplays.Count switch
-                            {
-                                0 => new(OFFSET, OFFSET + 32, 0, 0),
-                                1 => new(OFFSET + 96, OFFSET, 0, 0),
-                                _ => new(OFFSET + 64, OFFSET + 64, 0, 0),
-                            }
-                        )
-                    );
+                    fruitDisplays.Add(new(info, GetFruitOffset(fruitDisplays)));
                 }
                 if (fruitDisplays.Count >= MAX_COUNT)
                     break;
             }
             while (fruitDisplays.Count < MAX_COUNT)
             {
-                fruitDisplays.Add(
-                    new(
-                        fruitDisplays[0].Info,
-                        fruitDisplays.Count switch
-                        {
-                            0 => new(OFFSET, OFFSET + 48, 0, 0),
-                            1 => new(OFFSET + 96, OFFSET, 0, 0),
-                            _ => new(OFFSET + 64, OFFSET + 96, 0, 0),
-                        }
-                    )
-                );
+                fruitDisplays.Add(new(fruitDisplays[0].Info, GetFruitOffset(fruitDisplays)));
             }
-            ModEntry.Log($"fruitDisplays: {fruitDisplays.Count}");
         }
         return new(treeId, saplingInfo, fruitTreeData, plantedCount, displayText, sprite, fruitDisplays);
+
+        static SDUIEdges GetFruitOffset(List<FruitTreeFruitDisplay> fruitDisplays)
+        {
+            const int OFFSET = 12;
+            return fruitDisplays.Count switch
+            {
+                0 => new(OFFSET, OFFSET + 36, 0, 0),
+                1 => new(OFFSET + 72, OFFSET, 0, 0),
+                _ => new(OFFSET + 48, OFFSET + 72, 0, 0),
+            };
+        }
     }
 }
 
@@ -118,34 +118,33 @@ public sealed partial class MiscFruitTreeContext(IGoalContext goalCtx)
         goalCtx,
         canToggleNeeded: false,
         canToggleCountMode: false,
-        canSetReminders: false
+        canSetReminders: false,
+        itemPerPageModifier: 3.3 / 13.0
     )
 {
     protected override IReadOnlyList<FruitTreeDisplay> MakeAllDisplay()
     {
-        Dictionary<string, (int, int)> treeCount = [];
+        Dictionary<string, Dictionary<string, int>> treeToLocations = [];
         Utility.ForEachLocation(location =>
         {
+            if (!location.IsFarm && !(location.GetParentLocation()?.IsFarm ?? false))
+                return true;
             foreach (TerrainFeature feature in location.terrainFeatures.Values)
             {
-                if (!location.IsFarm)
-                    continue;
                 if (feature is not FruitTree fruitTree)
                     continue;
                 string treeId = fruitTree.treeId.Value;
                 if (!string.IsNullOrEmpty(treeId) && fruitTree.texture != null)
                 {
-                    if (treeCount.TryGetValue(treeId, out (int, int) count))
+                    if (!treeToLocations.TryGetValue(treeId, out Dictionary<string, int>? locations))
                     {
-                        treeCount[treeId] = new(count.Item1 + 1, Math.Max(count.Item2, fruitTree.growthStage.Value));
+                        locations = [];
+                        treeToLocations[treeId] = locations;
                     }
-                    else
-                    {
-                        treeCount[treeId] = new(1, fruitTree.growthStage.Value);
-                    }
+                    locations[location.DisplayName] = 1 + locations.GetValueOrDefault(location.DisplayName, 0);
                 }
             }
-            return false;
+            return true;
         });
 
         List<FruitTreeDisplay> fruitTreeDisplays = [];
@@ -156,9 +155,14 @@ public sealed partial class MiscFruitTreeContext(IGoalContext goalCtx)
                 && ItemInfoCache.Cache.TryGetValue(qId, out ItemInfo? info)
             )
             {
-                fruitTreeDisplays.Add(FruitTreeDisplay.Make(treeId, info, fruitTreeData, treeCount));
+                fruitTreeDisplays.Add(FruitTreeDisplay.Make(treeId, info, fruitTreeData, treeToLocations));
             }
         }
         return fruitTreeDisplays;
+    }
+
+    protected override List<FruitTreeDisplay> SortAllDisplay(List<FruitTreeDisplay> displayList)
+    {
+        return displayList.OrderByDescending(disp => disp.Count).ToList();
     }
 }

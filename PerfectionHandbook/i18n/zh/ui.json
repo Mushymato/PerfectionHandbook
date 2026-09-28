@@ -11,6 +11,7 @@
   "ui.shipped-count": "（你出售了{{count}}个）",
   "ui.fish-catch": "（{{count}}条{{length}}）",
   "ui.planted-count": "已种植{{count}}棵",
+  "ui.planted-location-count": "  {{loc}}: {{count}}",
   "ui.fish-catch-length": "，最长{{length}}cm",
   "ui.fish-time-range": "{{startTime}} - {{endTime}}",
   "ui.showing-need": "还需要",
@@ -28,7 +29,9 @@
   "ui.title.achievements": "成就",
   "ui.goals.item-shipped": "出售的物品",
   "ui.goals.buildings-constructed": "建造的建筑",
+  "ui.misc.location": "地点与事件",
   "ui.misc.crop-calendar": "农作物日历",
+  "ui.misc.fruit-trees": "果树",
   "ui.misc.ingredients": "材料清单",
   "ui.misc.needed-for": "需要{{needCount}}，需要{{need}}：",
   "ui.crop.month": "第{{month}}月",
@@ -49,7 +52,8 @@
   "ui.week-day": "{{dayOfWeek}} {{day}}",
   "screenread.ingredient": "需要{{needCount}}个{{thing}}，现有{{haveCount}}。",
   "ui.mines.floor": "矿洞F{{floor}}",
+  "ui.friend.tooltip": "{{friend}} ({{friendship}})",
   "ui.event.count": "{{seen}}/{{count}}个事件",
   "ui.prev-page": "上一页",
-  "ui.next-page": "下一页"
+  "ui.next-page": "下一页",
 }

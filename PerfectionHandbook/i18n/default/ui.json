@@ -11,6 +11,7 @@
   "ui.shipped-count": "(You shipped {{count}})",
   "ui.fish-catch": "(You caught {{count}} of these{{length}})",
   "ui.planted-count": "You planted {{count}}",
+  "ui.planted-location-count": "  {{loc}}: {{count}}",
   "ui.fish-catch-length": ", record length {{length}}cm",
   "ui.fish-time-range": "{{startTime}} - {{endTime}}",
   "ui.showing-need": "Need",

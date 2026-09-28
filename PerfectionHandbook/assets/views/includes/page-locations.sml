@@ -27,7 +27,7 @@
           +hover:border-tint="White"
           margin="4,0,12,0"
           padding="8"
-          left-click=|~GoalLocationContext.ShowEvent(this)|
+          left-click=|~MiscLocationContext.ShowEvent(this)|
           >
           <event-header text={:EventHeaderText}/>
         </frame>
@@ -69,7 +69,7 @@
               +hover:color={:TextHoverColor}
               shadow-alpha="0.8"
               text={:Label}
-              left-click=|~GoalLocationContext.ShowEventById(Link)| />
+              left-click=|~MiscLocationContext.ShowEventById(Link)| />
           </lane>
           <label *case="Friend" text={:Info.DisplayText} margin="8,0,0,0" shadow-alpha="0.8" />
           <!-- <lane *case="Friend" margin="8,0,0,0">
