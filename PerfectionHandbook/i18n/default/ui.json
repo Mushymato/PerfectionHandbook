@@ -30,6 +30,7 @@
   "ui.goals.buildings-constructed": "Buildings Constructed",
   "ui.misc.location": "Locations & Events",
   "ui.misc.crop-calendar": "Crop Calendar",
+  "ui.misc.fruit-trees": "Fruit Trees",
   "ui.misc.ingredients": "Ingredients",
   "ui.misc.needed-for": "You have {{count}} and you need {{need}} for:",
   "ui.crop.month": "Month: {{month}}",

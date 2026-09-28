@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PerfectionHandbook.GUI.Shared;
@@ -15,6 +16,7 @@ public sealed partial class HandbookContext
     public static readonly Color ActiveColor = Color.White;
     public static readonly Color InactiveColor = Color.DimGray * 0.4f;
     public static readonly Color HiddenColor = Color.Black * 0.2f;
+    internal static readonly StringBuilder sb = new();
 
     public readonly Farmer who;
     public readonly IReadOnlyList<GoalContext> PerfectionGoals;
@@ -57,6 +59,14 @@ public sealed partial class HandbookContext
                 I18n.Ui_Misc_CropCalendar(),
                 ItemRegistry.GetDataOrErrorItem("(O)889"),
                 (ctx) => new GoalCropListContext(ctx, CropListKind.Any)
+            ),
+            new MiscContext(
+                who,
+                playerOwned,
+                "Misc_Fruit_Tree",
+                I18n.Ui_Misc_FruitTrees(),
+                ItemRegistry.GetDataOrErrorItem("(O)628"),
+                (ctx) => new MiscFruitTreeContext(ctx)
             ),
             new MiscContext(
                 who,

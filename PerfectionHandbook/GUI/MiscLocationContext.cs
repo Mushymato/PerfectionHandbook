@@ -14,9 +14,11 @@ public sealed partial record LocationDisplay(LocationInfo Info)
     public readonly string DisplayName = Info.Location.DisplayName ?? Info.LocationId;
 
     [Notify]
-    private string eventCount = string.Empty;
-    public string ScreenRead => $"{DisplayName} {EventCount}";
-    public bool Needed => true;
+    private int seenCount = 0;
+    private readonly int eventsHere = Info.Events?.Count ?? 0;
+    public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere);
+    public string ScreenRead => $"{DisplayName} {EventCountText}";
+    public bool Needed => SeenCount < eventsHere;
 
     public bool SearchMatch(string txt)
     {
@@ -32,7 +34,7 @@ public sealed partial record LocationDisplay(LocationInfo Info)
             if (eventDisp.HasSeen)
                 seenCount++;
         }
-        EventCount = I18n.Ui_Event_Count(seenCount, EventDisplays.Count);
+        SeenCount = seenCount;
     }
 
     public ReminderEntry? Reminder => throw new NotImplementedException();
@@ -43,7 +45,6 @@ public sealed partial record LocationDisplay(LocationInfo Info)
 public sealed partial class MiscLocationContext(IGoalContext goalCtx)
     : AbstractPageListContext<LocationDisplay>(
         goalCtx,
-        canToggleNeeded: false,
         canToggleCountMode: false,
         canSetReminders: false,
         itemPerPageModifier: 9.0 / 13.0
@@ -54,6 +55,24 @@ public sealed partial class MiscLocationContext(IGoalContext goalCtx)
     [Notify]
     private LocationDisplay? selected = null;
     public bool HasSelected => Selected != null;
+
+    public override string SearchText
+    {
+        get => field;
+        set
+        {
+            if (!field.EqualsIgnoreCase(value))
+            {
+                field = value;
+                filteredDisplay = null;
+                OnPropertyChanged(new(nameof(SearchText)));
+                if (selected == null)
+                    UpdateFilteredDisplayPaginated();
+                else
+                    selected.SearchEvents(field);
+            }
+        }
+    } = string.Empty;
 
     public void HandleLeftClick(LocationDisplay display)
     {

@@ -73,6 +73,8 @@
   <infobar-page page-name="Achievement_Monoculture" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
   <!-- Misc_Location_Info -->
   <infobar-page page-name="Misc_Location_Info" page-include="mushymato.PerfectionHandbook/views/includes/page-locations"/>
+  <!-- Misc_Fruit_Tree -->
+  <infobar-page page-name="Misc_Fruit_Tree" page-include="mushymato.PerfectionHandbook/views/includes/page-fruit-trees"/>
   <!-- Misc_Crop_Calendar -->
   <infobar-page page-name="Misc_Crop_Calendar" page-include="mushymato.PerfectionHandbook/views/includes/page-crop-calendar"/>
   <!-- Misc_Required_Ingredients -->

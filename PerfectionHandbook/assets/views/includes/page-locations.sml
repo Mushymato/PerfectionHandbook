@@ -12,7 +12,7 @@
         left-click=|^HandleLeftClick(this)|>
         <lane orientation="vertical">
           <label text={:DisplayName} shadow-alpha="0.8" max-lines="1"/>
-          <label text={:EventCount} shadow-alpha="0.8" max-lines="-1"/>
+          <label text={:EventCountText} shadow-alpha="0.8" max-lines="-1"/>
         </lane>
       </frame>
     </grid>

@@ -300,10 +300,9 @@ public sealed record FishCaughtDisplay(ItemInfo Info, int OwnedCount) : Abstract
         OnPropertyChanged(new(nameof(Tooltip)));
     }
 
-    private static readonly StringBuilder sb = new();
-
     public override string GetTooltipDesc()
     {
+        StringBuilder sb = HandbookContext.sb;
         sb.Append(Info.Datum.Description);
         if (Count > 0)
         {
