@@ -48,7 +48,7 @@ public sealed partial class HandbookContext
                 "Misc_Location_Info",
                 I18n.Ui_Misc_Location(),
                 ItemRegistry.GetDataOrErrorItem("(O)102"),
-                (ctx) => new GoalLocationContext(ctx)
+                (ctx) => new MiscLocationContext(ctx)
             ),
             new MiscContext(
                 who,
@@ -64,7 +64,7 @@ public sealed partial class HandbookContext
                 "Misc_Required_Ingredients",
                 I18n.Ui_Misc_Ingredients(),
                 ItemRegistry.GetDataOrErrorItem("(O)419"),
-                (ctx) => new GoalRecipesIngredientContext(ctx)
+                (ctx) => new MiscRecipesIngredientContext(ctx)
             ),
             new MiscContext(
                 who,

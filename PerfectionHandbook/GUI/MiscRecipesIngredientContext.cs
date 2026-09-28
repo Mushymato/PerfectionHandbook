@@ -86,9 +86,9 @@ public partial record IngredientDisplay(string Key, NeededForInfoGroup NeededFor
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_RecipesIngredient, Key);
 }
 
-public sealed partial class GoalRecipesIngredientContext : AbstractItemCountContext<IngredientDisplay>
+public sealed partial class MiscRecipesIngredientContext : AbstractItemCountContext<IngredientDisplay>
 {
-    public GoalRecipesIngredientContext(IGoalContext goalCtx)
+    public MiscRecipesIngredientContext(IGoalContext goalCtx)
         : base(goalCtx, canToggleNeeded: false, canToggleCountMode: false, itemPerPageModifier: 6.0 / 13.0)
     {
         PropertyChanged += OnPropertyChanged_RecipeMode;

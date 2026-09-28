@@ -40,7 +40,7 @@ public sealed partial record LocationDisplay(LocationInfo Info)
     public static LocationDisplay Make(LocationInfo Info) => new(Info);
 }
 
-public sealed partial class GoalLocationContext(IGoalContext goalCtx)
+public sealed partial class MiscLocationContext(IGoalContext goalCtx)
     : AbstractPageListContext<LocationDisplay>(
         goalCtx,
         canToggleNeeded: false,
