@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0-alpha.11](https://github.com/Mushymato/PerfectionHandbook/tree/0.6.0-alpha.11) - 2026-09-28
+
+### Added
+- Fruit tree view 2
+- Exclaim mark for locations that have events you could see
+
 ## [0.6.0-alpha.10](https://github.com/Mushymato/PerfectionHandbook/tree/0.6.0-alpha.10) - 2026-09-27
 
 ### Added
