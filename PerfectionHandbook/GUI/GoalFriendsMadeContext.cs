@@ -41,11 +41,20 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
 
     public readonly string DisplayName = NpcInfo.DisplayName;
 
+    private readonly int eventsHere = NpcInfo.Events.Count;
+
     [Notify]
-    private string eventCount = "";
-    public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay} {EventCount}";
+    private int seenCount = 0;
+
+    [Notify]
+    private int readyCount = 0;
+
+    public bool HasReadyEvents => ReadyCount > 0;
+    public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere, ReadyCount);
+
+    public string ScreenRead => $"{DisplayName} {FriendshipPointDisplay} {EventCountText}";
     public string FriendDetailText =>
-        NpcInfo.Data.BirthSeason != null ? $"{NpcInfo.BirthdayText} | {EventCount}" : EventCount;
+        NpcInfo.Data.BirthSeason != null ? $"{NpcInfo.BirthdayText} | {EventCountText}" : EventCountText;
     public ReminderEntry? Reminder { get; } =
         MenuHandler.Reminders.GetOrCreateEntry(ReminderEntryFactory.Kind_FriendsMade, NpcInfo.Name);
 
@@ -61,13 +70,17 @@ public sealed partial record FriendsMadeDisplay(NPCInfo NpcInfo, SDUISprite MugS
         else
             CurrentFriendship = null;
         int seenCount = 0;
+        int readyCount = 0;
         foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
             eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
             if (eventDisp.HasSeen)
                 seenCount++;
+            if (eventDisp.EventStatus == EventInfoDisplay.EventInfoDisplayStatus.Ready)
+                readyCount++;
         }
-        EventCount = I18n.Ui_Event_Count(seenCount, EventDisplays.Count);
+        SeenCount = seenCount;
+        ReadyCount = readyCount;
     }
 
     public bool ToggleReminder() => MenuHandler.Reminders.ToggleEntryKeyChecked(Reminder);
@@ -119,7 +132,9 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
         return SortMode switch
         {
             PageSortMode.Default => displayList
-                .OrderByDescending(static disp => (disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill))
+                .OrderByDescending(static disp =>
+                    (disp.HasReadyEvents ? 1 : 0, disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill)
+                )
                 .ThenBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
             PageSortMode.Count => displayList

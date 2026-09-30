@@ -12,15 +12,18 @@
         hovered-subject={:NpcInfo.Chara}
         left-click=|^HandleLeftClick(this)|>
           <panel vertical-content-alignment="End">
-            <lane orientation="Horizontal" vertical-content-alignment="Middle">
+            <lane orientation="Horizontal" vertical-content-alignment="Middle" padding="0,0,12,0" >
               <image layout="64px 80px"
                 fit="Contain"
                 horizontal-alignment="middle"
                 vertical-alignment="end"
                 sprite={:MugShotSprite}
                 tint={:DisplayTint}/>
-              <lane orientation="Vertical" margin="0,0,12,0" >
-                <label margin="8,0,0,8" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+              <lane orientation="Vertical" layout="stretch content">
+                <panel margin="-2,0,0,0">
+                  <image *if={:HasReadyEvents} layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
+                  <label margin="18,0,0,8" layout="stretch content" font="small" text={:DisplayName} max-lines="-1" shadow-alpha="0.8"/>
+                </panel>
                 <frame *if={:NpcInfo.CanEventuallySocialize} layout="stretch 24px" border-thickness="4" border={@Mods/StardewUI/Sprites/MenuSlotTransparent}>
                   <panel layout="100% stretch" vertical-content-alignment="End">
                     <image sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFillPx} fit="Stretch" layout={FriendshipFillLayout}/>

@@ -53,7 +53,7 @@
   "screenread.ingredient": "需要{{needCount}}个{{thing}}，现有{{haveCount}}。",
   "ui.mines.floor": "矿洞F{{floor}}",
   "ui.friend.tooltip": "{{friend}} ({{friendship}})",
-  "ui.event.count": "{{seen}}/{{count}}个事件",
+  "ui.event.count": "{{seen}}/{{count}}个事件，{{ready}}个可触发",
   "ui.prev-page": "上一页",
   "ui.next-page": "下一页",
 }

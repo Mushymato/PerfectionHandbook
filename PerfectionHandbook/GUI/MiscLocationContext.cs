@@ -13,14 +13,16 @@ public sealed partial record LocationDisplay(LocationInfo Info)
 {
     public readonly string DisplayName = Info.Location.DisplayName ?? Info.LocationId;
 
+    private readonly int eventsHere = Info.Events?.Count ?? 0;
+
     [Notify]
     private int seenCount = 0;
 
     [Notify]
-    private bool hasReadyEvents = false;
+    private int readyCount = 0;
+    public bool HasReadyEvents => ReadyCount > 0;
 
-    private readonly int eventsHere = Info.Events?.Count ?? 0;
-    public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere);
+    public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere, ReadyCount);
     public string ScreenRead => $"{DisplayName} {EventCountText}";
     public bool Needed => SeenCount < eventsHere;
 
@@ -32,17 +34,17 @@ public sealed partial record LocationDisplay(LocationInfo Info)
     public void SetStatus(Farmer who)
     {
         int seenCount = 0;
-        bool hasReady = false;
+        int readyCount = 0;
         foreach (EventInfoDisplay eventDisp in EventDisplays)
         {
             eventDisp.HasSeen = who.eventsSeen.Contains(eventDisp.Info.EventId);
             if (eventDisp.HasSeen)
                 seenCount++;
             if (eventDisp.EventStatus == EventInfoDisplay.EventInfoDisplayStatus.Ready)
-                hasReady = true;
+                readyCount++;
         }
         SeenCount = seenCount;
-        HasReadyEvents = hasReady;
+        ReadyCount = readyCount;
     }
 
     public ReminderEntry? Reminder => throw new NotImplementedException();
@@ -58,6 +60,21 @@ public sealed partial class MiscLocationContext(IGoalContext goalCtx)
         itemPerPageModifier: 9.0 / 13.0
     )
 {
+    public override bool HasSortModes => true;
+    protected override List<PageSortMode> ValidSortModes => [PageSortMode.Default, PageSortMode.Name];
+
+    protected override List<LocationDisplay> SortAllDisplay(List<LocationDisplay> displayList)
+    {
+        return SortMode switch
+        {
+            PageSortMode.Default => displayList.OrderBy(static disp => disp.HasReadyEvents ? 0 : 1).ToList(),
+            PageSortMode.Name => displayList
+                .OrderBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
+                .ToList(),
+            _ => base.SortAllDisplay(displayList),
+        };
+    }
+
     private string previousSearchText = string.Empty;
 
     [Notify]

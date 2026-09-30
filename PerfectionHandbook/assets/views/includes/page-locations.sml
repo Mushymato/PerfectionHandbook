@@ -15,7 +15,7 @@
             <label text={:DisplayName} shadow-alpha="0.8" max-lines="1"/>
             <label text={:EventCountText} shadow-alpha="0.8" max-lines="-1"/>
           </lane>
-          <image *if={:HasReadyEvents} focusable="true" margin="6,0" layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
+          <image *if={:HasReadyEvents} margin="6,0" layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
         </lane>
       </frame>
     </grid>
@@ -86,9 +86,9 @@
     vertical-content-alignment="Middle"
     layout="stretch content"
     screen-read={&text}>
-    <panel *switch={:EventStatus} layout="27px content" horizontal-content-alignment="Middle">
-      <image *case="Seen" focusable="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark}/>
-      <image *case="Ready" focusable="true" layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
+    <panel *switch={:EventStatus} focusable="true" layout="27px content" horizontal-content-alignment="Middle">
+      <image *case="Seen" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark}/>
+      <image *case="Ready" layout="12px 32px" sprite={@mushymato.PerfectionHandbook/sprites/cursors:yellowExclaim}/>
     </panel>
     <digits *if={:HasRequiredFriendshipForNPC} margin="0,0,4,0" scale="3" number={:RequiredHeartLevelForNPC} />
     <image *if={:HasRequiredFriendshipForNPC} sprite={@mushymato.PerfectionHandbook/sprites/cursors:heartFill} layout="28px 24px"/>
