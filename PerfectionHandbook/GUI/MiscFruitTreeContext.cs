@@ -95,7 +95,7 @@ public sealed partial record FruitTreeDisplay(
             }
             while (fruitDisplays.Count < MAX_COUNT)
             {
-                fruitDisplays.Add(new(fruitDisplays[0].Info, GetFruitOffset(fruitDisplays)));
+                fruitDisplays.Add(new(fruitDisplays[^1].Info, GetFruitOffset(fruitDisplays)));
             }
         }
         return new(treeId, saplingInfo, fruitTreeData, plantedCount, displayText, sprite, fruitDisplays);
@@ -122,6 +122,9 @@ public sealed partial class MiscFruitTreeContext(IGoalContext goalCtx)
         itemPerPageModifier: 3.3 / 13.0
     )
 {
+    public override bool HasSortModes => true;
+    protected override List<PageSortMode> ValidSortModes => [PageSortMode.Count, PageSortMode.Name];
+
     protected override IReadOnlyList<FruitTreeDisplay> MakeAllDisplay()
     {
         Dictionary<string, Dictionary<string, int>> treeToLocations = [];
@@ -163,6 +166,13 @@ public sealed partial class MiscFruitTreeContext(IGoalContext goalCtx)
 
     protected override List<FruitTreeDisplay> SortAllDisplay(List<FruitTreeDisplay> displayList)
     {
-        return displayList.OrderByDescending(disp => disp.Count).ToList();
+        return SortMode switch
+        {
+            PageSortMode.Name => displayList
+                .OrderBy(static disp => disp.SaplingInfo.DisplayName, ModEntry.displayStringComparer)
+                .ToList(),
+            PageSortMode.Count => displayList.OrderByDescending(static disp => disp.Count).ToList(),
+            _ => base.SortAllDisplay(displayList),
+        };
     }
 }

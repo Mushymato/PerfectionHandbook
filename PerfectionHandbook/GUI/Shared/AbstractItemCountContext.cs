@@ -152,13 +152,13 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
     {
         return SortMode switch
         {
-            SORTMODE_DEFAULT => displayList
+            PageSortMode.Default => displayList
                 .OrderBy(static disp => (disp.Info.Datum.Category, disp.Info.Datum.QualifiedItemId))
                 .ToList(),
-            SORTMODE_NAME => displayList
+            PageSortMode.Name => displayList
                 .OrderBy(static disp => disp.Info.Datum.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
-            SORTMODE_COUNT => displayList.OrderByDescending(static disp => disp.Count).ToList(),
+            PageSortMode.Count => displayList.OrderByDescending(static disp => disp.Count).ToList(),
             _ => base.SortAllDisplay(displayList),
         };
     }
@@ -258,7 +258,7 @@ public abstract partial class AbstractItemCountContext<TDisplay> : AbstractPageL
         {
             display.SetCountMode(countMode);
         }
-        if (SortMode == SORTMODE_COUNT)
+        if (SortMode == PageSortMode.Count)
         {
             ReSortFilteredDisplay();
         }

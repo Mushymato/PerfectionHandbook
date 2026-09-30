@@ -139,15 +139,15 @@ public sealed partial class MiscRecipesIngredientContext : AbstractItemCountCont
     {
         return SortMode switch
         {
-            SORTMODE_DEFAULT => displayList
+            PageSortMode.Default => displayList
                 .OrderBy(static disp =>
                     (disp.Key.StartsWith($"{ModEntry.ModId}/") ? -1024 : disp.Info.Datum.Category, disp.Key)
                 )
                 .ToList(),
-            SORTMODE_NAME => displayList
+            PageSortMode.Name => displayList
                 .OrderBy(static disp => disp.NeededFor.CraftingDesc, ModEntry.displayStringComparer)
                 .ToList(),
-            SORTMODE_COUNT => displayList
+            PageSortMode.Count => displayList
                 .OrderByDescending(static disp => (disp.NeededCount <= disp.OwnedCount ? 1 : 0, disp.OwnedCount))
                 .ToList(),
             _ => base.SortAllDisplay(displayList),

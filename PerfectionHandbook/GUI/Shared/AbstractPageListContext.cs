@@ -8,6 +8,13 @@ using StardewValley.Extensions;
 
 namespace PerfectionHandbook.GUI.Shared;
 
+public enum PageSortMode
+{
+    Default,
+    Name,
+    Count,
+}
+
 public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
     where TDisplay : IPageDisplayEntry
 {
@@ -51,18 +58,17 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
             CanToggleNeeded = false;
             UpdateAllStatus(goalCtx.Who);
         }
+        if (HasSortModes)
+            SortMode = ValidSortModes[0];
     }
 
     [Notify]
     protected bool inSubPage = false;
 
-    public const string SORTMODE_DEFAULT = "default";
-    public const string SORTMODE_NAME = "name";
-    public const string SORTMODE_COUNT = "count";
-
     public virtual bool HasSortModes => false;
-    protected virtual string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
-    public virtual string SortMode
+    protected virtual List<PageSortMode> ValidSortModes =>
+        [PageSortMode.Default, PageSortMode.Name, PageSortMode.Count];
+    public virtual PageSortMode SortMode
     {
         get => field;
         set
@@ -73,8 +79,8 @@ public abstract partial class AbstractPageListContext<TDisplay> : IPageContext
                 ReSortFilteredDisplay();
             }
         }
-    } = SORTMODE_DEFAULT;
-    public virtual StringSpinBoxViewModel SortModeCtx =>
+    } = PageSortMode.Default;
+    public virtual EnumSpinBoxViewModel<PageSortMode> SortModeCtx =>
         new(
             () => SortMode,
             (value) =>

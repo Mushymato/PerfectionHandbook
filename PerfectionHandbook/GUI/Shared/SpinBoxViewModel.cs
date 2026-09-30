@@ -80,16 +80,16 @@ public sealed class IntSpinBoxViewModel(
     }
 }
 
-public sealed class StringSpinBoxViewModel(
-    Func<string> backingGetter,
-    Func<string, bool> backingSetter,
-    string[] validValues,
+public sealed class EnumSpinBoxViewModel<TEnum>(
+    Func<TEnum> backingGetter,
+    Func<TEnum, bool> backingSetter,
+    List<TEnum> validValues,
     string i18nPrefix
-) : AbstractSpinBoxViewModel<string>(backingGetter, backingSetter)
+) : AbstractSpinBoxViewModel<TEnum>(backingGetter, backingSetter)
 {
-    public readonly string[] ValidValues = validValues;
+    public readonly List<TEnum> ValidValues = validValues;
 
-    public override void ValueSetter(string newValue)
+    public override void ValueSetter(TEnum newValue)
     {
         if (!ValidValues.Contains(newValue))
             return;
@@ -101,8 +101,8 @@ public sealed class StringSpinBoxViewModel(
         int idx = ValidValues.IndexOf(Value);
         idx += change;
         if (idx < 0)
-            idx = ValidValues.Length - 1;
-        else if (idx >= ValidValues.Length)
+            idx = ValidValues.Count - 1;
+        else if (idx >= ValidValues.Count)
             idx = 0;
         Value = ValidValues[idx];
         return true;

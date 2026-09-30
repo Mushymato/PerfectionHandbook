@@ -400,7 +400,7 @@ public sealed partial class GoalFishCaughtContext(IGoalContext goalCtx)
 
     protected override List<FishCaughtDisplay> SortAllDisplay(List<FishCaughtDisplay> displayList)
     {
-        if (SortMode == SORTMODE_DEFAULT)
+        if (SortMode == PageSortMode.Default)
         {
             return displayList
                 .OrderBy(static disp =>

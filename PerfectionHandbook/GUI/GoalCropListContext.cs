@@ -449,7 +449,7 @@ public sealed partial class GoalCropListContext(IGoalContext goalCtx, CropListKi
 
     protected override List<CropDisplay> SortAllDisplay(List<CropDisplay> displayList)
     {
-        if (SortMode == SORTMODE_DEFAULT)
+        if (SortMode == PageSortMode.Default)
         {
             List<CropDisplay> sorted = displayList
                 .OrderBy(static disp =>

@@ -77,19 +77,6 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     : AbstractPageListContext<FriendsMadeDisplay>(goalCtx, itemPerPageModifier: 9.0 / 13.0)
 {
     public override bool HasSortModes => true;
-    protected override string[] ValidSortModes => [SORTMODE_DEFAULT, SORTMODE_NAME, SORTMODE_COUNT];
-    public override string SortMode
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                ReSortFilteredDisplay();
-            }
-        }
-    } = SORTMODE_DEFAULT;
 
     public override string SearchText
     {
@@ -131,14 +118,14 @@ public sealed partial class GoalFriendsMadeContext(IGoalContext goalCtx)
     {
         return SortMode switch
         {
-            SORTMODE_DEFAULT => displayList
+            PageSortMode.Default => displayList
                 .OrderByDescending(static disp => (disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill))
                 .ThenBy(static disp => disp.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
-            SORTMODE_COUNT => displayList
+            PageSortMode.Count => displayList
                 .OrderByDescending(static disp => (disp.NpcInfo.CanEventuallySocialize ? 1 : 0, disp.FriendshipFill))
                 .ToList(),
-            SORTMODE_NAME => displayList
+            PageSortMode.Name => displayList
                 .OrderBy(static disp => disp.NpcInfo.DisplayName, ModEntry.displayStringComparer)
                 .ToList(),
             _ => base.SortAllDisplay(displayList),
