@@ -7,8 +7,8 @@ A menu for tracking your perfection progress Stardew Valley.
 ## Installation
 
 1. Download and install SMAPI.
-2. Download and install StardewUI.
-3. Download this mod and install to the Mods folder.
+2. Download and install StardewUI Continued.
+3. Download this mod and extract this mod to the Mods folder.
 
 ## The Handbook
 
@@ -120,9 +120,16 @@ These configs are only available from Perfection Handbook's own config menu:
 * `Strict Item Owned Check`: When determining whether you have items needed for shipping/crafting/cooking, only consider items in your backpack and in the farmhouse.
 * `Cooking From Fridge Only`: When determining whether you have items needed for cooking, only consider items in your backpack and in a fridge.
 * `Show Mod Names`: Display mod names for friends and events (requires Mod Name Tooltip API).
-* `Reminders Max Count`: Maximum number of reminders.
+* `Reminders Max Count`: Maximum number of reminders before the oldest reminder is pushed out.
 * `Reminders Expand by Default`: For reminders with sub items, whether to fully expand them by default.
 * `Reminders HUD Position`: Position of the reminder hud on screen.
+
+## Compatibility
+
+Support for Spacecore (recipes and)
+
+Support for mods that alter perfection requirements is limited. Usually, this just means perfection handbook will display vanilla requirements even if another mod changed how it will work.
+Specific support is included for `Perfection Exclusions`. Any recipe not needed for perfection will be displayed as "completed" by default.
 
 ## Translations
 
@@ -131,5 +138,5 @@ These configs are only available from Perfection Handbook's own config menu:
 
 ## Special Thanks
 
-To Scarlett who helped filling in the event descriptions for vanilla events.
+To Scarlett who helped filling in the event descriptions for vanilla events and provided screenshots.
 To everyone who playtested this mod while it was in alpha hell on github.
