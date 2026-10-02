@@ -20,7 +20,7 @@ Here's a content patcher example for adding name and description for your own ev
           "DisplayName": "{{i18n:1.name}}",
           // a short event description
           "Description": "{{i18n:1.desc}}",
-          // a short event description, to be displayed if the player has seen the event
+          // (Optional) a short event description, to be displayed if the player has seen the event
           "DescriptionSpoiler": "{{i18n:1.spoiler}}"
         }
       }
@@ -29,8 +29,8 @@ Here's a content patcher example for adding name and description for your own ev
 }
 ```
 
-If it worked, you can see your text in game under the 'Friends' page, like this:
+If it worked, you can see your text in game under the 'Friends' page or the 'Location & Events' page, like this:
 
 ![Event Descriptions](./img/eventdescs.png)
 
-Players can still display the mod ID by clicking on the event header, no need to worry about that.
+Players can still see the underlying mod ID by clicking on the event header.
