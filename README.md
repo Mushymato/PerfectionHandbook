@@ -34,7 +34,7 @@ In certain pages, you can also toggle between displaying mods of count display, 
 * Items Shipped: The shipping list.
 * Cooking Recipes: The cooking recipes list, including whether you can craft the recipes. Recipes that are not known is hidden, and recipes that you know but lack ingredients to craft.
 * Crafting Recipes: The crafting recipes list, including whether you can craft the recipes.
-* Fish Caught: The fishing list, including a side for where and when to find the given fish.
+* Fish Caught: The fishing list, including a side panel showing where and when to find the given fish.
 * Monster Slayer Hero: The adventurer's guild monster slayer goals.
 * Great Friends: The social list, including events for each NPC. You can click on the blue event ids to jump between events, and the actors to navigate between characters who are also in this event.
 * Farmer Level: The skills list.
@@ -104,6 +104,18 @@ It provides knobs for:
 
 Whether a particular knob is available depends on the subpage.
 
+## Integration and Compatibility
+
+Besides typical content mods, there is built-in support for displaying:
+* Spacecore recipes and skills.
+* Vanilla Plus Perfections level 10 to 20 skills.
+
+If you have Mod Name Tooltip installed, characters and events will display their source mod.
+
+Support for mods that alter perfection requirements is limited.
+Usually, this just means perfection handbook will display vanilla requirements even if another mod changed how it will work.
+Specific support is included for Perfection Exclusions. Any recipe not needed for perfection will be displayed as "completed" by default.
+
 ## Configuration
 
 These configs can be changed in GMCM or Perfection Handbook's own config menu:
@@ -123,13 +135,6 @@ These configs are only available from Perfection Handbook's own config menu:
 * `Reminders Max Count`: Maximum number of reminders before the oldest reminder is pushed out.
 * `Reminders Expand by Default`: For reminders with sub items, whether to fully expand them by default.
 * `Reminders HUD Position`: Position of the reminder hud on screen.
-
-## Compatibility
-
-Support for Spacecore (recipes and)
-
-Support for mods that alter perfection requirements is limited. Usually, this just means perfection handbook will display vanilla requirements even if another mod changed how it will work.
-Specific support is included for `Perfection Exclusions`. Any recipe not needed for perfection will be displayed as "completed" by default.
 
 ## Translations
 
