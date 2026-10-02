@@ -147,7 +147,7 @@
 <template name="event-header">
   <lane orientation="horizontal"
     vertical-content-alignment="Middle"
-    layout="stretch content"
+    layout="stretch content[48..]"
     screen-read={&text}>
     <panel *switch={:EventStatus} layout="27px content" horizontal-content-alignment="Middle">
       <image *case="Seen" focusable="true" layout="27px 27px" sprite={@mushymato.PerfectionHandbook/sprites/cursors_1_6:checkmark}/>
@@ -166,6 +166,7 @@
     <label *!if={:Info.HasModName} text={&text}
       focusable="true"
       focusable-tag="default-focus"
-      shadow-alpha="0.8"/>
+      shadow-alpha="0.8"
+      max-lines="1"/>
   </lane>
 </template>

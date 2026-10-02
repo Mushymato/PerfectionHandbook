@@ -77,6 +77,8 @@
           <include *context={:RemindersHUDCtx} name="mushymato.PerfectionHandbook/views/reminder-hud" />
         </nine-grid-editor>
       </form-cell>
+
+      <spacer layout="1px 160px" item-span="-1"/>
     </grid>
   </scrollable>
   <button *float="Below"
