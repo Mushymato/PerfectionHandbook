@@ -67,14 +67,14 @@ public sealed class ModConfig
             mod,
             () => RemindersToggleKey,
             (value) => RemindersToggleKey = value,
-            I18n.Config_Name_RemindersToggleKey,
+            () => $"{I18n.Config_Section_Reminders()} {I18n.Config_Name_RemindersToggleKey()}",
             I18n.Config_Desc_RemindersToggleKey
         );
         gmcm.AddKeybindList(
             mod,
             () => RemindersEditModifierKey,
             (value) => RemindersEditModifierKey = value,
-            I18n.Config_Name_RemindersEditModifierKey,
+            () => $"{I18n.Config_Section_Reminders()} {I18n.Config_Name_RemindersEditModifierKey()}",
             I18n.Config_Desc_RemindersEditModifierKey
         );
         gmcm.AddParagraph(mod, I18n.Config_Gmcm_MoreConfigs);

@@ -85,6 +85,7 @@ public sealed class ModEntry : Mod
                 MenuHandler.ExportCard(new(Game1.player));
             }
         );
+#if DEBUG
         help.ConsoleCommands.Add(
             "ph-listevents",
             "List all events ids from the cache",
@@ -100,11 +101,26 @@ public sealed class ModEntry : Mod
                 Log(sb.ToString());
             }
         );
-#if DEBUG
         help.ConsoleCommands.Add(
-            "ph-invalidate",
-            "Invalidate some asset",
-            static (cmd, args) => help.GameContent.InvalidateCache(args[0])
+            "ph-friendship",
+            "Set all needed friendship to max",
+            static (cmd, args) =>
+            {
+                if (!Context.IsWorldReady)
+                    return;
+                Farmer who = Game1.player;
+                foreach (NPCInfo npcInfo in NPCInfoCache.Cache.Values)
+                {
+                    if (!npcInfo.CountForPerfection)
+                        continue;
+                    if (!who.friendshipData.TryGetValue(npcInfo.Name, out Friendship? friendship))
+                    {
+                        friendship = new();
+                        who.friendshipData[npcInfo.Name] = friendship;
+                    }
+                    friendship.Points = 2500;
+                }
+            }
         );
 #endif
     }

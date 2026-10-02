@@ -219,10 +219,10 @@ public static class Goals
             Dictionary<string, string> cookingRecipes = CraftingRecipe.cookingRecipes;
             foreach (KeyValuePair<string, string> item in cookingRecipes)
             {
-                total++;
                 string key = item.Key;
                 if (perfectionExcluded?.Contains(key) ?? false)
                     continue;
+                total++;
                 if (who.cookingRecipes.ContainsKey(key))
                 {
                     string key2 = ArgUtility.SplitBySpaceAndGet(ArgUtility.Get(item.Value.Split('/'), 2), 0);
