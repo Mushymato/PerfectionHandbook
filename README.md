@@ -143,5 +143,8 @@ These configs are only available from Perfection Handbook's own config menu:
 
 ## Special Thanks
 
+To pneuma163 for location names.
+To MouseyPounds for golden walnut locations.
 To Scarlett who helped filling in the event descriptions for vanilla events and provided screenshots.
 To everyone who playtested this mod while it was in alpha hell on github.
+

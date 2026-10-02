@@ -31,7 +31,7 @@ public sealed class ModConfig
                 reminderHud.Reposition();
             }
         }
-    } = new(SDUIAlignment.Start, SDUIAlignment.Start, new(64, 64));
+    } = new(SDUIAlignment.Start, SDUIAlignment.Start, new(64, 96));
 
     public void Register(IManifest mod)
     {
