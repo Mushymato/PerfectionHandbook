@@ -106,9 +106,13 @@ Whether a particular knob is available depends on the subpage.
 
 ## Integration and Compatibility
 
+All content mods that simply add more items NPC etc are supported.
+
 Besides typical content mods, there is built-in support for displaying:
-* Spacecore recipes and skills.
-* Vanilla Plus Perfections level 10 to 20 skills.
+* SpaceCore recipes and skills.
+* Vanilla Plus Professions level 10 to 20 skills.
+
+In the case of skills, perfection handbook does not alter the total level required for perfection.
 
 If you have Mod Name Tooltip installed, characters and events will display their source mod.
 
