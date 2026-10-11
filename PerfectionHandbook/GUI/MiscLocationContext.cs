@@ -24,7 +24,7 @@ public sealed partial record LocationDisplay(LocationInfo Info)
 
     public string EventCountText => I18n.Ui_Event_Count(SeenCount, eventsHere, ReadyCount);
     public string ScreenRead => $"{DisplayName} {EventCountText}";
-    public bool Needed => SeenCount < eventsHere;
+    public bool Needed => true;
 
     public bool SearchMatch(string txt)
     {
