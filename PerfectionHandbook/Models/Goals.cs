@@ -358,6 +358,8 @@ public static class Goals
                 }
                 // creating this to steal some parsing code
                 Bundle bundle = new(bundleId, bundleData, completion, Point.Zero, "LooseSprites\\JunimoNote", null);
+                if (bundle.ingredients.Count == 0)
+                    continue;
                 total++;
                 if (bundle.complete)
                 {

@@ -34,12 +34,12 @@ public static class AssetManager
             e.Edit(Edit_DataLocations, AssetEditPriority.Late + 100);
         }
         // location name strings from my i18n
-        else if (e.Name.IsEquivalentTo(AssetName_LocationStrings))
+        else if (e.NameWithoutLocale.IsEquivalentTo(AssetName_LocationStrings))
         {
             Load_StringsAsset(e, "location_names.json");
         }
         // event strings from my i18n
-        else if (e.Name.IsEquivalentTo(AssetName_EventDescStrings))
+        else if (e.NameWithoutLocale.IsEquivalentTo(AssetName_EventDescStrings))
         {
             Load_StringsAsset(e, "event_descriptions.json");
         }
