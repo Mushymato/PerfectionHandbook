@@ -139,9 +139,9 @@ public static class AssetManager
         foreach ((string key, LocationData data) in locationData)
         {
             string locKey = $"location.{key}";
-            if (data.DisplayName == null && locationNames.TryGetValue(locKey, out string? locName))
+            if (data.DisplayName == null && locationNames.ContainsKey(locKey))
             {
-                data.DisplayName = locName;
+                data.DisplayName = $"[LocalizedText {AssetName_LocationStrings}:{locKey}]";
             }
         }
     }
